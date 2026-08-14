@@ -45,6 +45,24 @@ npm run build:watch
 
 Неизвестная страница получает общую инициализацию. Админка не имеет корня `.punbb` и намеренно исключена из дизайна.
 
+## Локализация
+
+Локализация построена на `i18next`. Доступны русский (`ru`) и английский (`en`), выбранный язык сохраняется в `localStorage` под ключом `forumLanguage`.
+
+Для перевода текста добавьте ключ в `src/i18n/locales/ru.js` и `src/i18n/locales/en.js`, затем пометьте существующий DOM-элемент:
+
+```html
+<span data-i18n="language.label"></span>
+```
+
+Перевод атрибутов задается списком `атрибут:ключ`, разделенным точкой с запятой:
+
+```html
+<button data-i18n="actions.save" data-i18n-attr="title:actions.save;aria-label:actions.save"></button>
+```
+
+Параметры интерполяции можно передать JSON-объектом в `data-i18n-options`. Для старых скриптов доступен глобальный API `window.ForumI18n` с методами `t`, `changeLanguage`, `getLanguage` и `translateDom`.
+
 ## Старые скрипты форума
 
 Администраторские скрипты сохранены в `src/legacy/`:

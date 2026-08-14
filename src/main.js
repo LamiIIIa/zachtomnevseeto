@@ -3,6 +3,7 @@ import './styles/main.css'
 import { initCommon } from './components/common.js'
 import { applyStoredTheme, initHeader } from './components/header/index.js'
 import { getPageContext } from './core/page-context.js'
+import { initI18n } from './i18n/index.js'
 import { initAuth } from './pages/auth.js'
 import { initForumIndex } from './pages/forum-index.js'
 import { initForumView } from './pages/forum-view.js'
@@ -30,10 +31,15 @@ const pageInitializers = {
 // Применяем тему до DOMContentLoaded, чтобы уменьшить мигание оформления.
 applyStoredTheme()
 
-function init() {
+async function init() {
   const context = getPageContext()
   if (!context) return
 
+  try {
+    await initI18n(context.root)
+  } catch (error) {
+    console.error('Не удалось инициализировать локализацию форума', error)
+  }
   context.root.classList.add('forum-design')
   context.root.dataset.forumPage = context.page
   initCommon(context)
@@ -44,7 +50,7 @@ function init() {
 }
 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init, { once: true })
+  document.addEventListener('DOMContentLoaded', () => void init(), { once: true })
 } else {
-  init()
+  void init()
 }

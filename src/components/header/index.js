@@ -1,4 +1,5 @@
 import { applyStoredTheme, initThemeSwitcher } from './theme-switcher.js'
+import { initLanguageSwitcher } from './language-switcher.js'
 
 export { applyStoredTheme }
 
@@ -14,4 +15,5 @@ export function initHeader({ root }) {
   status?.classList.add('forum-header__status')
 
   initThemeSwitcher(announcement)
+  initLanguageSwitcher(announcement)
 }

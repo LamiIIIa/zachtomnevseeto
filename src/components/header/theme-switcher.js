@@ -1,11 +1,13 @@
+import { t } from '../../i18n/index.js'
+
 const STORAGE_KEY = 'selectedTheme'
 
 const THEMES = [
-  { name: 'shinobi', title: 'Даттебайо!' },
-  { name: 'oto', title: 'Я бессмертен!' },
-  { name: 'akatsuki', title: 'Познай боль!' },
-  { name: 'green', title: 'Сила Юности!' },
-  { name: 'kakashi', title: 'Как бы это сказать...' },
+  { name: 'shinobi', titleKey: 'themes.shinobi' },
+  { name: 'oto', titleKey: 'themes.oto' },
+  { name: 'akatsuki', titleKey: 'themes.akatsuki' },
+  { name: 'green', titleKey: 'themes.green' },
+  { name: 'kakashi', titleKey: 'themes.kakashi' },
 ]
 
 export function applyStoredTheme() {
@@ -19,6 +21,8 @@ export function initThemeSwitcher(root = document) {
 
   if (!switcher.children.length) {
     switcher.append(...THEMES.map(createThemeOption))
+  } else {
+    localizeThemeOptions(switcher)
   }
 
   switcher.addEventListener('change', (event) => {
@@ -40,9 +44,11 @@ function setTheme(theme) {
   if (input) input.checked = true
 }
 
-function createThemeOption({ name, title }) {
+function createThemeOption({ name, titleKey }) {
+  const title = t(titleKey)
   const item = document.createElement('li')
   item.title = title
+  item.dataset.i18nAttr = `title:${titleKey}`
 
   const wrapper = document.createElement('span')
   wrapper.className = 'radio'
@@ -56,10 +62,30 @@ function createThemeOption({ name, title }) {
   const label = document.createElement('label')
   label.htmlFor = name
   label.textContent = title
+  label.dataset.i18n = titleKey
 
   wrapper.append(input, label)
   item.append(wrapper)
   return item
+}
+
+function localizeThemeOptions(switcher) {
+  THEMES.forEach(({ name, titleKey }) => {
+    const input = switcher.querySelector(`input[value="${name}"]`)
+    const item = input?.closest('li')
+    const label = input?.id ? switcher.querySelector(`label[for="${input.id}"]`) : null
+    const title = t(titleKey)
+
+    if (item) {
+      item.title = title
+      item.dataset.i18nAttr = `title:${titleKey}`
+    }
+
+    if (label) {
+      label.textContent = title
+      label.dataset.i18n = titleKey
+    }
+  })
 }
 
 function isKnownTheme(theme) {

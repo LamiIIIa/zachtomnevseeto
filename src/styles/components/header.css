@@ -8,3 +8,24 @@
 .forum-design .forum-header__status {
   box-sizing: border-box;
 }
+
+.forum-language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--fd-space-sm);
+  margin: var(--fd-space-sm);
+}
+
+.forum-language-switcher__label {
+  font: inherit;
+}
+
+.forum-language-switcher__select {
+  min-height: 2rem;
+  padding: var(--fd-space-xs) var(--fd-space-sm);
+  border: 1px solid currentColor;
+  border-radius: var(--fd-radius-sm);
+  color: inherit;
+  background: transparent;
+  font: inherit;
+}
