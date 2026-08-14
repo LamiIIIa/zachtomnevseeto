@@ -1,0 +1,7 @@
+/* Сброс ограничен форумом и не применяется к панели администрирования. */
+.forum-design,
+.forum-design *,
+.forum-design *::before,
+.forum-design *::after {
+  box-sizing: border-box;
+}

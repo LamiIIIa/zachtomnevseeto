@@ -1,0 +1,105 @@
+{
+  "generatedFrom": "zachtomnewseeto.mybb.ru admin HTML fields",
+  "external": [
+    {
+      "area": "footer",
+      "order": 1,
+      "src": "https://forumstatic.ru//files/001b/95/a1/53719.js"
+    },
+    {
+      "area": "footer",
+      "order": 6,
+      "src": "https://forumstatic.ru/files/0015/c4/3f/31001.js"
+    },
+    {
+      "area": "footer",
+      "order": 10,
+      "src": "https://forumstatic.ru/files/001b/d5/6a/90542.js"
+    },
+    {
+      "area": "footer",
+      "order": 15,
+      "src": "//forumstatic.ru/f/ru/bestbb/realtime.js"
+    },
+    {
+      "area": "footer",
+      "order": 16,
+      "src": "//forumstatic.ru/f/ru/bestbb/realtime.disable.js"
+    },
+    {
+      "area": "footer",
+      "order": 18,
+      "src": "https://forumstatic.ru/files/001c/03/d0/70597.js"
+    },
+    {
+      "area": "footer",
+      "order": 19,
+      "src": "https://forumstatic.ru/files/001c/6f/41/11599.js?v=4"
+    },
+    {
+      "area": "test-footer",
+      "order": 1,
+      "src": "https://forumstatic.ru/files/001c/6f/41/77357.js?v=1"
+    },
+    {
+      "area": "header",
+      "order": 2,
+      "src": "https://forumstatic.ru/files/0015/c4/3f/26781.js"
+    },
+    {
+      "area": "header",
+      "order": 4,
+      "src": "//forumstatic.ru/f/ru/bestbb/notifications.js"
+    },
+    {
+      "area": "header",
+      "order": 9,
+      "src": "https://forumstatic.ru/files/001c/6f/41/17655.js?v=18"
+    },
+    {
+      "area": "header",
+      "order": 10,
+      "src": "https://forumstatic.ru/files/0015/c4/3f/77306.js"
+    },
+    {
+      "area": "header",
+      "order": 11,
+      "src": "https://forumstatic.ru/files/0015/c4/3f/91221.js"
+    },
+    {
+      "area": "header",
+      "order": 12,
+      "src": "//forumstatic.ru/files/0018/26/1d/86722.js"
+    },
+    {
+      "area": "header",
+      "order": 13,
+      "src": "https://forumstatic.ru/files/0015/c4/3f/26102.js"
+    },
+    {
+      "area": "header",
+      "order": 17,
+      "src": "https://forumstatic.ru/files/0012/d8/04/58219.js"
+    },
+    {
+      "area": "header",
+      "order": 18,
+      "src": "https://forumstatic.ru/files/0017/95/29/89289.js"
+    },
+    {
+      "area": "reply-form",
+      "order": 2,
+      "src": "https://forumstatic.ru/f/su/1bb/bbquote.js?v=1"
+    },
+    {
+      "area": "reply-form",
+      "order": 3,
+      "src": "https://forumstatic.ru/f/su/1bb/bbquote.custom_quotes.js?v=1"
+    },
+    {
+      "area": "reply-form",
+      "order": 6,
+      "src": "https://forumstatic.ru/files/0017/95/29/40399.js"
+    }
+  ]
+}
