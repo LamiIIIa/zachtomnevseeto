@@ -1,60 +1,113 @@
+// Инициализирует блочную раскладку только на главной странице форума.
 export function initForumIndex({ main }) {
-  if (!main) return;
-  if (main.dataset.forumLayout === "cards") return;
+  // Завершаем работу, если MyBB не создал основной контейнер страницы.
+  if (!main) return
 
-  main.classList.add("forum-design-index");
+  // Не преобразуем DOM повторно при повторном запуске скрипта.
+  if (main.dataset.forumLayout === 'cards') return
 
-  main
-    .querySelectorAll(".category > .container > table")
-    .forEach(convertCategoryTable);
+  // Добавляем класс-область для стилей главной страницы.
+  main.classList.add('forum-design-index')
 
-  main.dataset.forumLayout = "cards";
+  // Находим только таблицы со списками форумов внутри категорий.
+  const categoryTables = main.querySelectorAll('.category > .container > table')
 
-  const convertCategoryTable = (table) => {
-    if (table.datatest.convered === "true") return;
+  // Заменяем каждую найденную таблицу блочным списком.
+  categoryTables.forEach(convertCategoryTable)
 
-    const list = document.createElement("div");
-    list.className = "forum-list";
-    list.setAttribute("role", "list");
+  // Отмечаем, что преобразование главной страницы завершено.
+  main.dataset.forumLayout = 'cards'
+}
 
-    table.querySelectorAll("tbody > tr").forEach((row) => {
-      list.append(convertForunRow(row));
-    });
+// Заменяет одну таблицу категории контейнером с карточками форумов.
+function convertCategoryTable(table) {
+  // Создаём блочный список вместо элемента table.
+  const list = document.createElement('div')
 
-    table.replaceWith(list);
-  };
+  // Назначаем новый класс, который не зависит от табличных стилей MyBB.
+  list.className = 'forum-list'
 
-  const convertForunRow = (row) => {
-    const titleCell = row.querySelector(".tcl");
-    const topicsCell = row.querySelector(".tc2");
-    const postsCell = row.querySelector(".tc3");
-    const lastPostCell = row.querySelector(".tcr");
+  // Сохраняем семантику списка для вспомогательных технологий.
+  list.setAttribute('role', 'list')
 
-    const card = document.createElement("article");
-    card.id = row.id;
-    card.className = `forum-card ${row.className}`;
-    card.setAttribute("role", "listitem");
+  // Сохраняем строки в обычный массив до начала изменения DOM.
+  const rows = Array.from(table.tBodies[0]?.rows ?? [])
 
-    const main = createBlock("forum-card_main", titleCell);
-    const stats = document.createElement("div");
-    stats.className = "forum-card_stats";
+  // Преобразуем каждую строку таблицы в отдельную карточку.
+  rows.forEach((row) => {
+    // Добавляем готовую карточку в новый блочный список.
+    list.append(convertForumRow(row))
+  })
 
-    const topics = createBlock("forum-card_topics", topicsCell);
-    const posts = createBlock("forum-card_posts", postsCell);
-    const lastPost = createBlock("forum-card_last-post tcr", lastPost);
+  // Удаляем исходную таблицу и ставим на её место новый список.
+  table.replaceWith(list)
+}
 
-    stats.append(topics, posts);
-    card.append(main, stats, lastPost);
+// Собирает карточку форума из четырёх ячеек исходной строки.
+function convertForumRow(row) {
+  // Находим ячейку с названием, описанием, иконкой и подфорумами.
+  const titleCell = row.querySelector(':scope > .tcl')
 
-    return card;
-  };
+  // Находим ячейку с количеством тем.
+  const topicsCell = row.querySelector(':scope > .tc2')
 
-  const createBlock = (className, source) => {
-    const block = document.createElement("div");
-    block.className = className;
+  // Находим ячейку с количеством сообщений.
+  const postsCell = row.querySelector(':scope > .tc3')
 
-    if (source) block.append(...source.childNodes);
+  // Находим ячейку с данными последнего сообщения.
+  const lastPostCell = row.querySelector(':scope > .tcr')
 
-    return block;
-  };
+  // Создаём самостоятельную карточку форума.
+  const card = document.createElement('article')
+
+  // Сохраняем системный идентификатор MyBB вида forum_f3.
+  card.id = row.id
+
+  // Сохраняем классы состояния строки и добавляем новый класс карточки.
+  card.className = `forum-card ${row.className}`
+
+  // Помечаем карточку как элемент созданного выше списка.
+  card.setAttribute('role', 'listitem')
+
+  // Переносим основное содержимое, сохраняя старый класс tcl для совместимости.
+  const content = createBlock('forum-card__main tcl', titleCell)
+
+  // Создаём общий контейнер для двух счётчиков.
+  const stats = document.createElement('div')
+
+  // Добавляем контейнеру счётчиков независимый класс.
+  stats.className = 'forum-card__stats'
+
+  // Переносим количество тем в отдельный блок.
+  const topics = createBlock('forum-card__stat forum-card__topics', topicsCell)
+
+  // Переносим количество сообщений в отдельный блок.
+  const posts = createBlock('forum-card__stat forum-card__posts', postsCell)
+
+  // Переносим последнее сообщение и сохраняем класс tcr для старых стилей.
+  const lastPost = createBlock('forum-card__last-post tcr', lastPostCell)
+
+  // Объединяем два счётчика в один контейнер.
+  stats.append(topics, posts)
+
+  // Собираем карточку из основного содержимого, счётчиков и последнего сообщения.
+  card.append(content, stats, lastPost)
+
+  // Возвращаем готовую карточку в преобразователь категории.
+  return card
+}
+
+// Создаёт div и переносит в него существующие дочерние узлы ячейки.
+function createBlock(className, source) {
+  // Создаём новый блочный контейнер.
+  const block = document.createElement('div')
+
+  // Устанавливаем переданные классы нового интерфейса.
+  block.className = className
+
+  // Переносим узлы, сохраняя ссылки, аватары и обработчики событий.
+  if (source) block.append(...source.childNodes)
+
+  // Возвращаем заполненный блок вызывающей функции.
+  return block
 }
