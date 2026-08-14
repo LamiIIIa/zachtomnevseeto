@@ -7,11 +7,33 @@
 }
 
 .forum-card {
-  display: flex;
   flex-wrap: wrap;
   gap: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: stretch;
+  background-color: var(--color-lnthoverbg);
+  padding: 5px;
+  height: 200px;
 }
 
 .forum-card:last-child:nth-child(odd) {
   grid-column: 1 / -1;
+}
+
+.forum-card_last-post {
+  display: block !important;
+  padding: 2px;
+  margin: 5px;
+}
+
+.forum-design-index .forum-card__last-post {
+  grid-template-columns: 1fr var(--usav);
+  grid-template-rows: auto auto;
+  grid-template-areas: "lastpost1 ava" "lastpost2 ava";
+  place-content: center end;
+  place-items: center end;
+  gap: 10px 20px;
+  display: grid;
 }
