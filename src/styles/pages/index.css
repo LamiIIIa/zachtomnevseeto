@@ -28,7 +28,7 @@
   margin: 5px;
 }
 
-.forum-design-index .forum-card__last-post {
+.forum-card__last-post {
   grid-template-columns: 1fr var(--usav);
   grid-template-rows: auto auto;
   grid-template-areas: "lastpost1 ava" "lastpost2 ava";
