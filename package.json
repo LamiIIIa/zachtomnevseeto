@@ -1,0 +1,13 @@
+{
+  "name": "forumdesign",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "build:watch": "vite build --watch"
+  },
+  "devDependencies": {
+    "vite": "^8.2.0"
+  }
+}

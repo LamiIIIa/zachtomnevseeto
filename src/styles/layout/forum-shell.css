@@ -1,0 +1,4 @@
+/* Общий каркас #pun-index, #pun-viewforum, #pun-viewtopic и других страниц. */
+.forum-design #pun-main {
+  min-width: 0;
+}
