@@ -1,1 +1,16 @@
 /* Главная страница: #pun-index, .category, [id^="forum_f"]. */
+
+.forum-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.forum-list:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.foum-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
