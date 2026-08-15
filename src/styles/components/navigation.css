@@ -1,1 +1,15 @@
 /* #pun-navlinks, #pun-ulinks, хлебные крошки и меню. */
+
+/*
+ * Старые версии общего CSS заменяли название админки псевдоэлементом
+ * и скрывали настоящий span. Явно отменяем оба правила, чтобы текст из i18n
+ * оставался видимым даже при наличии закэшированной копии старого стиля.
+ */
+#pun-navlinks #navadmin a::before {
+  content: none !important;
+  display: none !important;
+}
+
+#pun-navlinks #navadmin a > span {
+  display: inline !important;
+}
