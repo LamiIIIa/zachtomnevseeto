@@ -1,0 +1,53 @@
+/* ls */
+
+.messages-container fieldset #plng {
+  display: none;
+}
+
+.messages-container fieldset strong {
+  display: flex;
+  position: relative;
+  z-index: 8;
+  top: -10px;
+  color: var(--color-link);
+}
+
+.messages-container #profilenav li {
+  margin-left: -25px;
+}
+
+#volSlider.vol_slider {
+  width: 180px;
+    height: 10px;
+    border: 1px solid var(--color-sub) !important;
+    box-sizing: border-box;
+    border-radius: 10px !important;
+  box-shadow: none;
+}
+
+#volSlider .before {
+    height: 8px !important;
+    margin: -1px 0 0 0px;
+    background: var(--color-sub) !important;
+}
+
+#volSlider .thumb {
+  width: 5px !important;
+    height: 14px !important;
+    position: relative;
+    top: -12px !important;
+    cursor: pointer;
+    background: var(--color-sub) !important;
+    margin-left: -2px;
+    border-radius: 50%;
+  box-shadow: none !important;
+}
+
+#volume-set {
+  display: flex;
+  font-family: var(--font);
+  text-transform: uppercase;
+  align-items: center;
+}
+
+

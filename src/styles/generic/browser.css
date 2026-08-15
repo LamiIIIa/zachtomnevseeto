@@ -1,0 +1,26 @@
+/* scrolbar select
+------------------------------------------------------------------------------------*/
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-forum);
+}
+
+.scrollbox::-webkit-scrollbar-track {
+  background: var(--color-qv);
+}
+
+/* selection */
+::selection {
+  color: var(--color-txt1);
+  background: var(--color-lnt);
+}
+
+
+

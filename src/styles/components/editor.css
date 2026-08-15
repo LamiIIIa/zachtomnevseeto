@@ -1,0 +1,408 @@
+/* textarea */
+textarea {
+  overflow: auto;
+  padding: 10px;
+  font: 500 11px/15px Verdana !important;
+  box-sizing: border-box;
+  width: 95%;
+}
+
+del {
+    filter: blur(3px);
+    text-decoration: none;
+    transition:.33s;
+}
+del:hover {
+    filter: initial;
+    transition:.63s;
+}
+
+/* answer form
+------------------------------------------------------------------------------------*/
+#pun-viewtopic #post {
+  margin-top: 20px;
+}
+
+#pun-viewtopic .post-box #post,
+#pun-viewtopic .post-box fieldset {
+  margin: 0 !important;
+  padding: 0;
+}
+
+.post-box {
+  padding-bottom: 20px;
+  height: 100%;
+}
+
+#post .areafield {
+  margin: 0;
+}
+
+#pun-edit #post .areafield span.input a {
+    margin: 10px 0;
+    display: block;
+    text-transform: lowercase;
+    letter-spacing: 0.5px;
+    font: 500 11px var(--font) text;
+}
+
+#pun-edit #tags .container {
+  top: 49px !important;
+}
+
+.hashelp {
+  position: relative;
+}
+
+#main-reply {
+  height: 213px;
+}
+
+.grippie {
+  margin-top: 5px;
+}
+
+/* CUSTOM FORM-BUTTONS WITH WRITTEN SYMBOLS � BLANCHE. free for use only with copy */
+#form-buttons {
+  display: grid;
+  grid-template-columns: 145px 1fr;
+  margin: 0px 0px 3px 0px;
+  background: var(--quote-bg1) !important;
+  position: relative;
+  border: 1px solid var(--color-dark);
+  padding: 5px;
+  height: 30px;
+  box-sizing: border-box;
+}
+
+#form-buttons table {
+  width: 100% !important;
+}
+
+#form-buttons tr {
+  position: absolute;
+  width: 850px;
+  display: flex;
+  height: 18px;
+  justify-content: space-around;
+  top: 10px;
+}
+
+
+#form-buttons td {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  align-items: center;
+  height: 18px;
+  box-sizing: border-box;
+  color: var(--color-light);
+}
+
+#plng {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  align-items: center;
+  height: 18px;
+  box-sizing: border-box;
+  color: var(--color-txt1);
+}
+
+#form-buttons td {
+  font: 500 18px var(--mat);
+  background-image: none !important;
+  width: inherit !important;
+  cursor: pointer;
+  transition: all 0.5s;
+}
+
+#plng {
+  font: 700 9px var(--font);
+  padding-top: 2px;
+  background: var(--color-dark);
+  border-radius: 13px;
+  letter-spacing: 0.05em;
+  position: relative;
+  right: -930px;
+  top: 20px;
+  text-transform: uppercase;
+}
+
+#form-buttons td:hover {
+  color: var(--color-hover);
+}
+
+#form-buttons td img {
+  z-index: 9;
+}
+
+#form-buttons td:before {
+  position: absolute;
+}
+
+#button-font:before {
+  content: '\e264';
+}
+
+#button-size:before {
+  content: '\eae2';
+}
+
+#button-bold:before {
+  content: '\e238';
+}
+
+#button-italic:before {
+  content: '\e23f';
+}
+
+#button-underline:before {
+  content: '\e249';
+}
+
+#button-strike:before {
+  content: '\e257';
+}
+
+#button-transL:before {
+  content: '\e8e2';
+}
+
+#button-indent:before {
+  content: '\e23e';
+}
+
+#button-left:before {
+  content: '\e236';
+}
+
+#button-center:before {
+  content: '\e234';
+}
+
+#button-right:before {
+  content: '\e237';
+}
+
+#button-justify:before {
+  content: '\e235';
+}
+
+#button-link:before {
+  content: '\e157';
+}
+
+#button-spoiler:before {
+  content: '\e875';
+}
+
+#button-sspoiler:before {
+  content: '\ef9e';
+}
+
+#button-image:before {
+  content: '\e412';
+}
+
+#button-imagetwo:before {
+  content: '\e3f4';
+}
+
+#button-video:before {
+  content: '\e1c4';
+}
+
+#button-hide:before {
+  content: '\e898';
+}
+
+#button-quote:before {
+  content: '\e625';
+}
+
+#button-code:before {
+  content: '\ead1';
+}
+
+#button-html:before {
+  content: '\ef54';
+}
+
+#button-color:before {
+  content: '\e40a';
+}
+
+#button-table:before {
+  content: '\f088';
+}
+
+#button-smile:before {
+  content: '\e87d';
+  display: none;
+}
+
+#button-sticker:before {
+  content: '\e813';
+}
+
+#button-keyboard:before {
+  content: '\f028';
+}
+
+#button-addition:before {
+  content: '\e145';
+}
+
+#button-mask:before {
+  content: '\e853';
+}
+
+#floatbut:before {
+  content: '\e3b5';
+}
+
+/* Исходный селектор #button-Change&#209;ase невалиден и браузером игнорируется. */
+
+#button-sp-vote:before {
+  content: '\e78f';
+}
+
+/* tags */
+#tags .container,
+#float {
+  overflow-y: auto;
+  padding: 10px !important;
+  height: 180px;
+  font: 400 10px var(--font) text;
+  text-transform: lowercase;
+  letter-spacing: 0.5px;
+  z-index: 99999;
+  top: 29px !important;
+  color: var(--color-txt1);
+  background: var(--color-qv);
+  border-radius: 0 0 15px 15px;
+}
+
+#font-area {
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 0 0 0 10px;
+  gap: 2px 15px;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#font-area div,
+#size-area div,
+#addition-area div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  transition: all 0.5s;
+  margin: -5px;
+  padding: 5px;
+  position: relative;
+}
+
+#font-area div:hover,
+#size-area div:hover,
+#addition-area div:hover {
+  background: var(--color-forum);
+  color: var(--color-txt2);
+}
+
+#font-area div img,
+#size-area div img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+#font-area span,
+#size-area span,
+#addition-area div {
+  height: auto !important;
+}
+
+#uploaded-images img {
+  object-fit: cover;
+}
+
+#image-area,
+#color-area,
+#video-area,
+#spoiler-area {
+  height: auto !important;
+}
+
+#spoiler-area a,
+#image-area a {
+  color: inherit;
+}
+
+#float {
+  left: 43%;
+  z-index: 2;
+  height: auto;
+  position: absolute;
+  display: none;
+}
+
+/* input buttons
+-----------------------------------------------------------------------------------*/
+input,
+select,
+option,
+.hvStickerPackModalTab {
+  background: var(--color-lnthoverbg);
+  border: 0px solid var(--color-sub);
+  font: 500 10px/10px var(--font) text !important;
+  letter-spacing: 0.5px;
+  padding: 5px 7px;
+  color: var(--color-txt1);
+  box-sizing: border-box;
+    border-radius: 0px;
+  transition: box-shadow 0.3s ease;
+}
+
+input:hover,
+select:hover,
+option:hover,
+.hvStickerPackModalTab{
+  box-shadow: -2px 2px 5px var(--shedow1);
+}
+
+select,
+option {
+  text-transform: uppercase;
+}
+
+#topic-modmenu {
+  margin-top: 20px;
+}
+
+/* button */
+.button,
+.hvStickerPackModalTab {
+    background: var(--color-forum) !important;
+    border: none !important;
+    padding: 8px 15px !important;
+    text-transform: uppercase;
+    font-size: 10px !important;
+    color: var(--color-txt1);
+    font-weight: 700 !important;
+    transition: all 0.5s;
+    cursor: pointer;
+    min-width: max-content;
+    
+}
+
+.button:hover,
+.hvStickerPackModalTab:hover,
+.hvStickerPackModalTab.active {
+  color: var(--color-link) !important;
+  background: var(--color-forum) !important;
+}
+

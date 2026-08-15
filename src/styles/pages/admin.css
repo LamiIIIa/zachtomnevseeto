@@ -1,0 +1,71 @@
+/* admin */
+.adformal, .adcontainer {
+  border-style: none !important;
+  }
+
+
+
+.adformal h2, #pun-adnav h2 {
+  padding: 0.5em 1em;
+  border-style: none !important;
+  background-color: var(--color-link) !important;
+  color: var(--color-forum) !important;
+  }
+  
+#pun-admain table,
+#pun-admain tr,
+#pun-admain td,
+#pun-admain th {
+  display: table !important;
+}
+#pun-admain tr {
+  display: table-row !important;
+}
+#pun-admain td,
+#pun-admain th {
+  display: table-cell !important;
+}
+
+  
+   #pun-admain .adcontainer th
+  {
+   background-color: var(--color-forum) !important;
+   }
+  
+  /*calculator*/
+
+.calc {
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font);
+  font-size: 14px;
+  text-transform: uppercase
+
+}
+
+.calc input {
+  width: 500px;
+}
+
+
+.calc label {
+  width: 500px;
+}
+
+
+.buttoncalc  {
+width: 100px !important;
+font-family: var(--font-1) !important;
+color: var(--color-link);
+  font-size: 12px;
+  letter-spacing: 1.5px;
+}
+
+#statsh2{
+  font-family: var(--font-1);
+  color: var(--color-link)
+}

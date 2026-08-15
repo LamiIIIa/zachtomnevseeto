@@ -1,0 +1,40 @@
+/* vievforum serchpost ect
+------------------------------------------------------------------------------------*/
+.newtext {
+  font-size: 10px;
+}
+
+.newtext a {
+  color: var(--link) !important;
+}
+
+.pagestext a {
+  color: var(--link) !important;
+}
+
+#pun-viewforum .category {
+  margin-bottom: 10px;
+}
+
+#pun-searchposts h3 span {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+#pun-searchposts h3 strong {
+  position: absolute;
+  right: 10px;
+}
+
+#pun-searchposts .FNTslider {
+  position: absolute;
+  right: 0;
+  top: -15px;
+}
+
+#pun-searchposts h3 span a {
+  display: inline-flex;
+  align-items: center;
+}
+

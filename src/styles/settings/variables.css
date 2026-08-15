@@ -1,0 +1,43 @@
+/*
+ * Общие переменные интерфейса.
+ * Они не принадлежат конкретной теме и наследуются всем HTML внутри форума,
+ * включая пользовательскую разметку в постах.
+ */
+:root {
+  --title-h: 456px;
+  --prof-w: 250px;
+  --profnav-w: 110px;
+  --main-w: 1100px;
+  --main-p: 20px;
+  --post-p: var(--main-p);
+  --usav: 30px;
+  --intd-gap: 15px;
+  --icon-w: 20px;
+  --icon-h: 20px;
+  --main-icon-w: 20px;
+  --main-icon-h: 20px;
+  --arrows: 50px;
+  --ls-w: 900px;
+  --ls-h: 374px;
+
+  --anim: all 0.7s;
+  --border: 1px solid #d1b48c;
+  --content-icon: '\2AF8';
+
+  --mat: 'Material Symbols Outlined';
+  --mat1: 'Material Symbols Rounded';
+  --faw: 'Font Awesome 5 Pro';
+  --font-k: normal 700 25px 'Russo One';
+  --font-kb: normal 700 10px 'Zen Kurenaido';
+  --font-1: 'Russo One';
+  --font: 'Zen Kurenaido';
+  --font-g: 'Nunito Sans';
+
+  --fd-content-width: 1180px;
+  --fd-space-xs: 0.25rem;
+  --fd-space-sm: 0.5rem;
+  --fd-space-md: 1rem;
+  --fd-space-lg: 2rem;
+  --fd-radius-sm: 0.5rem;
+  --fd-radius-md: 0.75rem;
+}

@@ -1,0 +1,32 @@
+/* links */
+
+a {
+  text-decoration: none;
+  transition: all 0.5s;
+  color: var(--color-link);
+}
+
+#pun-admain a,
+#MyBookmarks span.scrl {
+  color: var(--color-link) !important;
+}
+
+.punbb a, .punbb a:link {
+   color: var(--color-link);
+}
+
+a:hover,
+a:focus,
+a:active {
+  color: var(--color-hover);
+}
+
+:focus {
+  outline: none !important;
+}
+
+.adlabel,
+.adlabel a {
+  color: var(--color-txt2) !important;
+}
+

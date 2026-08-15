@@ -1,0 +1,297 @@
+/* profile in post
+------------------------------------------------------------------------------------*/
+.post-author {
+  width: var(--prof-w);
+  min-height: 85px;
+  position: relative;
+  background: var(--ava-bg) top no-repeat
+    var(--color-avatop);
+  border-top: 0px solid var(--color-txt1);
+  margin-bottom: 20px;
+  box-shadow: -5px 5px 10px var(--shedow1);
+}
+
+.post-author:before {
+  content: '';
+  background: url();
+  position: absolute;
+  top: -6px;
+  left: calc(50% - 80px);
+  width: 160px;
+  height: 6px;
+}
+
+.post-author ul {
+  display: flex;
+  flex-wrap: wrap;
+  text-align: center;
+  justify-content: space-around;
+  width: var(--prof-w);
+  gap: 0px;
+  padding: 10px;
+  box-sizing: border-box;
+  margin: 125px 0 0px 0;
+  border: 1px solid var(--color-txt2);
+  background: var(--color-forum);
+  border-radius: 0% 50% 0px 0px;
+  list-style: none;
+}
+
+#pun-searchposts .post-author ul {
+    background: transparent;
+    border: none;
+}
+
+.post-author li {
+  width: inherit;
+  position: relative;
+}
+
+/* author & title */
+.pa-author {
+    font: 600 18px/15px var(--font-1);
+    height: 40px;
+    position: absolute !important;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    letter-spacing: 0.05em;
+    padding: 0 10px;
+    box-sizing: border-box;
+    text-align: center;
+    width: 100%;
+}
+
+.pa-author strong {
+  font-weight: 600;
+}
+
+.pa-author,
+.pa-author a {
+  color: var(--color-txt4) !important;
+  z-index: 100;
+}
+
+.pa-author a:hover {
+  color: var(--color-hover);
+}
+
+
+#tuser {
+  position: absolute;
+  right: 10px;
+  top: 5px;
+} 
+
+.pa-title {
+  position: absolute !important;
+  top: 45px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  color: var(--color-txt3);
+  font: 600 8px var(--font) banner;
+  letter-spacing: 0.15em;
+  padding: 0 10px;
+  box-sizing: border-box;
+  z-index: 100;
+}
+
+
+/* avatar */
+.pa-avatar {
+  margin: -60px 0 0 0;
+}
+
+.pa-avatar img,
+#pa-avatar img {
+  max-width: 180px;
+    max-height: 180px;
+    position: relative;
+    border: none;
+  z-index: 100;
+  box-shadow: -5px 5px 10px var(--shedow1);
+}
+
+/* posts/respect */
+.pa-respect,
+.pa-posts{
+  width: calc(calc(var(--prof-w) - 22px) / 3) !important;
+  z-index: 3;
+  -webkit-text-size-adjust: none;
+  margin-top: 20px;
+  font: 400 12px var(--font-1);
+}
+
+.pa-fld3 {
+  z-index: 3;
+  -webkit-text-size-adjust: none;
+  margin-top: 20px;
+  font: 400 12px var(--font-1);
+}
+
+
+.pa-respect,
+.pa-respect a,
+.pa-posts{
+  color: var(--color-txt2);
+}
+
+.pa-respect .fld-name,
+.pa-posts .fld-name,
+.pa-fld2 .fld-name {
+  display: flex;
+  position: relative;
+  margin-bottom: 7px;
+  font: 600 10px var(--font-1);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  justify-content: right;
+}
+
+.pa-respect .fld-name,
+.pa-respect .fld-name a,
+.pa-posts .fld-name,
+.pa-fld2 .fld-name {
+  color: var(--color-txt2);
+}
+
+.pa-respect .fld-name a {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.pa-respect img {
+    display: none;
+  filter: grayscale(1);
+  vertical-align: middle;
+  margin-top: -1px;
+}
+
+
+/* fld */
+
+.pa-fld4, .pa-fld2, .pa-fld3 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 20px 10px 0 10px;
+  gap: 10px;
+  font: 12px var(--font) 400;
+}
+
+.pa-fld2 {
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--color-sub);
+  padding-bottom: 5px
+}
+
+.pa-fld4 {
+  text-transform: uppercase;
+  font-family: var(--font-1);
+  font-size: 16px;
+  letter-spacing: 3px;
+  border: solid 1px var(--color-sub);
+}
+
+.pa-fld1 .fld-name,
+  .pa-fld2 .fld-name,
+  .pa-fld3 .fld-name,
+.pa-fld4 .fld-name
+{
+      display: none;
+  }
+
+lz2 {
+  font: 500 9px/15px var(--font) banner;
+  color: #6c6c6c;
+  text-transform: lowercase;
+  letter-spacing: 0.1em;
+  text-align: justify;
+}
+
+lz2 a {
+  font-weight: 700;
+}
+
+plash {
+  background: url();
+  display: flex;
+  flex-direction: column;
+  color: var(--color-light);
+  width: 218px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+}
+
+plash b,
+plash i {
+  font: 500 9px var(--font) banner;
+  letter-spacing: 0.15em;
+}
+
+.pa-fld5 {
+  margin-top: 20px;
+}
+
+
+.pa-fld1 {
+    position: absolute !important;
+    top: -10px;
+    display: flex;
+    justify-content: center;
+  z-index: 10;
+}
+
+.pa-fld1:before {
+    content: '';
+    position: absolute;
+    background: var(--ava-bg);
+    width: 150px;
+    height: 50px;
+    border-radius: 50% 50% 0 0;
+    z-index: -100;
+}
+
+.band {
+    max-width: 50%;
+    display: flex;
+    position: relative;
+    border-radius: 50%;
+    justify-content: center;
+    align-items: center;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    mix-blend-mode: darken;
+}
+
+.akatsuki .band {
+  mix-blend-mode: hard-light;
+}
+
+
+/* online */
+.pa-online {
+   position: absolute !important;
+    top: 70px;
+    right: 30px;
+    background: var(--online) no-repeat center bottom;
+    height: 15px;
+    width: 15px !important;
+    border-radius: 50%;
+    font-size: 0;
+    overflow: hidden;
+    transition: all .5s;
+    box-shadow: -1px 1px 5px var(--color-onlinesadow);
+  z-index: 400;
+}
+
+
+

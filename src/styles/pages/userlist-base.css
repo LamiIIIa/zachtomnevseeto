@@ -1,0 +1,55 @@
+/* userlist respect online
+------------------------------------------------------------------------------------*/
+.usertable .container {
+  margin: 20px 0;
+}
+
+.usertable td,
+.usertable th {
+  text-align: center;
+}
+
+.usertable .tcl,
+#pun-respect .tcl,
+#pun-positive .tcl {
+  text-align: left;
+}
+
+#pun-respect td,
+#pun-respect th,
+#pun-positive td,
+#pun-positive th {
+  width: auto !important;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* userlist */
+.username,
+td.pmtc22 {
+  display: grid;
+  grid-template-columns: 36px auto;
+  grid-template-areas: 'ava user';
+  gap: 10px;
+  align-items: center;
+}
+
+#pun-online .username {
+  display: block;
+}
+
+/*td.pmtc22 {
+justify-content: end;
+}*/
+
+.usersname,
+td.pmtc22 a,
+#pun-viewforum td.tcr .byuser,
+#pun-searchtopics td.tcr .byuser {
+  grid-area: user;
+}
+
+.usersname a {
+  color: var(--color-accent);
+}
+

@@ -1,0 +1,125 @@
+/* mob moz
+------------------------------------------------------------------------------------*/
+@-moz-document url-prefix() {
+  * {
+    scrollbar-width: thin;
+  }
+  #form-buttons {
+    margin-bottom: -2px;
+  }
+  
+ 
+}
+
+/*html{min-width: 1200px!important;}&#228;&#235;&#255; &#236;&#238;&#225;&#232;&#235;*/
+@media screen and (max-device-width: 480px) {
+  /*  a,
+  a:hover,
+  a:focus,
+  a:active,*/
+  #pun-status,
+  .crumbs,
+  #pun-stats ul.container,
+  .modmenu .container,
+  #pun-index .tcr .lastpost,
+  #pun-respect td,
+  #pun-respect th,
+  #pun-positive td,
+  #pun-positive th,
+  #pun-viewforum td,
+  #pun-searchtopics td {
+    -webkit-text-size-adjust: none;
+  }
+  .hashelp center div a button,
+  .button,
+/*  input,*/
+  select {
+    -webkit-appearance: none !important;
+    border-radius: 0px !important;
+  }
+    .go-up,.go-down {
+      display: none;
+  }
+  
+  .upper::before,
+.dvnr::before {
+    display: none;
+}
+ 
+
+  
+  #pun-announcement {
+  width: calc(var(--main-w) + 0px);
+  height: 386px;
+  left: 0px;
+}
+
+.leftparp {
+width: 50%;
+height: 386px;
+}
+
+.lptop {
+ display: flex;
+ position: relative;
+ left: 45px;
+ height: 70px;
+ margin-left: 0px;
+ padding-top: 0px;
+ align-items: center;
+}
+
+.lpbottom{
+
+  height: 200px;
+  padding-left: 40px;
+  padding-top: 150px;
+
+}
+
+.navbar1:hover .navd1,
+.navbar2:hover .navd2,
+.navbar3:hover .navd3 {
+    left: 150px;
+}
+
+.navbar1:hover .navd1 {
+    top: -1px;
+}
+
+.navbar3:hover .navd3 {
+    top: -160px;
+}
+
+.rightpart{
+width: 50%;
+  height: 386px;
+
+}
+.riptop {
+  height: 250px;
+}
+
+.newsbox {
+  position: relative;
+  top: -25px;
+}
+
+.nh1{
+  padding-left: 67px;
+}
+
+.admins {
+  display: flex;
+  width: 70px;
+  height: 50px;
+  flex-direction: row;
+  box-sizing: border-box;
+  align-content: center;
+  justify-content: center;
+  position: relative;
+  left: 300px;
+  top: 375px;
+}
+
+}

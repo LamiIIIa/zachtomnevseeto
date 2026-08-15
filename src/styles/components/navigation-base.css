@@ -1,0 +1,74 @@
+/* navlinks| ulinks
+-------------------------------------------------------------*/
+
+#pun-navlinks {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+#pun-ulinks {
+  position: sticky;
+  top: 42px;
+  z-index: 1000;
+}
+
+#pun-navlinks .container,
+#pun-ulinks .container {
+  text-transform: uppercase;
+  margin: 0 0 0 calc(0px - var(--main-p));
+  width: calc(100% + var(--main-p) * 2);
+  text-align: center;
+  background: var(--color-forum);
+}
+
+#pun-navlinks li,
+#pun-ulinks li {
+display: inline-block;
+}
+
+/* navlinks */
+#pun-navlinks .container {
+  font: 600 20px var(--font-1);
+  letter-spacing: 0.05em;
+  padding: 15px 0;
+  background: var(--color-forum);
+}
+
+#pun-navlinks li {
+margin: 0 5px;
+}
+
+#navadmin a:before {
+content: '������';
+}
+
+/* ulinks */
+#pun-ulinks .container {
+  font: 500 12px var(--font) ;
+  letter-spacing: 0.1em;
+  padding: 0px 0 15px 0;
+  margin-bottom: -10px;
+}
+
+#pun-ulinks li {
+margin: 0 5px;
+}
+
+/* links color and animation */
+#pun-navlinks a {
+color: var(--color-link);
+}
+
+#pun-navlinks a:hover {
+color: var(--color-hover);
+}
+
+#pun-ulinks a {
+color: var(--color-txt2);
+}
+
+#pun-ulinks a:hover {
+color: var(--color-hover);
+}
+

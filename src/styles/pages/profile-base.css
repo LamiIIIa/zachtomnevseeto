@@ -1,0 +1,307 @@
+/* vievprofile
+------------------------------------------------------------------------------------*/
+#viewprofile tr {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  font: 500 11px var(--font) text;
+  gap: 20px;
+  align-items: center;
+  margin: 30px;
+  border: px solid var(--color-sub);
+  background: var(--color-forum);
+  padding: 20px;
+}
+
+#profile-signature tr {
+  display: block;
+  margin: 0px 0 0 0;
+  border: none !important;
+  background: none !important;
+}
+#profile-signature {
+  margin-top: -30px;
+}
+
+#profile-signature ul {
+  border: none !important;
+  padding: 0px !important;
+}
+
+
+/* left part */
+#viewprofile #profile-left {
+  width: inherit !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-align: center;
+  height: 100%;
+  box-sizing: border-box;
+  justify-content: center;
+  border: 1px solid var(--color-link);
+  padding-top: 25px !important;
+  background: var(--ava-bg) top no-repeat
+    var(--color-avatop);
+}
+
+#viewprofile #profile-left::after {
+  content: '';
+  width: calc(var(--prof-w) + 8px);
+  height: 240px;
+  top: 321px;
+  position: absolute;
+  background: var(--color-forum);
+  border-radius: 0 50% 0 0;
+  z-index: 1;
+}
+
+
+#profile-left li {
+  list-style: none;
+  z-index: 3
+}
+
+
+#profile-name strong {
+  font: 700 20px var(--font-1) !important;
+  color: var(--color-txt4);
+  text-transform: uppercase;
+  padding-top: 20px;
+
+}
+#profile-left #profile-title strong {
+  color: var(--color-txt4);
+  font: 600 9px var(--font) !important;
+}
+
+
+#profile-left #pa-online strong {
+  color: var(--color-txt2);
+  font: 600 9px var(--font) !important;
+}
+
+#pa-edit a {
+  color: var(--color-txt2);
+  border: px solid var(--color-sub);
+  padding: 3px 15px !important;
+  display: block;
+  border-radius: px;
+  font: 700 11px var(--font);
+}
+
+#pa-edit a:hover {
+  background: var(--color-forum);
+  color: var(--color-hover);
+}
+
+/* right part */
+#profile-right {
+  width: 100% !important;
+  padding: 15px !important;
+  display: flex;
+  gap: 10px 5px;
+  position: relative;
+  overflow: visible !important;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  height: 100%;
+  align-items: baseline;
+  align-content: space-around;
+  box-sizing: border-box;
+  border: solid 3px var(--color-underava);
+}
+
+#profile-right::before {
+  background: var(--color-underava);
+  
+}
+
+#profile-right li {
+  display: flex;
+  gap: 5px;
+  text-transform: uppercase;
+  flex-direction: column;
+  font: 400 9px var(--font);
+}
+
+#profile-right li span:first-child,
+#pa-email strong a {
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 4px 15px;
+  border-radius: px;
+  font-size: 11px;
+  font-family: var(--font-1);
+  text-align: center;
+}
+
+#profile-right li span:first-child{
+  color: var(--color-txt1);
+  background: var(--color-forum);
+}
+
+#profile-right li span:first-child a {
+  color: var(--color-txt1);
+} 
+
+#profile-right strong {
+  font-weight: 600;
+  padding: 0 !important;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+#profile-right strong,
+#profile-right strong a {
+  color: var(--color-txt1);
+}
+
+#profile-right #pa-fld1 {
+position: absolute;
+  left: -260px;
+  top: 1px;
+width: 35%;
+}
+
+#profile-right #pa-fld1 strong {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+#profile-right #pa-fld1{
+  mix-blend-mode: multiply;
+}
+
+#pa-posts {
+  order: 2;
+}
+
+#pa-respect {
+  order: 3;
+}
+
+#pa-positive {
+  order: 3;
+}
+
+#pa-fld2 {
+  order: 4;
+}
+
+#pa-posts,
+#pa-respect,
+#pa-positive,
+#pa-fld2,
+#pa-register-date,
+#pa-time-visit,
+#pa-last-post,
+#pa-last-visit {
+  width: calc(100% / 4.2);
+}
+
+#pa-posts strong {
+  display: flex;
+  flex-direction: column;
+}
+
+#pa-register-date {
+  order: 5;
+}
+
+#pa-time-visit {
+  order: 6;
+}
+
+#pa-last-post {
+  order: 7;
+}
+
+#pa-last-visit {
+  order: 8;
+}
+
+#profile-right #pa-email {
+  flex-direction: row;
+  width: 100%;
+  order: 9;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+#pa-email strong {
+  font-size: 0;
+  display: flex;
+  gap: 10px;
+}
+
+#pa-email strong a {
+  background: var(--color-forum);
+  color: var(--color-link);
+  font-weight: 700;
+}
+
+#pa-email strong a:hover {
+  color: var(--color-hover);
+}
+
+#pa-fld3 {
+    position: absolute;
+    right: -8px;
+    top: -8px;
+}
+
+
+/* inside */
+#profilenav,
+#pun-adnav {
+  float: left;
+  width: var(--profnav-w);
+  font: 600 11px var(--font) banner;
+  text-transform: lowercase;
+  letter-spacing: 0.5px;
+}
+
+#profilenav ul,
+#pun-adnav ul {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  list-style: none;
+}
+
+#profilenav ul {
+  position: relative;
+  left: -30px;
+}
+
+#profile fieldset,
+.adformal {
+  padding: 20px 40px;
+}
+
+#pun-profile fieldset,
+#pun-profile .adfs-box {
+  text-transform: lowercase;
+  font: 500 11px var(--font) text;
+  letter-spacing: 0.5px;
+  margin-left: var(--profnav-w) !important;
+}
+
+#profile fieldset fieldset {
+  margin-left: 0px !important;
+  padding: 0px;
+}
+
+#filetable thead tr {
+  display: table-row;
+}
+
+#pun-profile #profile {
+  min-height: 280px;
+}
+

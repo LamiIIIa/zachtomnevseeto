@@ -1,0 +1,52 @@
+/* messeges
+-----------------------------------------------------------------------------------*/
+#pun-messages .hasicon {
+  width: auto;
+}
+
+#pun-messages h3 {
+  margin-top: -21px;
+  position: relative;
+}
+
+.postlink .button {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+#profile.formal.messages-container .container {
+  min-height: 70px;
+}
+
+#notify-settings {
+  font: 400 9px var(--font) text;
+  text-transform: lowercase;
+  letter-spacing: 0.5px;
+  color: var(--color-gray);
+  margin-left: calc(var(--profnav-w) + 15px);
+}
+
+input#OnOff_Notify {
+  margin-top: -2px;
+}
+
+#volSlider.vol_slider {
+  margin-top: 1px;
+}
+
+#pun-messages .pa-avatar {
+  order: 2;
+}
+
+#pun-messages .pa-author {
+  order: 1;
+}
+
+#pun-messages .pa-title {
+  order: 3;
+}
+
+#pun-messages .pa-posts {
+  order: 4;
+}
+

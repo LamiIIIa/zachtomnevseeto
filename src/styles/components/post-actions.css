@@ -1,0 +1,221 @@
+/* post link links
+------------------------------------------------------------------------------------*/
+.post-links {
+  width: 100%;
+}
+
+#pun-viewtopic .post-links,
+#pun-searchposts .post-links {
+  margin-bottom: -11px;
+}
+
+.post-links ul {
+  text-align: right;
+  margin: 0;
+}
+
+#pun-searchposts .post-links ul {
+  text-align: left;
+}
+
+#pun-searchposts .post:last-child .post-links {
+  margin-bottom: 10px;
+}
+
+.post-links ul,
+#pun-viewtopic .linkst {
+  padding-right: 25px;
+}
+
+.endpost .post-links ul,
+#pun-messages .post-links ul {
+  padding-right: 0;
+}
+
+.post-links li {
+  display: inline-block;
+}
+
+.pl-email {
+  float: left;
+}
+
+.pl-quiet_quote {
+  margin-left: 10px;
+}
+
+.pl-email.pm,
+.pl-email.email,
+.editpole {
+  margin-left: 10px;
+}
+
+#pun-viewtopic .pl-delete,
+.pl-edit,
+#pun-messages .pl-quote {
+  margin-right: 10px;
+}
+
+#pun-viewtopic h3,
+#pun-searchposts h3,
+#pun-multimove h3 {
+  margin: 0;
+}
+
+.post h3 span,
+.linkst,
+.linksb {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.post h3 span {
+  flex-direction: row-reverse;
+  margin-top: -29px;
+  padding-left: calc(var(--prof-w) + var(--post-p) + 10px) !important;
+  box-sizing: border-box;
+  position: relative;
+}
+
+#pun-main .pagelink {
+  order: 1;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  font: 10px var(--font);
+  padding: 1px 10px;
+  text-transform: uppercase;
+}
+
+#pun-main .pagelink strong,
+#pun-main .pagelink a {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  padding: 1px;
+  box-sizing: border-box;
+  color: var(--color-txt3);
+}
+
+#pun-main .pagelink strong,
+#pun-main .pagelink a:hover {
+  box-shadow: -2px 2px 5px black;
+  color: var(--color-txt3);
+}
+
+.postlink {
+  order: 3;
+  width: auto !important;
+}
+.subscribelink {
+  order: 2;
+}
+
+#pun-viewforum noindex {
+  order: 3;
+}
+
+.post h3 span,
+.post-links,
+#pun-main .pagelink a,
+#pun-main .pagelink strong,
+.postlink,
+.subscribelink,
+#pun-viewforum .modmenu strong,
+.postlink .button {
+  font: 700 10px var(--font)!important;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.post h3 span a,
+.post-links a,
+.postlink a,
+.postlink,
+.pl-email a,
+.postlink .button,
+.subscribelink a,
+.editpole a {
+  color: var(--color-txt3) !important;
+}
+
+.post h3 span,
+.pagelink a {
+  color: var(--color-txt3);
+}
+
+.post-links a,
+.pagelink,
+.postlink {
+  position: relative;
+  z-index: 9;
+}
+
+.post h3 span,
+.linkst, .linksb,
+.endpost .post-links,
+#pun-messages .post-links {
+  background: var(--color-sub);
+  padding: 8px 10px;
+  color: var(--color-txt3);
+}
+
+.post h3 span,
+.endpost .post-links,
+.linksb,
+#pun-viewforum .linkst {
+  margin-left: -20px;
+  width: calc(100% + 40px);
+}
+
+.endpost .post-links {
+    margin-right: -20px;
+}
+
+.linksb,
+.linkst {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    box-sizing: border-box;
+}
+
+#pun-viewtopic .linkst,
+#pun-searchposts .linkst,
+#pun-multimove .linkst {
+  border: none;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-bottom: 5px;
+}
+
+#pun-multimove .post {
+    margin-bottom: 30px;
+}
+
+.linkst {
+  margin-bottom: 10px;
+}
+
+.permalink, .postlink a, .subscribelink {position: relative;}
+.post-links a:before, .permalink:before, .postlink a:before, .subscribelink:before {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 1px;
+    border-radius: 50%;
+    background: var(--color-txt2);
+    left: calc(50% - 5px);
+    bottom: -5px;
+    transform: translateY(-10px);
+    transition: all .5s;
+    opacity: 0;
+}
+
+.post-links a:hover:before, .permalink:hover:before, .postlink a:hover:before, .subscribelink:hover:before {
+    transform: translate(-15px, 1px);
+    opacity: 1;
+}
+

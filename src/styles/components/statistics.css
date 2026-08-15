@@ -1,0 +1,50 @@
+/* stats cont
+------------------------------------------------------------------------------------*/
+#pun-stats .container {
+  display: grid;
+  grid-template-columns: auto auto;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 10px;
+  gap: 5px;
+  grid-template-areas:
+    'tem reg'
+    'soo last'
+    'active active'
+    'day day';
+    list-style: none;
+}
+
+.statscon .item1 {
+  grid-area: tem;
+}
+.statscon .item2 {
+  grid-area: soo;
+}
+.statscon .item3 {
+  grid-area: reg;
+  text-align: right;
+}
+.statscon .item4 {
+  grid-area: last;
+  text-align: right;
+}
+
+.statscon .item5 {
+  text-align: justify;
+  line-height: 15px;
+  margin-top: 10px;
+}
+.statscon .item5.onlinelist {
+  grid-area: active;
+}
+.statscon .item5.users_24h {
+  grid-area: day;
+}
+
+.statscon strong,
+.statscon a {
+  color: var(--color-link);
+  font-weight: 600;
+}
+

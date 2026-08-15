@@ -1,0 +1,42 @@
+/* Up & Down Arrows 
+------------------------------------------------------------------ */
+
+.go-up,.go-down {
+display:none;
+position:fixed; 
+margin-left: 1083px !important; 
+z-index:9999; 
+cursor:pointer;
+opacity: 0.3; 
+transition: opacity 0.3s;
+margin-bottom: 5px; 
+width: 100px; 
+height: 100px; 
+justify-content: center;
+}
+.go-up {
+bottom: 100px; 
+}
+.go-down {
+bottom: 5px; 
+}
+.go-down:hover,.go-up:hover {
+opacity:1;
+}
+
+.upper::before,
+.dvnr::before {
+    font: 400 75px/100% 'Font Awesome 6 Pro';
+    margin-left: 0px;
+  color: var(--color-sub);
+  text-shadow: -2px 2px 5px black;
+}
+
+.upper:before {
+  content: '\f151';
+}
+
+.dvnr::before {
+  content: '\f150';
+}
+

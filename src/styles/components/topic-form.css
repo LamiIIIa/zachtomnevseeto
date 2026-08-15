@@ -1,0 +1,32 @@
+/* new theme */
+.required label,
+.datafield .input,
+.selectfield label,
+.inputfield label,
+.inputfield.required.longinput,
+#pun-admain legend span,
+#setmods dt {
+  background-color: transparent !important;
+  font: 400 10px var(--font) text !important;
+  text-transform: lowercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  margin-bottom: 7px;
+  color: var(--color-gray);
+}
+
+.inputfield.required.longinput:last-child {
+  display: flex;
+  align-items: center;
+}
+
+/* checkboxes */
+p[class='checkfield'] *,
+div[class='checkfield'] *,
+fieldset[class='radiofield'] * {
+  vertical-align: middle;
+  font: 400 10px var(--font) text;
+  padding: 2px 0;
+  display: inline-block;
+}
+

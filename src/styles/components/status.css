@@ -1,0 +1,28 @@
+/* status
+-----------------------------------------------------------------------------------*/
+
+/*������, �����...*/
+#pun-status .container {
+  font: 700 9px var(--font);
+  text-transform: uppercase;
+  color: var(--color-txt1);
+  position: absolute;
+  top: 20px;
+  margin: 0;
+  left: 0;
+  letter-spacing: 0.1em;
+  width: 100%;
+  text-align: center;
+}
+/*�����, ���������������*/
+#pun-status strong,
+#pun-status a,
+#pun-status .status-right a {
+  color: var(--color-txt2);
+}
+
+#pun-status .status-right {
+  float: inherit !important;
+  padding: 20px;
+}
+

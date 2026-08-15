@@ -52,7 +52,10 @@
 - шапка получает классы `.forum-header`, `.forum-header__title`, `.forum-header__navigation` и `.forum-header__status`;
 - переключатель тем работает из `components/header/theme-switcher.js`;
 - исходные CSS-снимки остаются неизменными в `src/legacy/styles/`;
-- исправления невалидного исторического CSS сделаны только в активной копии `src/styles/legacy/theme.css`.
+- общие переменные находятся в `src/styles/settings/variables.css`;
+- наборы цветов и изображений находятся в `src/styles/themes/`;
+- все части стилей подключаются напрямую через `src/styles/main.css`;
+- исходный снимок остаётся неизменным в `src/legacy/styles/theme.css`.
 
 Проверены `#pun-index`, `#pun-viewforum` и `#pun-viewtopic`: общий CSS/JS загружается, маршрутизация и шапка инициализируются, ошибок нового пакета в консоли нет.
 

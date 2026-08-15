@@ -1,0 +1,62 @@
+/* footer
+------------------------------------------------------------------------------------*/
+#pun-about {
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+#pun-about .container {
+  font: 600 6px var(--font) text;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: absolute;
+  margin-top: 115px;
+  width: 100%;
+  text-align: center;
+}
+
+#pun-stats .container {
+  font: 400 12px var(--font) !important;
+}
+
+#pun-about,
+#pun-about a {
+  color: var(--color-light);
+}
+
+.copyright {
+  font-family: var(--font);
+  text-transform: uppercase;
+  text-align: right;
+  padding: 5px 0;
+}
+
+.bannerc{
+  display: flex;
+  width: 100%;
+  height: 40px;
+  overflow: auto;
+}
+
+.banner{
+  width: 88px;
+  height: 31px;
+  background: var(--color-sub);
+  margin-left: 2px;
+  opacity: 0.5;
+  transition: opacity 0.8s;
+  mix-blend-mode: hard-light(50%);
+  font-family: var(--font-1);
+  text-align: center;
+}
+
+.banner img {
+  height: 31px;
+}
+
+.banner:hover{
+  opacity: 1;
+  mix-blend-mode: normal;
+}
+

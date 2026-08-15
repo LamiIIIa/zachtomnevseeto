@@ -1,0 +1,36 @@
+html.akatsuki {
+  --bg: url('https://forumstatic.ru/files/001c/6f/41/41996.webp') var(--bg-color);
+  --title-img: url('https://forumstatic.ru/files/001c/6f/41/37470.png');
+  --online: url() var(--color-hover);
+  --ava-bg: url('https://forumstatic.ru/files/001c/6f/41/32686.png?v=1');
+  --qv-1: url('https://forumstatic.ru/files/001c/6f/41/71993.svg');
+  --qv-2: url('https://forumstatic.ru/files/001c/6f/41/64579.png');
+  --qv-3: url('https://forumstatic.ru/files/001c/6f/41/76391.png');
+
+  --bg-color: #250101;
+  --pun: #;
+  --color-sub: #5b4c4c;
+  --color-sub-border: #5b4c4c;
+  --color-forum: #f5f1f1;
+  --color-txt2: var(--color-link);
+  --color-txt3: #f5f1f1;
+  --color-txt4: var(--color-txt3);
+  --text-k: var(--color-txt3);
+  --link-bg: #;
+  --color-link: #863030;
+  --color-hover: #b03b3b;
+  --color-qv: #fbf8f8;
+  --color-linkintopik: var(--color-link);
+  --color-lnthoverbg: #e8e3e3;
+  --color-lnt: #d55c5c;
+  --colir-qvk: #f5f1f1;
+  --color-underava: #6a5f5f;
+  --color-bb: var(--color-sub);
+  --color-avatop: var(--color-link);
+  --color-onlinesadow: #fc0202;
+  --shedow1: var(--color-txt1);
+  --shedow2: var(--color-txt1);
+  --color-glass: rgba(0, 0, 0, 0.75);
+  --color-nav: var(--color-forum);
+  --color-like: var(--color-link);
+}

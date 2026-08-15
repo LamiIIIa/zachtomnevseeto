@@ -1,0 +1,37 @@
+html.oto {
+  --bg: url('https://forumstatic.ru/files/001c/6f/41/70517.webp') var(--bg-color);
+  --title-img: url('https://forumstatic.ru/files/001c/6f/41/65220.png');
+  --online: url() #b2a5c0;
+  --ava-bg: url('https://forumstatic.ru/files/001c/6f/41/60364.png');
+  --qv-1: url('https://forumstatic.ru/files/001c/6f/41/12237.svg');
+  --qv-2: url('https://forumstatic.ru/files/001c/6f/41/13185.png');
+  --qv-3: url('https://forumstatic.ru/files/001c/6f/41/24209.png');
+
+  --bg-color: #3c3b36;
+  --pun: #;
+  --color-sub: #3c3b36;
+  --color-sub-border: #e9e9e9;
+  --color-forum: #e9e9e9;
+  --color-txt1: var(--bg-color);
+  --color-txt2: #565b68;
+  --color-txt3: var(--color-forum);
+  --color-txt4: var(--color-txt1);
+  --text-k: var(--color-txt3);
+  --link-bg: var(--color-link);
+  --color-link: #947faa;
+  --color-hover: #a397b6;
+  --color-qv: #fdfaf5;
+  --color-linkintopik: var(--color-lnt);
+  --color-lnthoverbg: #e0dede;
+  --color-lnt: #a49dad;
+  --colir-qvk: var(--color-txt3);
+  --color-underava: #98939d;
+  --color-bb: var(--color-link);
+  --color-avatop: var(--color-link);
+  --color-onlinesadow: #dfcff7;
+  --shedow1: var(--color-txt1);
+  --shedow2: var(--color-txt1);
+  --color-glass: rgba(60, 59, 64, 0.6);
+  --color-nav: var(--color-forum);
+  --color-like: var(--color-link);
+}

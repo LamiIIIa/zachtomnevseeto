@@ -1,0 +1,148 @@
+/* viewtopic post rating
+------------------------------------------------------------------------------------*/
+.post .container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--post-p);
+  justify-content: center;
+  position: relative;
+  padding: 20px 0;
+  align-items: flex-start;
+}
+
+.post .post-rating p,
+.post .post-vote p {
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font: 600 16px;
+  transition: all 0.2s;
+  position: relative;
+  left: -5%;
+  box-sizing: border-box;
+}
+
+.post .post-rating a,
+.post .post-vote a {
+  font-size: 11px !important;
+  position: relative;
+  color: var(--color-txt3);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bolder;
+  padding-top: 1px;
+}
+
+.post-rating p:before,
+.post-vote p:before {
+  font: 500 30px var(--mat1);
+  color: var(--color-sub);
+  transition: all 0.5s;
+  position: absolute;
+  margin-top: 3px;
+}
+.post-rating p:before {
+  content: '\e87d';
+}
+.post-vote p:before {
+  content: '\e147';
+}
+.post-rating:hover p:before,
+.post-vote:hover p:before {
+  color: var(--color-hover);
+}
+
+.mylike .post-rating p:before {
+  color: var(--color-like);
+}
+
+.post-body {
+  display: block;
+  width: calc(100% - var(--prof-w) - var(--post-p));
+  position: relative;
+}
+
+.post-content {
+  width: 100%;
+  text-align: justify;
+  overflow: hidden;
+}
+
+.post-content img.postimg {
+  vertical-align: middle;
+}
+
+.post-content table {
+  table-layout: fixed;
+}
+
+.post-content table td {
+  border: none !important;
+  vertical-align: top;
+}
+
+.post-content p {
+  margin: 0;
+  padding-bottom: 10px;
+  line-height: 150%;
+  text-align: justify;
+}
+
+#topic-users-in {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 10px 0;
+  color: var(--color-txt2);
+  font: 400 10px var(--font);
+}
+
+#topic-users-in a {
+  color: var(--color-link);
+}
+
+#topic-users-in span {
+  font-weight: normal !important;
+}
+
+#topic-users-in a:after {
+  content: ',';
+  margin-right: 2px;
+}
+
+.formsubmit {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-txt2);
+  font: 500 10px var(--font);
+}
+
+#post-form ~ .post {
+    margin-top: 40px;
+}
+
+#pun-post #post-preview legend span,
+#pun-userlist legend span,
+#pun-search legend span,
+.modal-inner legend span,
+#pun-delete legend span {
+  display: block !important;
+  margin-bottom: 10px;
+}
+
+#pun-login label {
+  white-space: nowrap;
+}
+
+#pun-post .post h3 span {
+    margin-top: 0px;
+}
+

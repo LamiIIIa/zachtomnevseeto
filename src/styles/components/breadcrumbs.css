@@ -1,0 +1,34 @@
+/* crumbs
+------------------------------------------------------------------------------------*/
+.crumbs {
+  margin: 20px 0px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font: 700 12px var(--font-1);
+}
+
+.crumbs a {
+  color: var(--color-link);
+  display: inline-flex;
+  align-items: flex-end;
+}
+
+.crumbs,
+.crumbs a:hover {
+  color: var(--color-hover);
+}
+
+.crumbs a:after,
+#pun-searchposts h3 span a:after {
+  content: var(--content-icon);
+  margin: -5px 0px -2px 9px;
+  font-size: 16px;
+  color: var(--color-sub);
+  opacity: 0.4;
+}
+
