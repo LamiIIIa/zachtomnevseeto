@@ -37,3 +37,68 @@
   display: grid;
   padding-right: 20px;
 }
+
+/*Категории */
+.category h2,
+#pun-stats h2 {
+  margin: 60px calc(0px - var(--main-p) - 1px) 40px
+    calc(0px - var(--main-p) - 1px);
+  background: url();
+  border-bottom: none;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  display: flex;
+  position: relative;
+}
+
+/* Цитата категории — настоящий span, поэтому content и ::before не нужны. */
+#pun-index .category h2 > span.category-quote {
+  position: absolute;
+  top: -8px;
+  right: 80px;
+  display: flex;
+  width: 700px;
+  height: 50px;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0;
+  margin: 0;
+  overflow: visible !important;
+  color: var(--colir-qvk);
+  font: var(--font-kb) !important;
+  line-height: 2;
+  letter-spacing: 0.1em;
+  text-align: right;
+  text-transform: none;
+  white-space: normal;
+}
+
+/* В нечётных категориях цитата располагается с противоположной стороны. */
+#pun-index .category:nth-child(2n + 1) h2 > span.category-quote {
+  right: 345px;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+/* Для статистики используется отдельный класс и более узкая ширина. */
+#pun-index #pun-stats h2 > span.statistics-quote {
+  position: absolute;
+  top: -5px;
+  right: 70px;
+  display: flex;
+  width: 500px;
+  height: 50px;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0;
+  margin: 0;
+  overflow: visible !important;
+  color: var(--colir-qvk);
+  font: var(--font-kb) !important;
+  line-height: 2;
+  letter-spacing: 0.1em;
+  text-align: left;
+  text-transform: none;
+  white-space: normal;
+}

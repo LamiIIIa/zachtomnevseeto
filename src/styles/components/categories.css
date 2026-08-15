@@ -28,24 +28,30 @@
 .category h2 > .category-title {
   color: var(--text-k);
   text-transform: uppercase;
-  font: var(--font-k);
+  font: var(--font-k) !important;
   padding: 0 45px;
   text-align: left;
   margin-top: 0px;
   position: relative;
   width: 100%;
+  overflow: visible !important;
+  white-space: normal;
+  text-overflow: clip;
   letter-spacing: 2px;
 }
 
 #pun-stats h2 > .statistics-title {
   color: var(--text-k);
   text-transform: uppercase;
-  font: var(--font-k);
+  font: var(--font-k) !important;
   padding: 0 45px;
   text-align: left;
   margin-top: 0;
   position: relative;
   width: 100%;
+  overflow: visible !important;
+  white-space: normal;
+  text-overflow: clip;
   letter-spacing: 2px;
 }
 
