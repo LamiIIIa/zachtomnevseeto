@@ -1,5 +1,5 @@
 /* Строка статуса пользователя. */
-#pun-status .container {
+#pun-index #pun-status .container {
   font: 700 9px var(--font);
   text-transform: uppercase;
   color: var(--color-txt1);
@@ -14,7 +14,7 @@
 }
 
 /* Слева находятся аватар и приветствие, справа — ссылки действий. */
-#pun-status .status-layout {
+#pun-index #pun-status .status-layout {
   box-sizing: border-box;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -24,7 +24,7 @@
   padding: 0 30px;
 }
 
-#pun-status .status-user {
+#pun-index #pun-status .status-user {
   min-width: 0;
   display: flex;
   align-items: center;
@@ -32,18 +32,18 @@
   text-align: left;
 }
 
-#pun-status .status-user__text,
-#pun-status .status-actions {
+#pun-index #pun-status .status-user__text,
+#pun-index #pun-status .status-actions {
   display: flex;
   flex-direction: column;
 }
 
-#pun-status .status-user__text {
+#pun-index #pun-status .status-user__text {
   gap: 4px;
   text-align: left;
 }
 
-#pun-status .status-actions {
+#pun-index #pun-status .status-actions {
   flex: 0 0 auto;
   align-items: flex-end;
   gap: 6px;
@@ -53,7 +53,7 @@
 }
 
 /* Собственный аватар не использует конфликтующий старый класс .user-avatar. */
-#pun-status .status-user__avatar {
+#pun-index #pun-status .status-user__avatar {
   display: block;
   flex: 0 0 46px;
   width: 46px;
@@ -61,31 +61,31 @@
   margin: 0;
 }
 
-#pun-status .status-user__avatar a,
-#pun-status .status-user__avatar-image {
+#pun-index #pun-status .status-user__avatar a,
+#pun-index #pun-status .status-user__avatar-image {
   display: block;
   width: 46px;
   height: 46px;
 }
 
-#pun-status .status-user__avatar-image {
+#pun-index #pun-status .status-user__avatar-image {
   object-fit: cover;
-  border-radius: 50%;
+  border-radius: 30% 20%;
 }
 
 /* Цвет ссылок и выделенных данных пользователя. */
-#pun-status strong,
-#pun-status a,
-#pun-status .status-right a {
+#pun-index #pun-status strong,
+#pun-index #pun-status a,
+#pun-index #pun-status .status-right a {
   color: var(--color-txt2);
 }
 
-#pun-status .status-actions .status-right {
+#pun-index #pun-status .status-actions .status-right {
   float: none;
   padding: 0;
 }
 
-#pun-status .status-action,
-#pun-status .status-action a {
+#pun-index #pun-status .status-action,
+#pun-index #pun-status .status-action a {
   display: block;
 }

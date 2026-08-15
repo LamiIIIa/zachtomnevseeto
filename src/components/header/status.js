@@ -8,6 +8,9 @@ const DEFAULT_AVATAR_URL = '/img/avatars/default.png'
 
 // Перестраивает стандартную строку статуса MyBB для авторизованного пользователя.
 export function initUserStatus(root) {
+  // Новая статусная панель нужна только на главной странице форума.
+  if (root.id !== 'pun-index') return
+
   // Находим исходные элементы статуса и ссылку на профиль текущего пользователя.
   const container = root.querySelector('#pun-status .container')
   const profileLink = root.querySelector('#navprofile a[href*="profile.php"]')

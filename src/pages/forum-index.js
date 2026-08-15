@@ -7,7 +7,6 @@ const CATEGORY_QUOTE_KEYS = [
   "citatas.four",
   "citatas.five",
   "citatas.six",
-  "citatas.seven",
 ];
 // Инициализирует блочную раскладку только на главной странице форума.
 export function initForumIndex({ main, root }) {
