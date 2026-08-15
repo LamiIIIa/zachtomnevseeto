@@ -232,11 +232,6 @@ podfor {
   margin-left: 10px;
 }
 
-.category .intd {
-  grid-template-areas: "for icon";
-  grid-template-columns: 1fr var(--main-icon-w);
-}
-
 .forum .intd,
 #profile .intd {
   grid-template-columns: var(--icon-w) 1fr;
@@ -270,10 +265,6 @@ podfor {
   filter: none;
 }
 
-.category .icon.inew::before {
-  background-color: var(--color-link);
-}
-
 .forum .icon,
 #profile .intd .icon {
   width: var(--icon-w);
@@ -281,17 +272,6 @@ podfor {
   filter: opacity(40%);
 }
 
-.category .icon {
-  width: var(--main-icon-w);
-  height: var(--main-icon-h);
-  grid-area: icon;
-  opacity: 0;
-}
-
-.category .icon.inew {
-  animation: blink 1.5s linear infinite;
-  opacity: 1;
-}
 .forum .icon-new,
 #profile .icon-new {
   filter: none;

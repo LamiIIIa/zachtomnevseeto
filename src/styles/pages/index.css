@@ -9,6 +9,8 @@
 
 /*Один форум в категории*/
 .forum-card {
+  box-sizing: border-box;
+  border: 2px solid transparent;
   flex-wrap: wrap;
   gap: 20px;
   display: flex;
@@ -16,8 +18,18 @@
   justify-content: space-around;
   align-items: stretch;
   background-color: var(--color-lnthoverbg);
+  background-image: var(--forum-card-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   padding: 5px;
   height: 200px;
+}
+
+/* Новые сообщения обозначаются рамкой и отдельным вариантом фоновой картинки. */
+#pun-index .forum-card--unread {
+  border-color: var(--color-link);
+  background-image: var(--forum-card-image-unread);
 }
 
 /*Если форумов нечетное количество, последний растягивается на всю жирину*/
@@ -66,19 +78,27 @@
 
 #pun-index .category h2 > .category-title,
 #pun-index #pun-stats h2 > .statistics-title {
+  box-sizing: border-box;
   width: 100%;
-  margin: 0;
+  height: 50px;
+  margin: 0 0 15px;
   padding: 0 45px;
-  position: static;
+  position: relative;
   overflow: visible !important;
   color: var(--color-link);
+  background-image: var(--category-heading-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
   font: var(--font-k) !important;
   letter-spacing: 2px;
   text-transform: uppercase;
   text-align: center;
   white-space: normal;
   text-overflow: clip;
-  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Общие правила настоящих span-цитат без ::before и абсолютных сдвигов. */
@@ -112,4 +132,20 @@
   width: 300px;
   max-width: calc(100% - 40px);
   color: var(--color-txt1);
+}
+
+@media screen and (max-width: 700px) {
+  /* Для мобильной версии можно будет назначить отдельные, менее широкие шаблоны. */
+  #pun-index .category h2 > .category-title,
+  #pun-index #pun-stats h2 > .statistics-title {
+    background-image: var(--category-heading-image-mobile);
+  }
+
+  #pun-index .forum-card {
+    background-image: var(--forum-card-image-mobile);
+  }
+
+  #pun-index .forum-card--unread {
+    background-image: var(--forum-card-image-unread-mobile);
+  }
 }

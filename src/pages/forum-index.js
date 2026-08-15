@@ -84,6 +84,20 @@ function convertForumRow(row) {
   // Находим ячейку с данными последнего сообщения.
   const lastPostCell = row.querySelector(":scope > .tcr");
 
+  // Находим старую иконку MyBB до переноса содержимого в новую карточку.
+  const messageIcon = titleCell?.querySelector(".icon");
+
+  // В разных шаблонах MyBB признак новых сообщений может стоять на строке,
+  // самой иконке или вложенном в неё элементе.
+  const hasNewMessages = Boolean(
+    row.classList.contains("inew") ||
+      messageIcon?.matches(".inew, .icon-new") ||
+      messageIcon?.querySelector(".inew, .icon-new")
+  );
+
+  // Состояние сохранено выше, поэтому старая мигающая иконка больше не нужна.
+  messageIcon?.remove();
+
   // Создаём самостоятельную карточку форума.
   const card = document.createElement("article");
 
@@ -92,6 +106,12 @@ function convertForumRow(row) {
 
   // Сохраняем классы состояния строки и добавляем новый класс карточки.
   card.className = `forum-card ${row.className}`;
+
+  // Рамка и фоновая картинка будут зависеть от этого смыслового класса.
+  card.classList.toggle("forum-card--unread", hasNewMessages);
+
+  // Data-атрибут оставляет состояние доступным для будущих вариантов графики.
+  card.dataset.messageState = hasNewMessages ? "unread" : "read";
 
   // Помечаем карточку как элемент созданного выше списка.
   card.setAttribute("role", "listitem");

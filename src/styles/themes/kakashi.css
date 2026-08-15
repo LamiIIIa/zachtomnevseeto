@@ -35,4 +35,12 @@ html.kakashi {
   --color-glass: rgba(38, 39, 40, 0.6);
   --color-nav: var(--shedow2);
   --color-like: #4ab9fe;
+
+  /* Графика главной страницы: заменить none на url(...) после экспорта файлов. */
+  --category-heading-image: none;
+  --category-heading-image-mobile: var(--category-heading-image);
+  --forum-card-image: none;
+  --forum-card-image-unread: var(--forum-card-image);
+  --forum-card-image-mobile: var(--forum-card-image);
+  --forum-card-image-unread-mobile: var(--forum-card-image-unread);
 }

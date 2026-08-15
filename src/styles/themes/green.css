@@ -33,4 +33,12 @@ html.green {
   --color-glass: rgba(6, 25, 15, 0.6);
   --color-nav: var(--color-forum);
   --color-like: var(--color-link);
+
+  /* Графика главной страницы: заменить none на url(...) после экспорта файлов. */
+  --category-heading-image: none;
+  --category-heading-image-mobile: var(--category-heading-image);
+  --forum-card-image: none;
+  --forum-card-image-unread: var(--forum-card-image);
+  --forum-card-image-mobile: var(--forum-card-image);
+  --forum-card-image-unread-mobile: var(--forum-card-image-unread);
 }
