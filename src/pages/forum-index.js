@@ -1,7 +1,7 @@
 // Инициализирует блочную раскладку только на главной странице форума.
-export function initForumIndex({ main }) {
+export function initForumIndex({ main, root }) {
   // Завершаем работу, если MyBB не создал основной контейнер страницы.
-  if (!main) return;
+  if (!main || !root) return;
 
   // Не преобразуем DOM повторно при повторном запуске скрипта.
   if (main.dataset.forumLayout === "cards") return;
@@ -9,15 +9,19 @@ export function initForumIndex({ main }) {
   // Добавляем класс-область для стилей главной страницы.
   main.classList.add("forum-design-index");
 
-  const breadcrumbs = main.querySelectorAll("p.conteiner.crumbs");
+  // Хлебные крошки находятся рядом с #pun-main, поэтому ищем их от корня страницы.
+  const breadcrumbs = root.querySelectorAll("p.container.crumbs");
 
   breadcrumbs.forEach((breadcrumb) => {
-    const forumName = breadcrumb.querySelector(":scppe > span");
+    // Находим название форума и разделитель только среди прямых потомков.
+    const forumName = breadcrumb.querySelector(":scope > span");
     const arrow = breadcrumb.querySelector(":scope > em");
 
+    // Сохраняем смысловые классы и скрываем оба элемента общей утилитой.
     forumName?.classList.add("forum-index__name", "hidden");
     arrow?.classList.add("forum-index__arrow", "hidden");
   });
+
   // Находим только таблицы со списками форумов внутри категорий.
   const categoryTables = main.querySelectorAll(
     ".category > .container > table"

@@ -1,4 +1,6 @@
-html.shinobi {
+/* В админке forum.js не запускается, поэтому назначаем ей базовую тему через CSS. */
+html.shinobi,
+html:has(#pun-admain) {
   --bg: url('https://forumstatic.ru/files/001c/6f/41/92103.webp') var(--bg-color);
   --title-img: url('https://forumstatic.ru/files/001c/6f/41/93941.png');
   --online: url() #ff5602;

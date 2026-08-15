@@ -1,4 +1,15 @@
 /* admin */
+/* В админке нет большой форумной шапки, поэтому убираем зарезервированное под неё место. */
+html:has(#pun-admain) #pun {
+  width: min(var(--main-w), calc(100% - 32px));
+  margin: 24px auto;
+}
+
+html:has(#pun-admain) .punbb {
+  width: auto;
+  margin: 10px;
+}
+
 .adformal, .adcontainer {
   border-style: none !important;
   }
