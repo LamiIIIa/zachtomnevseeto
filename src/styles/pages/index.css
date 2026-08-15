@@ -142,34 +142,23 @@
 /* Общие правила настоящих span-цитат без ::before и абсолютных сдвигов. */
 #pun-index .category h2 > span.category-quote,
 #pun-index #pun-stats h2 > span.statistics-quote {
-  height: auto;
-  margin: 0;
-  padding: 0;
-  position: static;
-  display: block;
-  overflow: visible !important;
-  font-family: "Kontrabanda", cursive !important;
-  font-size: 12px !important;
-  line-height: 2;
   letter-spacing: 0.1em;
-  text-align: center !important;
   text-transform: none;
   white-space: normal;
   text-overflow: clip;
-}
-
-/* Сохраняем выбранную ширину цитат категорий и центрируем блок. */
-#pun-index .category h2 > span.category-quote {
-  width: 300px;
+  width: 500px;
   max-width: calc(100% - 40px);
+  height: auto;
   color: var(--color-txt1);
-}
-
-/* Цитата статистики также находится по центру. */
-#pun-index #pun-stats h2 > span.statistics-quote {
-  width: 300px;
-  max-width: calc(100% - 40px);
-  color: var(--color-txt1);
+  margin: 0;
+  padding: 0;
+  line-height: 2;
+  display: block;
+  position: static;
+  text-align: center !important;
+  font-family: "Kontrabanda", cursive !important;
+  font-size: 18px !important;
+  overflow: visible !important;
 }
 
 @media screen and (max-width: 700px) {
