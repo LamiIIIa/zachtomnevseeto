@@ -37,7 +37,7 @@ html.oto {
   --color-like: var(--color-link);
 
   /* Графика главной страницы: заменить none на url(...) после экспорта файлов. */
-  --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/52824.webp);
+  --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/48518.webp);
   --category-heading-image-mobile: var(--category-heading-image);
   --forum-card-image: url(https://forumstatic.ru/files/001a/12/f3/47508.webp);
   --forum-card-image-unread: url(https://forumstatic.ru/files/001a/12/f3/20429.webp);

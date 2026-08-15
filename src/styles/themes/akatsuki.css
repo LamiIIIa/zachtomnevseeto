@@ -36,7 +36,7 @@ html.akatsuki {
   --color-like: var(--color-link);
 
   /* Графика главной страницы: заменить none на url(...) после экспорта файлов. */
-  --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/99580.webp);
+  --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/11791.webp);
   --category-heading-image-mobile: var(--category-heading-image);
   --forum-card-image: url(https://forumstatic.ru/files/001a/12/f3/10997.webp);
   --forum-card-image-unread: url(https://forumstatic.ru/files/001a/12/f3/40963.webp);

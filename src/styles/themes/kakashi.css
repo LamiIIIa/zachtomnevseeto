@@ -38,7 +38,7 @@ html.kakashi {
   --color-like: #4ab9fe;
 
   /* Графика главной страницы: заменить none на url(...) после экспорта файлов. */
-  --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/39688.webp);
+  --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/81023.webp);
   --category-heading-image-mobile: var(--category-heading-image);
   --forum-card-image: url(https://forumstatic.ru/files/001a/12/f3/15486.webp);
   --forum-card-image-unread: url(https://forumstatic.ru/files/001a/12/f3/17297.webp);

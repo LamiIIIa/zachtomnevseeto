@@ -36,7 +36,7 @@ html.green {
   --color-like: var(--color-link);
 
   /* Графика главной страницы: заменить none на url(...) после экспорта файлов. */
-  --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/76604.webp);
+  --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/87391.webp);
   --category-heading-image-mobile: var(--category-heading-image);
   --forum-card-image: url(https://forumstatic.ru/files/001a/12/f3/84183.webp);
   --forum-card-image-unread: url(https://forumstatic.ru/files/001a/12/f3/95491.webp);
