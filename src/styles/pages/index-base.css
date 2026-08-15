@@ -1,25 +1,12 @@
-/* pun-index podforum
-------------------------------------------------------------------------------------*/
-#pun-index .hasicon {
-  margin: 0 60px 0 calc(-2px - var(--main-p));
-}
+/* Содержимое карточек главной страницы.
+ * Раскладка .forum-list и .forum-card находится в pages/index.css.
+ */
 
 .statscon {
   margin: 0 35px;
 }
 
-#pun-index .hasicon tr {
-  position: relative;
-  grid-template-columns: auto 1fr;
-  gap: 30px;
-  color: var(--color-txt1);
-}
-
 /* subforums */
-#pun-index .hasicon .isub .tcl {
-  padding-left: 0px !important;
-}
-
 #pun-index .subforums {
   display: none !important;
 }
@@ -154,7 +141,6 @@ podfor {
 }
 
 /* right part */
-#pun-index .tcr,
 #pun-viewforum .isub .tcr {
   display: grid;
   grid-template-columns: 1fr var(--usav);
@@ -326,4 +312,3 @@ podfor {
 #profile .iclosed .icon {
   opacity: 0.5;
 }
-
