@@ -1,11 +1,12 @@
 html.green {
-  --bg: url('https://forumstatic.ru/files/001c/6f/41/33706.webp') var(--bg-color);
-  --title-img: url('https://forumstatic.ru/files/001c/6f/41/58540.png');
+  --bg: url("https://forumstatic.ru/files/001c/6f/41/33706.webp")
+    var(--bg-color);
+  --title-img: url("https://forumstatic.ru/files/001c/6f/41/58540.png");
   --online: url() #f88802;
-  --ava-bg: url('https://forumstatic.ru/files/001c/6f/41/86081.webp');
-  --qv-1: url('https://forumstatic.ru/files/001c/6f/41/18384.svg');
-  --qv-2: url('https://forumstatic.ru/files/001c/6f/41/10563.png');
-  --qv-3: url('https://forumstatic.ru/files/001c/6f/41/58433.png');
+  --ava-bg: url("https://forumstatic.ru/files/001c/6f/41/86081.webp");
+  --qv-1: url("https://forumstatic.ru/files/001c/6f/41/18384.svg");
+  --qv-2: url("https://forumstatic.ru/files/001c/6f/41/10563.png");
+  --qv-3: url("https://forumstatic.ru/files/001c/6f/41/58433.png");
 
   --bg-color: #153726;
   --pun: #;
@@ -37,8 +38,8 @@ html.green {
   /* Графика главной страницы: заменить none на url(...) после экспорта файлов. */
   --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/76604.webp);
   --category-heading-image-mobile: var(--category-heading-image);
-  --forum-card-image: none;
-  --forum-card-image-unread: var(--forum-card-image);
+  --forum-card-image: url(https://forumstatic.ru/files/001a/12/f3/84183.webp);
+  --forum-card-image-unread: url(https://forumstatic.ru/files/001a/12/f3/95491.webp);
   --forum-card-image-mobile: var(--forum-card-image);
   --forum-card-image-unread-mobile: var(--forum-card-image-unread);
 }

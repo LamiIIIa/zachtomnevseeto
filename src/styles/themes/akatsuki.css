@@ -38,8 +38,8 @@ html.akatsuki {
   /* Графика главной страницы: заменить none на url(...) после экспорта файлов. */
   --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/99580.webp);
   --category-heading-image-mobile: var(--category-heading-image);
-  --forum-card-image: none;
-  --forum-card-image-unread: var(--forum-card-image);
+  --forum-card-image: url(https://forumstatic.ru/files/001a/12/f3/10997.webp);
+  --forum-card-image-unread: url(https://forumstatic.ru/files/001a/12/f3/40963.webp);
   --forum-card-image-mobile: var(--forum-card-image);
   --forum-card-image-unread-mobile: var(--forum-card-image-unread);
 }

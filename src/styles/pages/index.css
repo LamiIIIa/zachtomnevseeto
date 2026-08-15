@@ -46,9 +46,8 @@
   z-index: 1;
 }
 
-/* Новые сообщения обозначаются рамкой, неоморфной тенью и новой картинкой. */
+/* Новые сообщения обозначаются неоморфной тенью и новой картинкой. */
 #pun-index .forum-card--unread {
-  border-color: var(--color-link);
   box-shadow:
     8px 8px 18px color-mix(in srgb, var(--color-forum) 70%, #000),
     -8px -8px 18px color-mix(in srgb, var(--color-forum) 75%, #fff);
