@@ -772,7 +772,7 @@ color: var(--color-hover);
 /* text category*/
 
 
-.category h2 span {
+.category h2 > span:first-child {
   color: var(--text-k);
   text-transform: uppercase;
   font: var(--font-k);
@@ -784,95 +784,21 @@ color: var(--color-hover);
   letter-spacing: 2px;
 }
 
-#pun-stats h2 span {
+#pun-stats h2 > span:first-child {
   color: var(--text-k);
   text-transform: uppercase;
   font: var(--font-k);
   padding: 0 45px;
   text-align: left;
-  margin-top: -px;
+  margin-top: 0;
   position: relative;
   width: 100%;
   letter-spacing: 2px;
 }
 
-.category h2 span:before {
-  letter-spacing: 0.1em;
-  font: var(--font-kb);
-  width: 700px;
-  color: var(--colir-qvk);
-  height: 50px;
-  position: absolute;
-  text-align: right;
-  justify-content: flex-end;
-  top: -8px;
-  right: 80px;
-  display: flex;
-  align-items: center;
-  line-height: 2;
-}
-
-#pun-stats h2 span:before {
-  letter-spacing: 0.1em;
-  font: var(--font-kb);
-  width: 500px;
-  color: var(--colir-qvk);
-  height: 50px;
-  position: absolute;
-  justify-content: flex-end;
-  top: -5px;
-  right: 70px;
-  display: flex;
-  align-items: inherit;
-  text-align: left;
-  line-height: 2;
-}
-
-
-.category:nth-child(2n + 1) h2 span:before {
-  text-align: left;
-  width: 700px;
-  right: 345px;
-  justify-content: flex-start;
-}
-
-.category:nth-child(2n + 1) h2 span {
+.category:nth-child(2n + 1) h2 > span:first-child {
   text-align: right;
   padding: 0 85px;
-}
-
-/* текст категории */
-.category-2 h2 span:before {
-  content: '"Ничего не понимаю! Ладно, притворюсь, что понял..."';
-}
-
-.category-3 h2 span:before {
-  content: '"Очень просто сложить руки и сказать: Это невозможно."';
-}
-
-.category-4 h2 span:before {
-  content: '"А теперь у меня вопрос к вам. Вам клонов с Сусаноо или без?"';
-}
-
-.category-5 h2 span:before {
-  content: '"Ты талантлив... и ты, действительно, отличаешься от остальных. Но быть другим — не значит быть лучше. Иначе говоря, гвоздь, который торчит, забьют первым."';
-}
-
-.category-14 h2 span:before {
-  content: '"Жена моего друга для меня не женщина. Но если она хорошенькая — он мне не друг!"';
-}
-
-.category-15 h2 span:before {
-  content: '"Какого чёрта нам нужны бани? Опять будешь мне что-то впаривать?"';
-}
-
-.category-16 h2 span:before {
-  content: '"Беги, Ли, беги на свет заходящего солнца!... Но помни — береги причёску."';
-}
-
-/* текст статистики */
-#pun-stats h2 span:before {
-  content: '"Да, в мире шиноби те, кто не следуют приказам, считаются мусором. Но те, кто предают друзей, хуже мусора... "';
 }
 
 /* structure forum
@@ -3672,4 +3598,3 @@ color: var(--color-link);
   font-family: var(--font-1);
   color: var(--color-link)
 }
-
