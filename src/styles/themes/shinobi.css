@@ -1,14 +1,15 @@
 /* В админке forum.js не запускается, поэтому назначаем ей базовую тему через CSS. */
 html.shinobi,
 html:has(#pun-admain) {
-  --bg: url('https://forumstatic.ru/files/001c/6f/41/92103.webp') var(--bg-color);
-  --title-img: url('https://forumstatic.ru/files/001c/6f/41/93941.png');
+  --bg: url("https://forumstatic.ru/files/001c/6f/41/92103.webp")
+    var(--bg-color);
+  --title-img: url("https://forumstatic.ru/files/001c/6f/41/93941.png");
   --online: url() #ff5602;
-  --icon: url('https://forumstatic.ru/files/001c/6f/41/92920.png');
-  --ava-bg: url('https://forumstatic.ru/files/001c/6f/41/49145.webp');
-  --qv-1: url('https://forumstatic.ru/files/001c/6f/41/31225.svg');
-  --qv-2: url('https://forumstatic.ru/files/001c/6f/41/94635.png');
-  --qv-3: url('https://forumstatic.ru/files/001c/6f/41/21555.png');
+  --icon: url("https://forumstatic.ru/files/001c/6f/41/92920.png");
+  --ava-bg: url("https://forumstatic.ru/files/001c/6f/41/49145.webp");
+  --qv-1: url("https://forumstatic.ru/files/001c/6f/41/31225.svg");
+  --qv-2: url("https://forumstatic.ru/files/001c/6f/41/94635.png");
+  --qv-3: url("https://forumstatic.ru/files/001c/6f/41/21555.png");
 
   --bg-color: #282627;
   --pun: #;
@@ -39,7 +40,7 @@ html:has(#pun-admain) {
   --color-like: var(--color-link);
 
   /* Графика главной страницы: заменить none на url(...) после экспорта файлов. */
-  --category-heading-image: none;
+  --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/81710.webp);
   --category-heading-image-mobile: var(--category-heading-image);
   --forum-card-image: none;
   --forum-card-image-unread: var(--forum-card-image);

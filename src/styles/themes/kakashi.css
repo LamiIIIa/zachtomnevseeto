@@ -1,12 +1,13 @@
 html.kakashi {
-  --bg: url('https://forumstatic.ru/files/001c/6f/41/59020.webp') var(--bg-color);
-  --title-img: url('https://forumstatic.ru/files/001c/6f/41/32910.png');
+  --bg: url("https://forumstatic.ru/files/001c/6f/41/59020.webp")
+    var(--bg-color);
+  --title-img: url("https://forumstatic.ru/files/001c/6f/41/32910.png");
   --online: url() var(--color-hover);
-  --ava-bg: url('https://forumstatic.ru/files/001c/6f/41/24932.webp');
-  --qv-1: url('https://forumstatic.ru/files/001c/6f/41/67544.svg');
-  --qv-2: url('https://forumstatic.ru/files/001c/6f/41/15818.png');
-  --qv-3: url('https://forumstatic.ru/files/001c/6f/41/73843.png');
-  --icon: url('https://forumstatic.ru/files/001a/12/f3/66553.png');
+  --ava-bg: url("https://forumstatic.ru/files/001c/6f/41/24932.webp");
+  --qv-1: url("https://forumstatic.ru/files/001c/6f/41/67544.svg");
+  --qv-2: url("https://forumstatic.ru/files/001c/6f/41/15818.png");
+  --qv-3: url("https://forumstatic.ru/files/001c/6f/41/73843.png");
+  --icon: url("https://forumstatic.ru/files/001a/12/f3/66553.png");
 
   --bg-color: #262728;
   --pun: #;
@@ -37,7 +38,7 @@ html.kakashi {
   --color-like: #4ab9fe;
 
   /* Графика главной страницы: заменить none на url(...) после экспорта файлов. */
-  --category-heading-image: none;
+  --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/39688.webp);
   --category-heading-image-mobile: var(--category-heading-image);
   --forum-card-image: none;
   --forum-card-image-unread: var(--forum-card-image);

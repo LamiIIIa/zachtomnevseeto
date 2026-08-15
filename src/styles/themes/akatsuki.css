@@ -1,11 +1,12 @@
 html.akatsuki {
-  --bg: url('https://forumstatic.ru/files/001c/6f/41/41996.webp') var(--bg-color);
-  --title-img: url('https://forumstatic.ru/files/001c/6f/41/37470.png');
+  --bg: url("https://forumstatic.ru/files/001c/6f/41/41996.webp")
+    var(--bg-color);
+  --title-img: url("https://forumstatic.ru/files/001c/6f/41/37470.png");
   --online: url() var(--color-hover);
-  --ava-bg: url('https://forumstatic.ru/files/001c/6f/41/32686.png?v=1');
-  --qv-1: url('https://forumstatic.ru/files/001c/6f/41/71993.svg');
-  --qv-2: url('https://forumstatic.ru/files/001c/6f/41/64579.png');
-  --qv-3: url('https://forumstatic.ru/files/001c/6f/41/76391.png');
+  --ava-bg: url("https://forumstatic.ru/files/001c/6f/41/32686.png?v=1");
+  --qv-1: url("https://forumstatic.ru/files/001c/6f/41/71993.svg");
+  --qv-2: url("https://forumstatic.ru/files/001c/6f/41/64579.png");
+  --qv-3: url("https://forumstatic.ru/files/001c/6f/41/76391.png");
 
   --bg-color: #250101;
   --pun: #;
@@ -35,7 +36,7 @@ html.akatsuki {
   --color-like: var(--color-link);
 
   /* Графика главной страницы: заменить none на url(...) после экспорта файлов. */
-  --category-heading-image: none;
+  --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/99580.webp);
   --category-heading-image-mobile: var(--category-heading-image);
   --forum-card-image: none;
   --forum-card-image-unread: var(--forum-card-image);
