@@ -80,12 +80,12 @@
 .forum-card__last-post {
   grid-template-columns: 1fr var(--usav);
   grid-template-rows: auto auto;
-  grid-template-areas: "lastpost1 ava" "lastpost2 ava";
+  grid-template-areas: "lastpost2 ava" "lastpost1 ava";
   place-content: center end;
   place-items: center end;
   gap: 10px 20px;
-  display: grid;
   padding-right: 20px;
+  display: grid;
 }
 
 /* Контейнеры категорий и статистики на главной странице. */
