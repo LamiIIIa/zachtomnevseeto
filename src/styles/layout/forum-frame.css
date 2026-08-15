@@ -139,7 +139,7 @@ height: var(--title-h);
 .lpbottom{
   display: flex;
   flex-direction: column;
-  height: 200px;
+  height: 350px;
   padding-left: 70px;
   padding-top: 150px;
   color: var(--color-forum);
@@ -148,6 +148,8 @@ height: var(--title-h);
 
 .navbar1, .navbar2, .navbar3 {
   display: flex;
+  flex: 0 0 40px;
+  min-height: 40px;
   position: relative; /* ����� ������������� ::before ������� ��������� */
   box-sizing: border-box;
   height: 40px;
@@ -354,6 +356,5 @@ border: 1px solid rgba(255, 255, 255, 0.1);
 box-shadow: -2px 2px 5px black;
   border-radius: 50%;
 }
-
 
 
