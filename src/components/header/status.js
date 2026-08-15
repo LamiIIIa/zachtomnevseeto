@@ -59,38 +59,47 @@ export function initUserStatus(root) {
   container.dataset.statusLayout = 'ready'
 }
 
-// Создаёт аватар текущего пользователя из уже загруженных данных или профиля.
+// Создаёт независимый аватар без старого класса .user-avatar и его конфликтов.
 function createStatusAvatar(root, profileLink) {
   const profileId = getProfileId(profileLink.href)
 
-  // На главной аватар часто уже присутствует в данных последнего сообщения.
+  // На главной адрес аватара часто уже есть в данных последнего сообщения.
   const existingAvatar = Array.from(root.querySelectorAll('.user-avatar')).find(
     (avatar) => getProfileId(avatar.querySelector('a')?.href) === profileId,
   )
+  const existingSource = getAvatarSource(existingAvatar)
 
-  if (existingAvatar) {
-    // Клонируем элемент, чтобы не забирать аватар из карточки форума.
-    const avatar = existingAvatar.cloneNode(true)
-    avatar.classList.add('status-user__avatar')
-    return avatar
-  }
-
-  // Если готового элемента нет, сразу показываем системный аватар-заглушку.
+  // Создаём простую разметку, которая не наследует стили аватаров карточек.
   const avatar = document.createElement('span')
   const link = document.createElement('a')
-  const image = document.createElement('span')
+  const image = document.createElement('img')
 
-  avatar.classList.add('user-avatar', 'status-user__avatar')
+  avatar.classList.add('status-user__avatar')
   link.href = profileLink.href
-  image.classList.add('avatar-image')
-  image.style.backgroundImage = `url(${JSON.stringify(DEFAULT_AVATAR_URL)})`
+  link.setAttribute('aria-label', profileLink.textContent.trim())
+  image.classList.add('status-user__avatar-image')
+  image.src = existingSource || DEFAULT_AVATAR_URL
+  image.alt = ''
   link.append(image)
   avatar.append(link)
 
-  // Настоящий аватар подставится после фоновой загрузки страницы профиля.
-  void loadProfileAvatar(profileLink.href, image)
+  // Если адреса на странице нет, настоящий аватар загрузится из профиля.
+  if (!existingSource) void loadProfileAvatar(profileLink.href, image)
 
   return avatar
+}
+
+// Извлекает URL как из обычного img, так и из фонового .avatar-image MyBB.
+function getAvatarSource(avatar) {
+  if (!avatar) return null
+
+  const imageSource = avatar.querySelector('img')?.src
+  if (imageSource) return imageSource
+
+  const background = avatar.querySelector('.avatar-image')?.style.backgroundImage
+  const match = background?.match(/^url\(["']?(.*?)["']?\)$/)
+
+  return match?.[1] || null
 }
 
 // Возвращает числовой id из стандартной ссылки MyBB profile.php?id=N.
@@ -117,8 +126,7 @@ async function loadProfileAvatar(profileUrl, image) {
 
     if (!source) return
 
-    const avatarUrl = new URL(source, profileUrl).href
-    image.style.backgroundImage = `url(${JSON.stringify(avatarUrl)})`
+    image.src = new URL(source, profileUrl).href
   } catch {
     // При сетевой ошибке остаётся системный аватар-заглушка.
   }

@@ -16,10 +16,12 @@
 /* Слева находятся аватар и приветствие, справа — ссылки действий. */
 #pun-status .status-layout {
   box-sizing: border-box;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
+  min-height: 46px;
   gap: 24px;
+  padding: 0 30px;
 }
 
 #pun-status .status-user {
@@ -45,34 +47,30 @@
   flex: 0 0 auto;
   align-items: flex-end;
   gap: 6px;
-  margin-left: auto;
+  margin: 0;
+  justify-self: end;
   text-align: right;
 }
 
-/* Переопределяем общий старый стиль аватаров только внутри статуса. */
-#pun-status .status-user > .status-user__avatar {
-  float: none;
+/* Собственный аватар не использует конфликтующий старый класс .user-avatar. */
+#pun-status .status-user__avatar {
+  display: block;
   flex: 0 0 46px;
   width: 46px;
   height: 46px;
   margin: 0;
-  position: relative;
 }
 
-#pun-status .status-user > .status-user__avatar a,
-#pun-status .status-user > .status-user__avatar .avatar-image {
+#pun-status .status-user__avatar a,
+#pun-status .status-user__avatar-image {
   display: block;
   width: 46px;
   height: 46px;
 }
 
-#pun-status .status-user > .status-user__avatar .avatar-image {
-  float: none;
+#pun-status .status-user__avatar-image {
+  object-fit: cover;
   border-radius: 50%;
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  opacity: 1;
 }
 
 /* Цвет ссылок и выделенных данных пользователя. */
