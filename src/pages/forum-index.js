@@ -148,24 +148,42 @@ function initIndexQuotes(root) {
 
     if (!translationKey) return;
 
-    addQuoteK(category, translationKey);
+    // Названию и цитате категории назначаем разные классы.
+    addQuoteK(category, translationKey, {
+      titleClass: "category-title",
+      quoteClass: "category-quote",
+    });
   });
 
   const statistics = root.querySelector("#pun-stats");
 
   if (statistics) {
-    addQuoteK(statistics, "citatas.eight");
+    // Названию и цитате статистики назначаем собственные классы.
+    addQuoteK(statistics, "citatas.eight", {
+      titleClass: "statistics-title",
+      quoteClass: "statistics-quote",
+    });
   }
 }
 
-function addQuoteK(section, translationKey) {
+function addQuoteK(section, translationKey, { titleClass, quoteClass }) {
+  // Находим заголовок категории или статистики.
   const heading = section.querySelector("h2");
 
   if (!heading) return;
 
-  if (heading.querySelector(":scope > .category-quote")) return;
+  // Первый прямой span — это название, которое уже создал MyBB.
+  const title = heading.querySelector(":scope > span:first-of-type");
 
-  const quote = quotesK(translationKey);
+  // Добавляем названию отдельный класс для оформления.
+  title?.classList.add(titleClass);
 
+  // Не создаём вторую такую же цитату при повторном запуске.
+  if (heading.querySelector(`:scope > .${quoteClass}`)) return;
+
+  // Создаём цитату с классом, соответствующим типу секции.
+  const quote = quotesK(translationKey, quoteClass);
+
+  // Добавляем готовую цитату внутрь заголовка.
   heading.append(quote);
 }

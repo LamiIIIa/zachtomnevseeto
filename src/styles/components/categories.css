@@ -25,7 +25,7 @@
 /* text category*/
 
 
-.category h2 > span:first-child {
+.category h2 > .category-title {
   color: var(--text-k);
   text-transform: uppercase;
   font: var(--font-k);
@@ -37,7 +37,7 @@
   letter-spacing: 2px;
 }
 
-#pun-stats h2 > span:first-child {
+#pun-stats h2 > .statistics-title {
   color: var(--text-k);
   text-transform: uppercase;
   font: var(--font-k);
@@ -49,7 +49,7 @@
   letter-spacing: 2px;
 }
 
-.category:nth-child(2n + 1) h2 > span:first-child {
+.category:nth-child(2n + 1) h2 > .category-title {
   text-align: right;
   padding: 0 85px;
 }

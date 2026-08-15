@@ -1,12 +1,12 @@
 import { t } from "../../i18n/index.js";
 
-// Создаёт локализованный DOM-элемент цитаты.
-export default function createQuote(translationKey) {
+// Создаёт локализованный DOM-элемент цитаты с нужным классом.
+export default function createQuote(translationKey, quoteClass) {
   // Создаём настоящий элемент вместо CSS-псевдоэлемента.
   const quote = document.createElement("span");
 
-  // Добавляем независимый класс для будущего оформления.
-  quote.classList.add("category-quote");
+  // Добавляем класс конкретного вида цитаты: категории или статистики.
+  quote.classList.add(quoteClass);
 
   // Сохраняем ключ, чтобы i18n мог обновлять текст элемента.
   quote.dataset.i18n = translationKey;
