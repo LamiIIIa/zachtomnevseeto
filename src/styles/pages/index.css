@@ -11,25 +11,64 @@
 .forum-card {
   box-sizing: border-box;
   border: 2px solid transparent;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   flex-wrap: wrap;
   gap: 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-items: stretch;
-  background-color: var(--color-lnthoverbg);
-  background-image: var(--forum-card-image);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+  background-color: var(--color-forum);
+  box-shadow: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
   padding: 5px;
   height: 200px;
 }
 
-/* Новые сообщения обозначаются рамкой и отдельным вариантом фоновой картинки. */
+/* Отдельный слой позволяет менять прозрачность картинки, не затрагивая текст. */
+#pun-index .forum-card::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background-image: var(--forum-card-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+/* Содержимое карточки всегда располагается над фоновым изображением. */
+#pun-index .forum-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Новые сообщения обозначаются рамкой, неоморфной тенью и новой картинкой. */
 #pun-index .forum-card--unread {
   border-color: var(--color-link);
+  box-shadow:
+    8px 8px 18px color-mix(in srgb, var(--color-forum) 70%, #000),
+    -8px -8px 18px color-mix(in srgb, var(--color-forum) 75%, #fff);
+}
+
+#pun-index .forum-card--unread::before {
   background-image: var(--forum-card-image-unread);
+  animation: forum-card-image-pulse 6s ease-in-out infinite;
+}
+
+/* Медленное мягкое мигание только картинки активной карточки. */
+@keyframes forum-card-image-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
 }
 
 /*Если форумов нечетное количество, последний растягивается на всю жирину*/
@@ -141,11 +180,18 @@
     background-image: var(--category-heading-image-mobile);
   }
 
-  #pun-index .forum-card {
+  #pun-index .forum-card::before {
     background-image: var(--forum-card-image-mobile);
   }
 
-  #pun-index .forum-card--unread {
+  #pun-index .forum-card--unread::before {
     background-image: var(--forum-card-image-unread-mobile);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Уважаем системную настройку отключения анимации. */
+  #pun-index .forum-card--unread::before {
+    animation: none;
   }
 }
