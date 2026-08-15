@@ -1,0 +1,59 @@
+/* Переключатель цветовых тем в шапке форума. */
+#theme_switcher li {
+  display: inline-block;
+  padding: 5px;
+}
+
+/* Название темы остаётся доступным в разметке, а визуально показывается иконка. */
+#theme_switcher li label {
+  display: none;
+}
+
+#theme_switcher li input {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+#theme_switcher li input::before {
+  color: var(--color-txt3);
+  font: 400 16px/100% 'Font Awesome 6 Pro';
+  margin-right: 4px;
+  opacity: 0.7;
+  text-shadow: -2px 2px 2px black;
+  transition: opacity 0.3s, color 0.3s;
+}
+
+#theme_switcher li input#shinobi::before {
+  content: '\f06c';
+}
+
+#theme_switcher li input#oto::before {
+  content: '\f001';
+}
+
+#theme_switcher li input#akatsuki::before {
+  content: '\f0c2';
+  font-weight: 600;
+}
+
+#theme_switcher li input#green::before {
+  content: '\f1b0';
+  font-weight: 600;
+}
+
+#theme_switcher li input#kakashi::before {
+  content: '\f0e7';
+  font-weight: 600;
+}
+
+/* Подсвечиваем наведённую и выбранную тему. */
+#theme_switcher li input:hover::before,
+#theme_switcher li input:checked::before {
+  color: var(--color-txt2);
+  opacity: 1;
+}

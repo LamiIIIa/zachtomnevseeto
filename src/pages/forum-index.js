@@ -9,6 +9,15 @@ export function initForumIndex({ main }) {
   // Добавляем класс-область для стилей главной страницы.
   main.classList.add("forum-design-index");
 
+  const breadcrumbs = main.querySelectorAll("p.conteiner.crumbs");
+
+  breadcrumbs.forEach((breadcrumb) => {
+    const forumName = breadcrumb.querySelector(":scppe > span");
+    const arrow = breadcrumb.querySelector(":scope > em");
+
+    forumName?.classList.add("forum-index__name", "hidden");
+    arrow?.classList.add("forum-index__arrow", "hidden");
+  });
   // Находим только таблицы со списками форумов внутри категорий.
   const categoryTables = main.querySelectorAll(
     ".category > .container > table"

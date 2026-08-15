@@ -50,6 +50,7 @@
 @import './layout/forum-shell.css';
 @import './components/navigation.css';
 @import './components/header.css';
+@import './components/theme-switcher.css';
 @import './components/pagination.css';
 @import './components/forms.css';
 @import './pages/index.css';

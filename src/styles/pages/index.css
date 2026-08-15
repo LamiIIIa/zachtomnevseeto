@@ -1,11 +1,13 @@
 /* Главная страница: #pun-index, .category, [id^="forum_f"]. */
 
+/*карточка всех форумов в категории*/
 .forum-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
 }
 
+/*Один форум в категории*/
 .forum-card {
   flex-wrap: wrap;
   gap: 20px;
@@ -18,15 +20,12 @@
   height: 200px;
 }
 
+/*Если форумов нечетное количество, последний растягивается на всю жирину*/
 .forum-card:last-child:nth-child(odd) {
   grid-column: 1 / -1;
 }
 
-.forum-card_last-post {
-  display: block !important;
-  padding: 2px;
-  margin: 5px;
-}
+/*Зона отображения последнего поста*/
 
 .forum-card__last-post {
   grid-template-columns: 1fr var(--usav);
@@ -36,4 +35,5 @@
   place-items: center end;
   gap: 10px 20px;
   display: grid;
+  padding-right: 20px;
 }
