@@ -25,7 +25,7 @@
 /* text category*/
 
 
-.category h2 span {
+.category h2 > span:first-child {
   color: var(--text-k);
   text-transform: uppercase;
   font: var(--font-k);
@@ -37,94 +37,19 @@
   letter-spacing: 2px;
 }
 
-#pun-stats h2 span {
+#pun-stats h2 > span:first-child {
   color: var(--text-k);
   text-transform: uppercase;
   font: var(--font-k);
   padding: 0 45px;
   text-align: left;
-  margin-top: -px;
+  margin-top: 0;
   position: relative;
   width: 100%;
   letter-spacing: 2px;
 }
 
-.category h2 span:before {
-  letter-spacing: 0.1em;
-  font: var(--font-kb);
-  width: 700px;
-  color: var(--colir-qvk);
-  height: 50px;
-  position: absolute;
-  text-align: right;
-  justify-content: flex-end;
-  top: -8px;
-  right: 80px;
-  display: flex;
-  align-items: center;
-  line-height: 2;
-}
-
-#pun-stats h2 span:before {
-  letter-spacing: 0.1em;
-  font: var(--font-kb);
-  width: 500px;
-  color: var(--colir-qvk);
-  height: 50px;
-  position: absolute;
-  justify-content: flex-end;
-  top: -5px;
-  right: 70px;
-  display: flex;
-  align-items: inherit;
-  text-align: left;
-  line-height: 2;
-}
-
-
-.category:nth-child(2n + 1) h2 span:before {
-  text-align: left;
-  width: 700px;
-  right: 345px;
-  justify-content: flex-start;
-}
-
-.category:nth-child(2n + 1) h2 span {
+.category:nth-child(2n + 1) h2 > span:first-child {
   text-align: right;
   padding: 0 85px;
 }
-
-/* ����� ��������� */
-.category-2 h2 span:before {
-  content: '"������ �� �������! �����, ����������, ��� �����..."';
-}
-
-.category-3 h2 span:before {
-  content: '"����� ������ ������� ���� � �������: ��� ����������."';
-}
-
-.category-4 h2 span:before {
-  content: '"� ������ � ���� ������ � ���. ��� ������ � ������� ��� ���?"';
-}
-
-.category-5 h2 span:before {
-  content: '"�� ���������... � ��, �������������, ����������� �� ���������. �� ���� ������ � �� ������ ���� �����. ����� ������, ������, ������� ������, ������ ������."';
-}
-
-.category-14 h2 span:before {
-  content: '"���� ����� ����� ��� ���� �� �������. �� ���� ��� ����������� � �� ��� �� ����!"';
-}
-
-.category-15 h2 span:before {
-  content: '"������ ����� ��� ����� ����? ����� ������ ��� ���-�� ���������?"';
-}
-
-.category-16 h2 span:before {
-  content: '"����, ��, ���� �� ���� ���������� ������!... �� ����� � ������ ��������."';
-}
-
-/* ����� ���������� */
-#pun-stats h2 span:before {
-  content: '"��, � ���� ������ ��, ��� �� ������� ��������, ��������� �������. �� ��, ��� ������� ������, ���� ������... "';
-}
-

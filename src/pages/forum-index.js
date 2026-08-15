@@ -1,3 +1,14 @@
+import quotesK from "../components/main_components/quotesK.js";
+
+const CATEGORY_QUOTE_KEYS = [
+  "citatas.first",
+  "citatas.second",
+  "citatas.third",
+  "citatas.four",
+  "citatas.five",
+  "citatas.six",
+  "citatas.seven",
+];
 // Инициализирует блочную раскладку только на главной странице форума.
 export function initForumIndex({ main, root }) {
   // Завершаем работу, если MyBB не создал основной контейнер страницы.
@@ -8,6 +19,8 @@ export function initForumIndex({ main, root }) {
 
   // Добавляем класс-область для стилей главной страницы.
   main.classList.add("forum-design-index");
+
+  initIndexQuotes(root);
 
   // Хлебные крошки находятся рядом с #pun-main, поэтому ищем их от корня страницы.
   const breadcrumbs = root.querySelectorAll("p.container.crumbs");
@@ -125,4 +138,34 @@ function createBlock(className, source) {
 
   // Возвращаем заполненный блок вызывающей функции.
   return block;
+}
+
+function initIndexQuotes(root) {
+  const categories = root.querySelectorAll("#pun-main .category");
+
+  categories.forEach((category, index) => {
+    const translationKey = CATEGORY_QUOTE_KEYS[index];
+
+    if (!translationKey) return;
+
+    addQuoteK(category, translationKey);
+  });
+
+  const statistics = root.querySelector("#pun-stats");
+
+  if (statistics) {
+    addQuoteK(statistics, "citatas.eight");
+  }
+}
+
+function addQuoteK(section, translationKey) {
+  const heading = section.querySelector("h2");
+
+  if (!heading) return;
+
+  if (heading.querySelector(":scope > .category-quote")) return;
+
+  const quote = quotesK(translationKey);
+
+  heading.append(quote);
 }
