@@ -111,5 +111,5 @@
 #pun-index #pun-stats h2 > span.statistics-quote {
   width: 300px;
   max-width: calc(100% - 40px);
-  color: var(--colir-qvk);
+  color: var(--color-txt1);
 }

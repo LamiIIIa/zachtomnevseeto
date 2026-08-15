@@ -27,4 +27,7 @@ export default {
   navigation: {
     adminNav: "Власть",
   },
+  status: {
+    supportForum: "Помочь форуму",
+  },
 };

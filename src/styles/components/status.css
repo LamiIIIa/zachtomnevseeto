@@ -1,28 +1,93 @@
-/* status
------------------------------------------------------------------------------------*/
-
-/*������, �����...*/
+/* Строка статуса пользователя. */
 #pun-status .container {
   font: 700 9px var(--font);
   text-transform: uppercase;
   color: var(--color-txt1);
-  position: absolute;
-  top: 20px;
-  margin: 0;
-  left: 0;
   letter-spacing: 0.1em;
-  width: 100%;
   text-align: center;
+  width: 100%;
+  margin: 0;
+  position: absolute;
+  top: 150px;
+  left: 0;
+  z-index: 1000;
 }
-/*�����, ���������������*/
+
+/* Слева находятся аватар и приветствие, справа — ссылки действий. */
+#pun-status .status-layout {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+#pun-status .status-user {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+#pun-status .status-user__text,
+#pun-status .status-actions {
+  display: flex;
+  flex-direction: column;
+}
+
+#pun-status .status-user__text {
+  gap: 4px;
+  text-align: left;
+}
+
+#pun-status .status-actions {
+  flex: 0 0 auto;
+  align-items: flex-end;
+  gap: 6px;
+  margin-left: auto;
+  text-align: right;
+}
+
+/* Переопределяем общий старый стиль аватаров только внутри статуса. */
+#pun-status .status-user > .status-user__avatar {
+  float: none;
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
+  margin: 0;
+  position: relative;
+}
+
+#pun-status .status-user > .status-user__avatar a,
+#pun-status .status-user > .status-user__avatar .avatar-image {
+  display: block;
+  width: 46px;
+  height: 46px;
+}
+
+#pun-status .status-user > .status-user__avatar .avatar-image {
+  float: none;
+  border-radius: 50%;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 1;
+}
+
+/* Цвет ссылок и выделенных данных пользователя. */
 #pun-status strong,
 #pun-status a,
 #pun-status .status-right a {
   color: var(--color-txt2);
 }
 
-#pun-status .status-right {
-  float: inherit !important;
-  padding: 20px;
+#pun-status .status-actions .status-right {
+  float: none;
+  padding: 0;
 }
 
+#pun-status .status-action,
+#pun-status .status-action a {
+  display: block;
+}

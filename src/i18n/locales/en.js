@@ -28,4 +28,7 @@ export default {
   navigation: {
     adminNav: 'Authority',
   },
+  status: {
+    supportForum: 'Support the forum',
+  },
 }
