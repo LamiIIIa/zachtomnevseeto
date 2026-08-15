@@ -25,4 +25,7 @@ export default {
     eight:
       'Yes, in the shinobi world, those who disobey orders are considered scum. But those who betray their friends are worse than scum...',
   },
+  navigation: {
+    adminNav: 'Authority',
+  },
 }

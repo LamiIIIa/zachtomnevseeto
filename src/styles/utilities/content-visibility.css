@@ -41,7 +41,6 @@ form#post.container legend span,
 #viewprofile-next #profilenav,
 #pa-invites,
 #profile-gifts,
-#navadmin span,
 #pun-live-rusff,
 .crumbs em,
 #pun-searchtopics .modmenu,
@@ -73,6 +72,5 @@ form#post.container legend span,
 .pun-modal.rating_theme h2 span {
   display: inline-block !important;
 }
-
 
 

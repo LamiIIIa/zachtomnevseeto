@@ -39,10 +39,6 @@ display: inline-block;
 margin: 0 5px;
 }
 
-#navadmin a:before {
-content: '������';
-}
-
 /* ulinks */
 #pun-ulinks .container {
   font: 500 12px var(--font) ;
@@ -71,4 +67,3 @@ color: var(--color-txt2);
 #pun-ulinks a:hover {
 color: var(--color-hover);
 }
-
