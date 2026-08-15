@@ -55,6 +55,7 @@
   padding: 5px 0;
   background: none;
   border-bottom: none;
+  box-shadow: none !important;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -77,6 +78,7 @@
   text-align: center;
   white-space: normal;
   text-overflow: clip;
+  margin-bottom: 15px;
 }
 
 /* Общие правила настоящих span-цитат без ::before и абсолютных сдвигов. */
@@ -88,11 +90,11 @@
   position: static;
   display: block;
   overflow: visible !important;
-  font: var(--font-kb) !important;
-  font-family: "Kontrabanda", "Zen Kurenaido", cursive !important;
+  font-family: "Kontrabanda", cursive !important;
+  font-size: 12px !important;
   line-height: 2;
   letter-spacing: 0.1em;
-  text-align: center;
+  text-align: center !important;
   text-transform: none;
   white-space: normal;
   text-overflow: clip;
@@ -100,14 +102,14 @@
 
 /* Сохраняем выбранную ширину цитат категорий и центрируем блок. */
 #pun-index .category h2 > span.category-quote {
-  width: 200px;
+  width: 300px;
   max-width: calc(100% - 40px);
   color: var(--color-txt1);
 }
 
-/* Цитата статистики шире, но также находится по центру. */
+/* Цитата статистики также находится по центру. */
 #pun-index #pun-stats h2 > span.statistics-quote {
-  width: 500px;
+  width: 300px;
   max-width: calc(100% - 40px);
   color: var(--colir-qvk);
 }
