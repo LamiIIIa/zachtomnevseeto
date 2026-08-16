@@ -29,6 +29,24 @@ function convertTopicRow(row, headers) {
   const cells = Array.from(row.cells)
   const topic = document.createElement('article')
   const oldIcon = cells[0]?.querySelector('.icon')
+
+  if (row.classList.contains('altstyle')) {
+    console.log('[viewforum: active topic]', {
+      rowClass: row.className,
+      rowId: row.id,
+      icon: oldIcon?.outerHTML,
+      links: Array.from(row.querySelectorAll('a')).map((link) => ({
+        text: link.textContent.trim(),
+        href: link.href,
+        className: link.className,
+      })),
+      cells: cells.map((cell) => ({
+        className: cell.className,
+        text: cell.textContent.trim(),
+      })),
+    })
+  }
+
   const iconElements = oldIcon ? [oldIcon, ...oldIcon.querySelectorAll('*')] : []
   const iconClasses = new Set(iconElements.flatMap((element) => [...element.classList]))
   const hasNewMessages = Boolean(
