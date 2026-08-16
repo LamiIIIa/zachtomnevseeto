@@ -82,6 +82,31 @@
   text-align: right;
 }
 
+#pun-viewforum .linkst,
+#pun-viewforum .linksb {
+  width: calc(100% + var(--main-p) + var(--main-p));
+  max-width: none;
+  margin-right: calc(0px - var(--main-p));
+  margin-left: calc(0px - var(--main-p));
+  padding-right: var(--main-p);
+  padding-left: var(--main-p);
+  color: var(--color-txt1);
+  background: var(--color-forum);
+  border: 0;
+  border-bottom: 1px solid var(--color-categoru-mobile);
+}
+
+#pun-viewforum :is(.linkst, .linksb) .pagelink,
+#pun-viewforum :is(.linkst, .linksb) .pagelink a {
+  color: var(--color-txt1) !important;
+}
+
+#pun-viewforum :is(.linkst, .linksb) .pagelink strong,
+#pun-viewforum :is(.linkst, .linksb) .postlink,
+#pun-viewforum :is(.linkst, .linksb) .postlink a {
+  color: var(--color-categoru-mobile) !important;
+}
+
 @media screen and (max-width: 700px) {
   #pun-viewforum .topic-list {
     gap: 10px;
@@ -206,28 +231,4 @@
     white-space: nowrap;
   }
 
-  #pun-viewforum .linkst,
-  #pun-viewforum .linksb {
-    width: calc(100% + var(--main-p) + var(--main-p));
-    max-width: none;
-    margin-right: calc(0px - var(--main-p));
-    margin-left: calc(0px - var(--main-p));
-    padding-right: var(--main-p);
-    padding-left: var(--main-p);
-    color: var(--color-txt1);
-    background: var(--color-forum);
-    border: 0;
-    border-bottom: 1px solid var(--color-categoru-mobile);
-  }
-
-  #pun-viewforum :is(.linkst, .linksb) .pagelink,
-  #pun-viewforum :is(.linkst, .linksb) .pagelink a {
-    color: var(--color-txt1) !important;
-  }
-
-  #pun-viewforum :is(.linkst, .linksb) .pagelink strong,
-  #pun-viewforum :is(.linkst, .linksb) .postlink,
-  #pun-viewforum :is(.linkst, .linksb) .postlink a {
-    color: var(--color-categoru-mobile) !important;
-  }
 }

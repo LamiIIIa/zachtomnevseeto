@@ -103,7 +103,12 @@
 #pun-main .pagelink strong,
 #pun-main .pagelink a:hover {
   box-shadow: -2px 2px 5px black;
-  color: var(--color-txt3);
+  color: var(--color-link);
+  border-radius: 3px;
+}
+
+#pun-main .pagelink > :is(a, strong):first-child {
+  margin-left: 5px;
 }
 
 .postlink {
@@ -218,4 +223,3 @@
     transform: translate(-15px, 1px);
     opacity: 1;
 }
-
