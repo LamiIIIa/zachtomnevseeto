@@ -1,0 +1,104 @@
+/* Общий мобильный каркас, перекрывающий встроенный mobile.css MyBB. */
+@media screen and (max-width: 700px) {
+  html,
+  body {
+    width: 100% !important;
+    max-width: 100%;
+    height: auto !important;
+    min-height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  html {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  body,
+  body.redirect-page {
+    position: static;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    background-attachment: scroll;
+    overscroll-behavior-y: auto;
+  }
+
+  /* У страницы остаётся только один скролл — корневой скролл документа. */
+  #pun {
+    width: 100% !important;
+    max-width: 100%;
+    min-width: 0;
+    height: auto !important;
+    min-height: 100dvh;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0;
+    box-shadow: none;
+    overflow: visible !important;
+  }
+
+  #pun > .punbb {
+    width: 100% !important;
+    max-width: 100%;
+    min-width: 0;
+    height: auto !important;
+    min-height: 100dvh;
+    margin: 0 !important;
+    padding: var(--main-p) var(--main-p) 0;
+    display: flex;
+    flex-direction: column;
+    overflow: visible !important;
+  }
+
+  /* Убираем системные шапку, подвал, название и содержимое старой шапки. */
+  #html-header,
+  #html-footer,
+  #pun-title,
+  #pun-announcement div.container {
+    margin: 0 auto !important;
+    overflow-x: auto !important;
+    display: none;
+  }
+
+  /* Фон шапки остаётся сверху; её содержимое будет оформлено позже. */
+  #pun-announcement {
+    display: block !important;
+    order: -1;
+    position: relative !important;
+    inset: auto !important;
+    width: calc(100% + var(--main-p) * 2) !important;
+    height: auto !important;
+    aspect-ratio: 1300 / 456;
+    margin: calc(0px - var(--main-p)) 0 0 calc(0px - var(--main-p)) !important;
+    background-position: center;
+    background-size: cover;
+  }
+
+  /* Мобильная навигация больше не залипает поверх содержимого. */
+  #pun-navlinks {
+    position: relative;
+    top: auto;
+    z-index: auto;
+  }
+
+  /* Статус идёт обычным блоком после шапки и не перекрывает страницу. */
+  #pun-index #pun-status .container {
+    position: static;
+    top: auto;
+    left: auto;
+  }
+
+  /* Убираем пустой отступ внизу, созданный абсолютным старым подвалом. */
+  #pun-about {
+    height: auto;
+    min-height: 0;
+    margin: auto 0 0;
+  }
+
+  #pun-about .container {
+    position: static;
+    width: 100%;
+    margin: 0;
+  }
+}
