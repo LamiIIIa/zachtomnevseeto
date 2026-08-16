@@ -16,6 +16,11 @@
   --icon-h: 20px;
   --main-icon-w: 20px;
   --main-icon-h: 20px;
+  --topic-icon-size: 48px;
+  --topic-icon-image: var(--icon);
+  --topic-shadow-new: 0 8px 22px color-mix(in srgb, var(--color-link) 28%, transparent);
+  --topic-shadow-pinned: 0 8px 22px color-mix(in srgb, var(--color-sub) 28%, transparent);
+  --topic-shadow-important: 0 8px 24px color-mix(in srgb, var(--color-hover) 38%, transparent);
   --arrows: 50px;
   --ls-w: 900px;
   --ls-h: 374px;

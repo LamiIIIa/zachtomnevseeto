@@ -28,9 +28,19 @@ function convertTopicTable(table) {
 function convertTopicRow(row, headers) {
   const cells = Array.from(row.cells)
   const topic = document.createElement('article')
+  const oldIcon = cells[0]?.querySelector('.icon')
+  const hasNewMessages = Boolean(
+    row.classList.contains('inew') ||
+      oldIcon?.matches('.inew, .icon-new') ||
+      oldIcon?.querySelector('.inew, .icon-new')
+  )
+
+  // Состояние темы остаётся на карточке, поэтому старая системная иконка не нужна.
+  oldIcon?.remove()
 
   if (row.id) topic.id = row.id
   topic.className = `topic-card ${row.className}`.trim()
+  topic.classList.toggle('inew', hasNewMessages)
   topic.setAttribute('role', 'listitem')
 
   const main = createBlock('topic-card__main tcl', cells[0], headers[0])
