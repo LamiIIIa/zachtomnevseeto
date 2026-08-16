@@ -1,6 +1,7 @@
 import { t } from '../../i18n/index.js'
 
 const STORAGE_KEY = 'selectedTheme'
+const MOBILE_HEADER_QUERY = '(max-width: 700px)'
 
 const THEMES = [
   { name: 'shinobi', titleKey: 'themes.shinobi' },
@@ -33,6 +34,27 @@ export function initThemeSwitcher(root = document) {
 
   switcher.dataset.forumDesignReady = 'true'
   applyStoredTheme()
+  initMobilePlacement(switcher, root)
+}
+
+function initMobilePlacement(switcher, header) {
+  if (!window.matchMedia || !header) return
+
+  const placeholder = document.createComment('theme-switcher-position')
+  switcher.before(placeholder)
+
+  const media = window.matchMedia(MOBILE_HEADER_QUERY)
+  const updatePlacement = () => {
+    if (media.matches) {
+      header.append(switcher)
+      return
+    }
+
+    placeholder.after(switcher)
+  }
+
+  updatePlacement()
+  media.addEventListener?.('change', updatePlacement)
 }
 
 function setTheme(theme) {
