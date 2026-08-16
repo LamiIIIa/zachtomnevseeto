@@ -255,6 +255,12 @@
     visibility: hidden;
     pointer-events: none;
   }
+
+  /* На странице поиска поле может получить фокус автоматически — док не скрываем. */
+  #pun-search.mobile-navigation-ready .mobile-dock {
+    visibility: visible;
+    pointer-events: auto;
+  }
 }
 
 @media screen and (max-width: 700px) and (max-height: 500px) {
