@@ -1,3 +1,9 @@
-import linksObgect from "../linksObgect.js";
+import linkObj from "../linksObgect.js";
 
-export function initMobileImportantLink(header) {}
+export function initMobileImportantLink(header) {
+  if (!header || header.querySelector(".mobile-important-links")) return;
+
+  const importantLinks = Object.values(linkObj.linkForMobHead);
+
+  const
+}
