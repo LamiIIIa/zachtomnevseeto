@@ -1,6 +1,6 @@
 import linkObj from "../linksObgect.js";
 
-export function initMobileImportantLink(header) {
+export function initMobileImportantLinks(header) {
   if (!header || header.querySelector(".mobile-important-links")) return;
 
   const importantLinks = Object.values(linkObj.linkForMobHead);
@@ -8,15 +8,15 @@ export function initMobileImportantLink(header) {
   const container = document.createElement("div");
   container.className = "mobile-important-links";
 
-  const button = document.createElement(button);
-  button.classname = "mobile-important-links-buttun";
+  const button = document.createElement("button");
+  button.className = "mobile-important-links__button";
   button.type = "button";
 
   button.setAttribute("aria-label", "Открыть важные ссылки");
   button.setAttribute("aria-controls", "mobile-important-links-menu");
   button.setAttribute("aria-expanded", "false");
 
-  const menu = document.querySelector("div");
+  const menu = document.createElement("nav");
   menu.id = "mobile-important-links-menu";
   menu.className = "mobile-important-links__menu";
   menu.setAttribute("aria-label", "Важные ссылки");
@@ -39,4 +39,45 @@ export function initMobileImportantLink(header) {
   });
 
   menu.append(list);
+
+  const closeMenu = () => {
+    menu.hidden = true;
+    button.setAttribute("aria-expanded", "false");
+  };
+
+  const openMenu = () => {
+    menu.hidden = false;
+    button.setAttribute("aria-expanded", "true");
+  };
+
+  button.addEventListener("click", () => {
+    const isOpen = button.getAttribute("aria-expanded") === "true";
+
+    if (isOpen) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+
+  menu.addEventListener("click", (event) => {
+    if (event.target.closest("a")) {
+      closeMenu();
+    }
+  });
+
+  document.addEventListener("pointerdown", (event) => {
+    if (!container.contains(event.target)) {
+      closeMenu();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeMenu();
+    }
+  });
+
+  container.append(menu, button);
+  header.append(container);
 }
