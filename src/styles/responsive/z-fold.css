@@ -1,0 +1,97 @@
+/*
+ * Samsung Galaxy Z Fold.
+ * Узкий диапазон рассчитан на внешний экран, широкий — на раскрытый экран.
+ * Файл подключается последним и уточняет общие мобильные правила.
+ */
+
+/* Внешний экран Fold: мало места по ширине, сохраняем удобные зоны нажатия. */
+@media screen and (max-width: 390px) {
+  :root {
+    --main-p: 12px;
+    --post-p: 12px;
+  }
+
+  #pun-index .category h2,
+  #pun-index #pun-stats h2 {
+    margin-top: 38px;
+    margin-bottom: 26px;
+  }
+
+  #pun-index .category h2 > .category-title,
+  #pun-index #pun-stats h2 > .statistics-title {
+    min-height: 48px;
+    height: auto;
+    padding-inline: 18px;
+    font-size: 19px !important;
+  }
+
+  #pun-index .category h2 > span.category-quote,
+  #pun-index #pun-stats h2 > span.statistics-quote {
+    max-width: calc(100% - 20px);
+  }
+
+  #pun-index .forum-card {
+    min-height: 190px;
+    height: auto;
+    border-radius: 42px 14px;
+  }
+
+  #pun-index .forum-card__last-post {
+    gap: 5px 10px;
+    padding-right: 12px;
+  }
+
+  #pun-index .statscon {
+    margin-inline: 8px;
+  }
+
+  #pun-announcement > .mobile-theme-picker {
+    top: 8px;
+    right: 8px;
+  }
+
+  .mobile-theme-picker #theme_switcher {
+    min-width: 178px;
+  }
+
+  .mobile-dock__item {
+    padding-inline: 2px;
+    font-size: 9px;
+  }
+}
+
+/* Раскрытый Fold: используем дополнительную ширину для двух колонок. */
+@media screen and (min-width: 600px) and (max-width: 700px) {
+  :root {
+    --main-p: 18px;
+    --post-p: 18px;
+  }
+
+  #pun-index .forum-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  #pun-index .forum-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  #pun-index .forum-card {
+    height: 210px;
+  }
+
+  #pun-index .forum-card__last-post {
+    gap: 5px 12px;
+    padding-right: 18px;
+  }
+
+  #pun-index #pun-stats .statscon {
+    max-width: 620px;
+    margin-inline: auto;
+  }
+
+  .mobile-menu__list {
+    width: min(100%, 620px);
+    margin-inline: auto !important;
+  }
+}

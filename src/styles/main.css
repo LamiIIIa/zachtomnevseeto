@@ -65,3 +65,4 @@
 @import './responsive/mobile.css';
 @import './responsive/mobile-header.css';
 @import './components/mobile-navigation.css';
+@import './responsive/z-fold.css';
