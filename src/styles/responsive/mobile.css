@@ -162,7 +162,7 @@
     padding: 12px;
     border-radius: 16px;
     background: var(--color-forum);
-    grid-template-columns: 46px minmax(90px, 1fr) minmax(92px, auto);
+    grid-template-columns: 46px minmax(0, 1fr);
     align-items: center;
     gap: 12px;
     display: grid;
@@ -197,8 +197,7 @@
   }
 
   #pun-index #pun-status .status-actions {
-    grid-column: 3;
-    justify-self: end;
+    display: none !important;
   }
 
   /* На мобильном оставляем только приветствие. */
@@ -206,26 +205,4 @@
     display: none;
   }
 
-  /* Системную премиум-ссылку скрываем, оставляем донат. */
-  #pun-index #pun-status .status-action--premium {
-    display: none;
-  }
-
-  /* Кнопка поддержки форума. */
-  #pun-index #pun-status .status-action--support {
-    box-sizing: border-box;
-    max-width: 110px;
-    min-height: 42px;
-    padding: 8px 10px;
-    border: 1px solid var(--color-link);
-    border-radius: 12px;
-    color: var(--color-forum);
-    background: var(--color-link);
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    font-size: clamp(8px, 2.3vw, 10px);
-    text-align: center;
-    text-decoration: none;
-  }
 }
