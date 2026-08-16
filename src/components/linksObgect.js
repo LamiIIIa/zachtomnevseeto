@@ -10,11 +10,15 @@ const lonkObj = {
     },
     looking: {
       link: "https://akatsukigood.forum.cool/viewtopic.php?id=333",
-      title: "Заявки на роли",
+      title: "Игроки ищут!",
     },
     calc: {
       link: "https://akatsukigood.forum.cool/pages/kalkulyator",
       title: "Калькулятор",
+    },
+    map: {
+      link: "https://forumstatic.ru/files/001a/12/f3/34431.jpg",
+      title: "Карта",
     },
   },
 };

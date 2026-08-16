@@ -158,6 +158,10 @@
     display: none;
   }
 
+  #pun-viewforum .topic-card__main .newtext {
+    display: none;
+  }
+
   #pun-viewforum .topic-card__main a[href*='viewtopic.php']:first-of-type {
     display: block;
     min-width: 0;
