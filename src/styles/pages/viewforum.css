@@ -81,3 +81,128 @@
   gap: 7px;
   text-align: right;
 }
+
+@media screen and (max-width: 700px) {
+  #pun-viewforum .topic-list {
+    gap: 10px;
+    margin: 12px 0;
+  }
+
+  #pun-viewforum .topic-card {
+    --mobile-topic-avatar-size: 48px;
+    --mobile-topic-count-size: 32px;
+
+    grid-template-columns:
+      var(--mobile-topic-avatar-size)
+      minmax(0, 1fr)
+      max-content
+      var(--mobile-topic-count-size);
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      'avatar title date count'
+      'avatar preview preview count';
+    gap: 4px 10px;
+    min-height: 72px;
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  /* Десктопную тематическую иконку заменяет аватар последнего автора. */
+  #pun-viewforum .topic-card::before {
+    display: none;
+  }
+
+  #pun-viewforum .topic-card__main {
+    grid-area: title;
+    align-self: end;
+    min-width: 0;
+  }
+
+  #pun-viewforum .topic-card__main .intd,
+  #pun-viewforum .topic-card__main .tclcon {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+
+  #pun-viewforum .topic-card__main .byuser {
+    display: none;
+  }
+
+  #pun-viewforum .topic-card__main a[href*='viewtopic.php']:first-of-type {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Дочерние элементы последнего сообщения входят прямо в grid карточки. */
+  #pun-viewforum .topic-card .topic-card__last-post {
+    display: contents;
+  }
+
+  #pun-viewforum .topic-card__last-post .user-avatar {
+    grid-area: avatar;
+    align-self: center;
+    width: var(--mobile-topic-avatar-size) !important;
+    height: var(--mobile-topic-avatar-size) !important;
+    margin: 0 !important;
+  }
+
+  #pun-viewforum .topic-card__last-post .avatar-image {
+    width: var(--mobile-topic-avatar-size) !important;
+    height: var(--mobile-topic-avatar-size) !important;
+  }
+
+  #pun-viewforum .topic-card__last-post > a {
+    grid-area: date;
+    align-self: end;
+    overflow: hidden;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #pun-viewforum .topic-card__last-post > .byuser {
+    display: none;
+  }
+
+  #pun-viewforum .topic-card__stats {
+    display: contents;
+  }
+
+  #pun-viewforum .topic-card__replies {
+    grid-area: count;
+    place-self: center;
+    display: grid;
+    place-items: center;
+    width: var(--mobile-topic-count-size);
+    height: var(--mobile-topic-count-size);
+    color: var(--color-forum);
+    background: var(--color-link);
+    border-radius: 50%;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  #pun-viewforum .topic-card__views {
+    display: none;
+  }
+
+  /* Контейнер будет создан JS после получения последнего сообщения. */
+  #pun-viewforum .topic-card__preview {
+    grid-area: preview;
+    align-self: start;
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    color: var(--color-txt1);
+    font-family: var(--font-g);
+    font-size: 11px;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    text-transform: none;
+    white-space: nowrap;
+  }
+}
