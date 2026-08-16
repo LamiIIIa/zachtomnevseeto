@@ -205,4 +205,26 @@
     text-transform: none;
     white-space: nowrap;
   }
+
+  #pun-viewforum .linkst {
+    width: calc(100% + var(--main-p) + var(--main-p));
+    max-width: none;
+    margin-right: calc(0px - var(--main-p));
+    margin-left: calc(0px - var(--main-p));
+    padding-right: var(--main-p);
+    padding-left: var(--main-p);
+    border: 0;
+    border-bottom: 1px solid var(--color-categoru-mobile);
+  }
+
+  #pun-viewforum .linkst .pagelink,
+  #pun-viewforum .linkst .pagelink a {
+    color: var(--color-txt1) !important;
+  }
+
+  #pun-viewforum .linkst .pagelink strong,
+  #pun-viewforum .linkst .postlink,
+  #pun-viewforum .linkst .postlink a {
+    color: var(--color-categoru-mobile) !important;
+  }
 }
