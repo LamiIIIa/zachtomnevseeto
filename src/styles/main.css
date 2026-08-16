@@ -64,3 +64,4 @@
 /* Последними перекрываем встроенный мобильный CSS MyBB. */
 @import './responsive/mobile.css';
 @import './responsive/mobile-header.css';
+@import './components/mobile-navigation.css';

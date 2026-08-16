@@ -1,4 +1,5 @@
 import { t } from '../i18n/index.js'
+import { initMobileNavigation } from './mobile-navigation.js'
 
 export function initCommon({ root }) {
   // Отмечаем, что новый JavaScript-дизайн запущен на текущей странице.
@@ -6,6 +7,9 @@ export function initCommon({ root }) {
 
   // Настраиваем общую навигацию до инициализации остальных элементов страницы.
   initAdminNavigation(root)
+
+  // Создаём мобильную навигацию до подключения обработчиков раскрывающихся меню.
+  initMobileNavigation({ root })
 
   // Находим все кнопки, которые открывают и закрывают связанные меню.
   root.querySelectorAll('[data-menu-toggle]').forEach((button) => {
