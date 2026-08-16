@@ -214,6 +214,8 @@
     margin-left: calc(0px - var(--main-p));
     padding-right: var(--main-p);
     padding-left: var(--main-p);
+    color: var(--color-txt1);
+    background: var(--color-forum);
     border: 0;
     border-bottom: 1px solid var(--color-categoru-mobile);
   }
