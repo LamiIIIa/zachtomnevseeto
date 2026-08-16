@@ -38,12 +38,13 @@ podfor {
 }
 
 #pun-index .tcl h3 {
-  margin: 0;
-  width: 100%;
   text-align: left;
-  grid-area: name;
+  width: 100%;
   font: 400 normal 18px var(--font-1);
   text-transform: uppercase;
+  grid-area: name;
+  margin: 0;
+  padding-left: 40px;
 }
 
 #pun-index .tcl h3 a {
