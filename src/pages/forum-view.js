@@ -65,8 +65,8 @@ function createTopicState(row) {
     (state) => iconClasses.has(state)
   )
 
-  const lastPostDate = lastPostLink?.textContent.replace(/\s+/g, '').trim() ?? ''
-
+  // Сохраняем исходную подпись MyBB: «Сегодня 12:30», «Вчера 18:45» или дату.
+  const lastPostDate = lastPostLink?.textContent.replace(/\s+/g, ' ').trim() ?? ''
 
   return {
     id: getNumericUrlParameter(topicLink?.href, 'id'),
@@ -77,7 +77,8 @@ function createTopicState(row) {
     lastPostId: getPostId(lastPostLink?.href),
     lastPostUrl: lastPostLink?.href ?? '',
     lastPostDate,
-    formattedDate: formatTopicDate(lastPostDate)
+    // Компактная подпись используется только отдельным мобильным элементом.
+    formattedDate: formatTopicDate(lastPostDate),
     hasNewMessages,
     unreadUrl: unreadLink?.href ?? '',
     unreadCount: hasNewMessages ? null : 0,
@@ -113,10 +114,13 @@ function renderTopicCard(row, headers, topicState) {
   const replies = createBlock('topic-card__stat topic-card__replies tc2', cells[1], headers[1])
   const views = createBlock('topic-card__stat topic-card__views tc3', cells[2], headers[2])
   const lastPost = createBlock('topic-card__last-post tcr', cells[3], headers[3])
+
+  // Полную десктопную дату оставляем на месте и создаём её мобильную копию.
   const mobileDate = document.createElement('time')
 
   mobileDate.className = 'topic-card__mobile-date'
   mobileDate.textContent = topicState.formattedDate
+  // Полная исходная дата остаётся доступной вспомогательным технологиям.
   mobileDate.setAttribute('aria-label', topicState.lastPostDate)
 
   const stats = document.createElement('div')
@@ -161,66 +165,96 @@ function getNumericText(text) {
 }
 
 function formatTopicDate(value, now = new Date()) {
-  const normalized = value.replase(/\s+/g, '').trim()
+  // Убираем повторяющиеся пробелы и переносы, сохраняя разделение слов.
+  const normalized = value.replace(/\s+/g, ' ').trim()
+
+  // Забираем только часы и минуты: секунды в мобильной карточке не нужны.
   const timeMatch = normalized.match(/(\d{1,2}):(\d{2})/)
 
+  // Неизвестный формат безопаснее показать без изменений.
   if (!timeMatch) return normalized
 
-  const time = `${timeMatch[1].padStart(2, 0)}:${timeMatch[2]}`
+  // Всегда выводим часы двумя цифрами, например «09:05».
+  const time = `${timeMatch[1].padStart(2, '0')}:${timeMatch[2]}`
 
-  if(/^Сегодня\b/i.test(normalized)) {
+  // Для сегодняшнего сообщения достаточно времени.
+  if (/^Сегодня\b/i.test(normalized)) {
     return time
   }
 
+  // Для остальных вариантов получаем настоящую календарную дату.
   const date = parseTopicDate(normalized, now)
 
+  // Если строка не распознана, оставляем исходную подпись MyBB.
+  if (!date) return normalized
+
+  // Находим понедельник текущей недели.
+  const weekStart = new Date(now)
+
+  // Обнуляем время, чтобы сравнивать только календарные дни.
   weekStart.setHours(0, 0, 0, 0)
   weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7))
 
+  // В пределах текущей недели выводим короткий день: «пн», «вт», «ср».
   if (date >= weekStart) {
-    return new Intl.DateTimeFormat('ru-Ru', {
+    return new Intl.DateTimeFormat('ru-RU', {
       weekday: 'short',
     })
-    .format(date)
-    .replase(/\.$/, '')
+      .format(date)
+      // В интерфейсе точка после сокращения не нужна.
+      .replace(/\.$/, '')
   }
 
-  return new Intl.DateTimeFormat('ru-Ru', {
+  // Для более старых сообщений выводим число и месяц: «12 авг».
+  return new Intl.DateTimeFormat('ru-RU', {
     day: 'numeric',
     month: 'short',
   })
-  .format(date)
-  .replace(/\.$/, '')
+    .format(date)
+    .replace(/\.$/, '')
 }
 
 function parseTopicDate(value, now) {
+  // «Вчера» преобразуем в предыдущий календарный день.
   if (/^Вчера\b/i.test(value)) {
+    // Создаём копию, чтобы не изменять переданный объект now.
     const yesterday = new Date(now)
 
+    // Обнуляем время и отнимаем один день.
     yesterday.setHours(0, 0, 0, 0)
     yesterday.setDate(yesterday.getDate() - 1)
 
     return yesterday
   }
 
+  // Поддерживаем разделители точкой, косой чертой и дефисом.
+  // Год в строке может отсутствовать.
   const match = value.match(
     /^(\d{1,2})[./-](\d{1,2})(?:[./-](\d{2,4}))?/
   )
 
+  // Другой формат эта функция разбирать не должна.
   if (!match) return null
 
+  // Извлекаем числовые части найденной даты.
   const day = Number(match[1])
   const month = Number(match[2])
   let year = match[3] ? Number(match[3]) : now.getFullYear()
 
+  // Преобразуем короткий год, например 26, в 2026.
   if (year < 100) year += 2000
 
+  // Месяцы Date начинаются с нуля, поэтому вычитаем единицу.
   const date = new Date(year, month - 1, day)
 
+  // Дата без года не должна случайно оказаться в будущем.
+  // Например, «28.12» в январе относится к предыдущему году.
   if (!match[3] && date > now) {
     date.setFullYear(date.getFullYear() - 1)
   }
 
+  // Date исправляет невозможные значения автоматически.
+  // Повторная проверка отбрасывает даты вроде 31 февраля.
   if (
     date.getDate() !== day ||
     date.getMonth() !== month - 1
@@ -228,5 +262,6 @@ function parseTopicDate(value, now) {
     return null
   }
 
+  // Возвращаем корректно распознанную дату.
   return date
 }
