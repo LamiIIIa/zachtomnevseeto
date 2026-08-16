@@ -2,7 +2,7 @@ html.green {
   --bg: url("https://forumstatic.ru/files/001c/6f/41/33706.webp")
     var(--bg-color);
   --title-img: url("https://forumstatic.ru/files/001c/6f/41/58540.png");
-  --title-img-mobile: none;
+  --title-img-mobile: url(https://forumstatic.ru/files/001a/12/f3/90829.webp);
   --online: url() #f88802;
   --ava-bg: url("https://forumstatic.ru/files/001c/6f/41/86081.webp");
   --qv-1: url("https://forumstatic.ru/files/001c/6f/41/18384.svg");
