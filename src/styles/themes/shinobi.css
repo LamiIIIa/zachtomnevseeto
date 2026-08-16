@@ -42,7 +42,7 @@ html:has(#pun-admain) {
 
   /* Графика главной страницы: заменить none на url(...) после экспорта файлов. */
   --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/81710.webp);
-  --category-heading-image-mobile: var(--category-heading-image);
+  --category-heading-image-mobile: none;
   --forum-card-image: url(https://forumstatic.ru/files/001a/12/f3/82706.webp);
   --forum-card-image-unread: url(https://forumstatic.ru/files/001a/12/f3/11014.webp);
   --forum-card-image-mobile: var(--forum-card-image);

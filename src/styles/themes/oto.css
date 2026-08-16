@@ -39,7 +39,7 @@ html.oto {
 
   /* Графика главной страницы: заменить none на url(...) после экспорта файлов. */
   --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/48518.webp);
-  --category-heading-image-mobile: var(--category-heading-image);
+  --category-heading-image-mobile: none;
   --forum-card-image: url(https://forumstatic.ru/files/001a/12/f3/47508.webp);
   --forum-card-image-unread: url(https://forumstatic.ru/files/001a/12/f3/20558.webp);
   --forum-card-image-mobile: var(--forum-card-image);

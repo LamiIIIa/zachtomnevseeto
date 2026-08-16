@@ -43,13 +43,46 @@ function initMobilePlacement(switcher, header) {
   const placeholder = document.createComment('theme-switcher-position')
   switcher.before(placeholder)
 
+  const picker = document.createElement('div')
+  picker.className = 'mobile-theme-picker'
+
+  const button = document.createElement('button')
+  button.className = 'mobile-theme-picker__button'
+  button.type = 'button'
+  button.setAttribute('aria-controls', 'theme_switcher')
+  button.setAttribute('aria-expanded', 'false')
+  button.dataset.i18n = 'themes.menu'
+  button.textContent = t('themes.menu')
+
+  const closePicker = () => {
+    picker.classList.remove('mobile-theme-picker--open')
+    button.setAttribute('aria-expanded', 'false')
+  }
+
+  button.addEventListener('click', () => {
+    const isOpen = picker.classList.toggle('mobile-theme-picker--open')
+    button.setAttribute('aria-expanded', String(isOpen))
+  })
+
+  switcher.addEventListener('change', closePicker)
+  document.addEventListener('pointerdown', (event) => {
+    if (!picker.contains(event.target)) closePicker()
+  })
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closePicker()
+  })
+
+  picker.append(button)
+  header.append(picker)
+
   const media = window.matchMedia(MOBILE_HEADER_QUERY)
   const updatePlacement = () => {
     if (media.matches) {
-      header.append(switcher)
+      picker.append(switcher)
       return
     }
 
+    closePicker()
     placeholder.after(switcher)
   }
 

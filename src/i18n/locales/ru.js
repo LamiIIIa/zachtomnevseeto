@@ -7,6 +7,7 @@ export default {
     },
   },
   themes: {
+    menu: "Темы",
     shinobi: "Даттебайо!",
     oto: "Я бессмертен!",
     akatsuki: "Познай боль!",

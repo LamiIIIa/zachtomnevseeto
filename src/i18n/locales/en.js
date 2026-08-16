@@ -7,6 +7,7 @@ export default {
     },
   },
   themes: {
+    menu: 'Themes',
     shinobi: 'Believe it!',
     oto: 'I am immortal!',
     akatsuki: 'Know pain!',

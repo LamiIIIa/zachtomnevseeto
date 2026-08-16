@@ -38,7 +38,7 @@ html.green {
 
   /* Графика главной страницы: заменить none на url(...) после экспорта файлов. */
   --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/87391.webp);
-  --category-heading-image-mobile: var(--category-heading-image);
+  --category-heading-image-mobile: none;
   --forum-card-image: url(https://forumstatic.ru/files/001a/12/f3/84183.webp);
   --forum-card-image-unread: url(https://forumstatic.ru/files/001a/12/f3/95491.webp);
   --forum-card-image-mobile: var(--forum-card-image);
