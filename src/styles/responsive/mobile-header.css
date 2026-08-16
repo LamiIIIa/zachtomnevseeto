@@ -135,14 +135,14 @@
   .mobile-important-links__button {
     appearance: none;
     box-sizing: border-box;
-    width: 44px;
-    height: 44px;
+    width: 30px;
+    height: 30px;
     margin: 0;
     padding: 0;
-    border: 1px solid rgb(255 255 255 / 30%);
-    border-radius: 12px;
-    color: white;
-    background: rgb(0 0 0 / 55%);
+    border: 1px solid color-mix(in srgb, var(--color-link) 30%, transparent);
+    border-radius: 5px;
+    color: var(--color-txt1);
+    background: color-mix(in srgb, var(--color-forum) 78%, transparent);
     align-items: center;
     justify-content: center;
     display: flex;
@@ -173,10 +173,10 @@
     inset: 0 0 50px;
     margin: 0;
     padding: 12px;
-    border: 1px solid rgb(255 255 255 / 22%);
+    border: 1px solid color-mix(in srgb, var(--color-link) 25%, transparent);
     border-radius: 14px;
-    color: white;
-    background: rgb(0 0 0 / 82%);
+    color: var(--color-txt1);
+    background: color-mix(in srgb, var(--color-forum) 86%, transparent);
     box-shadow: 0 12px 30px rgb(0 0 0 / 38%);
     overflow-x: hidden;
     overflow-y: auto;
@@ -190,15 +190,14 @@
   }
 
   .mobile-important-links__list {
+    align-content: center;
     width: 100%;
-    min-height: 100%;
+    height: 100%;
     margin: 0;
     padding: 0;
     list-style: none;
-    align-content: center;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    display: grid;
+    display: flex;
+    flex-direction: column;
   }
 
   .mobile-important-links__item {
@@ -214,10 +213,10 @@
     min-height: 52px;
     height: 100%;
     padding: 11px 13px;
-    border: 1px solid rgb(255 255 255 / 18%);
+    border: 1px solid color-mix(in srgb, var(--color-link) 22%, transparent);
     border-radius: 10px;
-    color: white;
-    background: rgb(255 255 255 / 8%);
+    color: var(--color-link);
+    background: color-mix(in srgb, var(--color-forum) 72%, transparent);
     font: 500 12px/1.3 var(--font);
     letter-spacing: 0.04em;
     text-align: center;
@@ -228,8 +227,8 @@
   }
 
   .mobile-important-links__link:is(:hover, :active, :focus-visible) {
-    color: white;
-    border-color: rgb(255 255 255 / 45%);
-    background: rgb(255 255 255 / 16%);
+    color: var(--color-hover);
+    border-color: color-mix(in srgb, var(--color-link) 55%, transparent);
+    background: color-mix(in srgb, var(--color-forum) 92%, transparent);
   }
 }
