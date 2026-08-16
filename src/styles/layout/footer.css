@@ -39,39 +39,6 @@
   overflow: auto;
 }
 
-.bannerc[hidden] {
-  display: none !important;
-}
-
-.footer-banners-toggle {
-  appearance: none;
-  min-height: 34px;
-  margin: 6px auto;
-  padding: 7px 14px;
-  border: 1px solid var(--color-link);
-  border-radius: 10px;
-  color: var(--color-link);
-  background: var(--color-forum);
-  font: 600 10px/1 var(--font);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  display: block;
-  cursor: pointer;
-}
-
-.footer-banners-toggle::after {
-  content: ' ▾';
-}
-
-.footer-banners-toggle[aria-expanded='true']::after {
-  content: ' ▴';
-}
-
-.footer-banners-toggle:is(:hover, :focus-visible) {
-  color: var(--color-hover);
-  border-color: var(--color-hover);
-}
-
 .banner{
   width: 88px;
   height: 31px;

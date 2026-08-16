@@ -91,8 +91,13 @@
     box-sizing: border-box;
     width: 100%;
     max-width: 100%;
-    height: 43px;
-    padding: 4px 0;
+    height: 53px;
+    margin: 12px 0 8px;
+    padding: 9px;
+    border: 1px solid color-mix(in srgb, var(--color-link) 35%, transparent);
+    border-radius: 14px;
+    background: var(--color-forum);
+    box-shadow: inset 0 0 12px color-mix(in srgb, var(--shedow1) 20%, transparent);
     flex-wrap: nowrap;
     gap: 3px;
     overflow-x: auto;
@@ -109,8 +114,23 @@
 
   /* В мобильной статистике оставляем только пользователей онлайн сейчас. */
   #pun-index #pun-stats .container {
+    box-sizing: border-box;
+    width: 100%;
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas: "active";
+  }
+
+  #pun-index #pun-stats h2 {
+    margin-top: 24px;
+    margin-bottom: 20px;
+  }
+
+  #pun-index #pun-stats .statscon {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    padding-inline: 0;
   }
 
   #pun-index #pun-stats .item1,
@@ -122,6 +142,8 @@
   }
 
   #pun-index #pun-stats .onlinelist {
+    box-sizing: border-box;
+    width: 100%;
     margin-top: 0;
     text-align: left;
   }
@@ -140,18 +162,38 @@
     padding: 12px;
     border-radius: 16px;
     background: var(--color-forum);
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     gap: 12px;
     display: grid;
   }
 
-  /* Слева: аватар и приветствие. */
+  /* Разделяем вложенный блок на три самостоятельные колонки. */
   #pun-index #pun-status .status-user {
+    display: contents;
+  }
+
+  #pun-index #pun-status .status-user__avatar {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  #pun-index #pun-status .status-user__text {
     min-width: 0;
-    display: flex;
+    grid-column: 2;
     align-items: center;
-    gap: 12px;
+    justify-self: stretch;
+    text-align: center;
+  }
+
+  #pun-index #pun-status .status-user__greeting {
+    width: 100%;
+    text-align: center;
+  }
+
+  #pun-index #pun-status .status-actions {
+    grid-column: 3;
+    justify-self: end;
   }
 
   /* На мобильном оставляем только приветствие. */

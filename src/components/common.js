@@ -11,7 +11,7 @@ export function initCommon({ root }) {
   // Создаём мобильную навигацию до подключения обработчиков раскрывающихся меню.
   initMobileNavigation({ root })
 
-  // Сворачиваем партнёрские баннеры в футере под отдельную кнопку.
+  // Переносим партнёрские баннеры из скрытого системного футера в видимый.
   initFooterBanners(root)
 
   // Находим все кнопки, которые открывают и закрывают связанные меню.
@@ -32,29 +32,31 @@ export function initCommon({ root }) {
 }
 
 function initFooterBanners(root) {
-  root.querySelectorAll('.bannerc').forEach((banners, index) => {
+  const footer = root.querySelector('#pun-about .container') || root.querySelector('#pun-about')
+  if (!footer || !window.matchMedia) return
+
+  const media = window.matchMedia('(max-width: 700px)')
+
+  document.querySelectorAll('.bannerc').forEach((banners) => {
     if (banners.dataset.forumDesignReady) return
 
-    const id = banners.id || `footer-banners-${index + 1}`
-    banners.id = id
-    banners.hidden = true
+    const placeholder = document.createComment('footer-banners-position')
+    banners.before(placeholder)
     banners.dataset.forumDesignReady = 'true'
+    banners.hidden = false
+    banners.classList.add('footer-banners-window')
 
-    const button = document.createElement('button')
-    button.type = 'button'
-    button.className = 'footer-banners-toggle'
-    button.setAttribute('aria-controls', id)
-    button.setAttribute('aria-expanded', 'false')
-    button.dataset.i18n = 'footer.banners'
-    button.textContent = t('footer.banners')
+    const updatePlacement = () => {
+      if (media.matches) {
+        footer.prepend(banners)
+        return
+      }
 
-    button.addEventListener('click', () => {
-      const isOpen = button.getAttribute('aria-expanded') === 'true'
-      button.setAttribute('aria-expanded', String(!isOpen))
-      banners.hidden = isOpen
-    })
+      placeholder.after(banners)
+    }
 
-    banners.before(button)
+    updatePlacement()
+    media.addEventListener?.('change', updatePlacement)
   })
 }
 

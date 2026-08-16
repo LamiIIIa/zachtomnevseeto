@@ -84,11 +84,6 @@
     padding-right: 18px;
   }
 
-  #pun-index #pun-stats .statscon {
-    max-width: 620px;
-    margin-inline: auto;
-  }
-
   .mobile-menu__list {
     width: min(100%, 620px);
     margin-inline: auto !important;
