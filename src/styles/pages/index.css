@@ -163,6 +163,15 @@
 }
 
 @media screen and (max-width: 700px) {
+  /* На мобильных все форумы располагаются одной вертикальной колонкой. */
+  #pun-index .forum-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #pun-index .forum-card:last-child:nth-child(odd) {
+    grid-column: auto;
+  }
+
   /* Для мобильной версии можно будет назначить отдельные, менее широкие шаблоны. */
   #pun-index .category h2 > .category-title,
   #pun-index #pun-stats h2 > .statistics-title {
