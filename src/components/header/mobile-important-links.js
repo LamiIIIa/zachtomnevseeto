@@ -1,3 +1,3 @@
 import linksObgect from "../linksObgect.js";
 
-export function 
+export function initMobileImportantLink(header) {}

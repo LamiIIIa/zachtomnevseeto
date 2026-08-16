@@ -162,27 +162,28 @@
     padding: 12px;
     border-radius: 16px;
     background: var(--color-forum);
-    grid-template-columns: 46px minmax(0, 1fr);
     align-items: center;
     gap: 12px;
-    display: grid;
+    display: flex;
   }
 
-  /* Разделяем вложенный блок на три самостоятельные колонки. */
+  /* Аватар и приветствие образуют один надёжный горизонтальный ряд. */
   #pun-index #pun-status .status-user {
-    display: contents;
+    width: 100%;
+    min-width: 0;
+    align-items: center;
+    gap: 12px;
+    display: flex;
   }
 
   #pun-index #pun-status .status-user__avatar {
-    grid-column: 1;
-    justify-self: start;
+    flex: 0 0 46px;
   }
 
   #pun-index #pun-status .status-user__text {
     min-width: 0;
-    grid-column: 2;
+    flex: 1 1 auto;
     align-items: center;
-    justify-self: stretch;
     text-align: center;
   }
 
