@@ -183,6 +183,8 @@
   /* Для мобильной версии можно будет назначить отдельные, менее широкие шаблоны. */
   #pun-index .category h2 > .category-title,
   #pun-index #pun-stats h2 > .statistics-title {
+    color: var(--color-forum);
+    background-color: var(--color-categoru-mobile);
     background-image: var(--category-heading-image-mobile);
   }
 

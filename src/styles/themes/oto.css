@@ -37,6 +37,8 @@ html.oto {
   --color-nav: var(--color-forum);
   --color-like: var(--color-link);
 
+  --color-categoru-mobile: var(--color-link);
+
   /* Графика главной страницы: заменить none на url(...) после экспорта файлов. */
   --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/48518.webp);
   --category-heading-image-mobile: none;
