@@ -123,8 +123,8 @@
   /* Важные ссылки закреплены в левом нижнем углу мобильной шапки. */
   #pun-announcement > .mobile-important-links {
     position: absolute;
-    left: 12px;
-    bottom: 12px;
+    left: 2px;
+    bottom: 2px;
     z-index: 3;
     display: block;
   }
@@ -149,8 +149,8 @@
   }
 
   .mobile-important-links__button::before {
-    content: '↑';
-    font: 600 22px/1 var(--font);
+    content: '\e5d2';
+    font: 400 22px/1 var(--mat);
     transition: transform 0.2s ease;
   }
 
