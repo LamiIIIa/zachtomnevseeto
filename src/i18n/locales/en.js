@@ -30,4 +30,7 @@ export default {
   status: {
     supportForum: 'Support the forum',
   },
+  footer: {
+    banners: 'Banners',
+  },
 }

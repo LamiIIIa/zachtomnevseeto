@@ -186,6 +186,8 @@
     color: var(--color-forum);
     background-color: var(--color-categoru-mobile);
     background-image: var(--category-heading-image-mobile);
+    font-size: clamp(12px, 4.4vw, 25px) !important;
+    white-space: nowrap;
   }
 
   #pun-index .forum-card::before {

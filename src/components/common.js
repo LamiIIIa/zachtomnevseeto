@@ -11,6 +11,9 @@ export function initCommon({ root }) {
   // Создаём мобильную навигацию до подключения обработчиков раскрывающихся меню.
   initMobileNavigation({ root })
 
+  // Сворачиваем партнёрские баннеры в футере под отдельную кнопку.
+  initFooterBanners(root)
+
   // Находим все кнопки, которые открывают и закрывают связанные меню.
   root.querySelectorAll('[data-menu-toggle]').forEach((button) => {
     // Получаем меню по идентификатору из aria-controls кнопки.
@@ -25,6 +28,33 @@ export function initCommon({ root }) {
       button.setAttribute('aria-expanded', String(!isOpen))
       menu.hidden = isOpen
     })
+  })
+}
+
+function initFooterBanners(root) {
+  root.querySelectorAll('.bannerc').forEach((banners, index) => {
+    if (banners.dataset.forumDesignReady) return
+
+    const id = banners.id || `footer-banners-${index + 1}`
+    banners.id = id
+    banners.hidden = true
+    banners.dataset.forumDesignReady = 'true'
+
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'footer-banners-toggle'
+    button.setAttribute('aria-controls', id)
+    button.setAttribute('aria-expanded', 'false')
+    button.dataset.i18n = 'footer.banners'
+    button.textContent = t('footer.banners')
+
+    button.addEventListener('click', () => {
+      const isOpen = button.getAttribute('aria-expanded') === 'true'
+      button.setAttribute('aria-expanded', String(!isOpen))
+      banners.hidden = isOpen
+    })
+
+    banners.before(button)
   })
 }
 

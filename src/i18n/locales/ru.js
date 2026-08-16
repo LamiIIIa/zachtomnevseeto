@@ -30,4 +30,7 @@ export default {
   status: {
     supportForum: "Помочь форуму",
   },
+  footer: {
+    banners: "Баннеры",
+  },
 };
