@@ -134,6 +134,8 @@ function convertForumRow(row) {
   // Переносим последнее сообщение и сохраняем класс tcr для старых стилей.
   const lastPost = createBlock("forum-card__last-post tcr", lastPostCell);
 
+  makeLastPostInLink(lastPost);
+
   // Объединяем два счётчика в один контейнер.
   stats.append(topics, posts);
 
@@ -183,6 +185,45 @@ function initIndexQuotes(root) {
       quoteClass: "statistics-quote",
     });
   }
+}
+
+function makeLastPostInLink(lastPost) {
+  const link = lastPost.querySelector(
+    "a.lastpost-link[href], .lastpost-link a[href]"
+  );
+
+  if (!link) return;
+
+  const linkLast = link.href;
+
+  lastPost.classList.add("forum-card__last-post--clickable");
+  lastPost.tabIndex = 0;
+  lastPost.setAttribute("role", "link");
+
+  lastPost.addEventListener("click", (event) => {
+    event.preventDefault();
+
+    if (event.ctrlKey || event.metaKey) {
+      window.open(linkLast, "_blank", "noopener");
+      return;
+    }
+
+    window.location.assign(linkLast);
+  });
+
+  lastPost.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+
+    event.preventDefault();
+    window.location.assign(linkLast);
+  });
+
+  lastPost.addEventListener("auxclick", (event) => {
+    if (event.button !== 1) return;
+
+    event.preventDefault();
+    window.open(linkLast, "_blank", "noopener");
+  });
 }
 
 function addQuoteK(section, translationKey, { titleClass, quoteClass }) {

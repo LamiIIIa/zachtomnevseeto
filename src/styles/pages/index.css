@@ -48,8 +48,7 @@
 
 /* Новые сообщения обозначаются неоморфной тенью и новой картинкой. */
 #pun-index .forum-card--unread {
-  box-shadow:
-    8px 8px 18px color-mix(in srgb, var(--color-forum) 70%, #000),
+  box-shadow: 8px 8px 18px color-mix(in srgb, var(--color-forum) 70%, #000),
     -8px -8px 18px color-mix(in srgb, var(--color-forum) 75%, #fff);
 }
 
@@ -87,6 +86,15 @@
   padding-right: 50px;
   padding-bottom: 5px;
   display: grid;
+}
+
+#pun-index .forum-card__last-post--clickable {
+  cursor: pointer;
+}
+
+#pun-index .forum-card__last-post--clickable:focus-visible {
+  outline: 2px solid var(--color-link);
+  outline-offset: 4px;
 }
 
 /* Контейнеры категорий и статистики на главной странице. */
