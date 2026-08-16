@@ -162,7 +162,7 @@
     padding: 12px;
     border-radius: 16px;
     background: var(--color-forum);
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: 46px minmax(90px, 1fr) minmax(92px, auto);
     align-items: center;
     gap: 12px;
     display: grid;
@@ -188,6 +188,11 @@
 
   #pun-index #pun-status .status-user__greeting {
     width: 100%;
+    overflow: hidden;
+    overflow-wrap: normal;
+    word-break: normal;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     text-align: center;
   }
 
@@ -209,8 +214,9 @@
   /* Кнопка поддержки форума. */
   #pun-index #pun-status .status-action--support {
     box-sizing: border-box;
+    max-width: 110px;
     min-height: 42px;
-    padding: 10px 14px;
+    padding: 8px 10px;
     border: 1px solid var(--color-link);
     border-radius: 12px;
     color: var(--color-forum);
@@ -218,6 +224,7 @@
     align-items: center;
     justify-content: center;
     display: flex;
+    font-size: clamp(8px, 2.3vw, 10px);
     text-align: center;
     text-decoration: none;
   }
