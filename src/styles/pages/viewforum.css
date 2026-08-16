@@ -82,6 +82,11 @@
   text-align: right;
 }
 
+/* Отдельная короткая дата нужна только мобильной карточке. */
+#pun-viewforum .topic-card__mobile-date {
+  display: none;
+}
+
 #pun-viewforum .linkst,
 #pun-viewforum .linksb {
   width: calc(100% + var(--main-p) + var(--main-p));
@@ -189,9 +194,16 @@
   }
 
   #pun-viewforum .topic-card__last-post > a {
+    display: none;
+  }
+
+  #pun-viewforum .topic-card__mobile-date {
     grid-area: date;
     align-self: end;
+    display: block;
+    min-width: 0;
     overflow: hidden;
+    color: var(--color-link);
     font-size: 10px;
     text-overflow: ellipsis;
     white-space: nowrap;

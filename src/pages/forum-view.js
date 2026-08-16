@@ -227,6 +227,27 @@ function parseTopicDate(value, now) {
     return yesterday
   }
 
+  // Старые сообщения MyBB отдаёт в ISO-формате: «2025-12-19 12:01:19».
+  const isoMatch = value.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/)
+
+  if (isoMatch) {
+    const year = Number(isoMatch[1])
+    const month = Number(isoMatch[2])
+    const day = Number(isoMatch[3])
+    const date = new Date(year, month - 1, day)
+
+    // Проверяем, что Date не исправил невозможное число или месяц.
+    if (
+      date.getFullYear() !== year ||
+      date.getMonth() !== month - 1 ||
+      date.getDate() !== day
+    ) {
+      return null
+    }
+
+    return date
+  }
+
   // Поддерживаем разделители точкой, косой чертой и дефисом.
   // Год в строке может отсутствовать.
   const match = value.match(
