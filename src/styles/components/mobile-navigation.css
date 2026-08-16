@@ -11,7 +11,7 @@
 }
 
 @media screen and (max-width: 700px) {
-  #pun > .punbb.mobile-navigation-ready {
+  .punbb.mobile-navigation-ready {
     --mobile-dock-height: 64px;
     --mobile-navigation-z: 5000;
 
@@ -22,8 +22,8 @@
   }
 
   /* Старая навигация скрывается только после успешного создания новой. */
-  #pun > .punbb.mobile-navigation-ready #pun-navlinks,
-  #pun > .punbb.mobile-navigation-ready #pun-ulinks {
+  .punbb.mobile-navigation-ready #pun-navlinks,
+  .punbb.mobile-navigation-ready #pun-ulinks {
     display: none !important;
   }
 
@@ -258,7 +258,7 @@
 }
 
 @media screen and (max-width: 700px) and (max-height: 500px) {
-  #pun > .punbb.mobile-navigation-ready {
+  .punbb.mobile-navigation-ready {
     --mobile-dock-height: 56px;
   }
 

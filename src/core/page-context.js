@@ -1,4 +1,10 @@
-const PAGE_ROOT_SELECTOR = '#pun > .punbb[id^="pun-"]'
+const PAGE_ROOT_SELECTOR = [
+  '#pun > .punbb[id^="pun-"]',
+  '#pun .punbb[id^="pun-"]',
+  '.punbb[id^="pun-"]',
+  '#pun > .punbb',
+  '#pun .punbb',
+].join(', ')
 
 export function getPageContext() {
   const root = document.querySelector(PAGE_ROOT_SELECTOR)
@@ -7,7 +13,7 @@ export function getPageContext() {
   return {
     root,
     main: root.querySelector('#pun-main'),
-    page: root.id.replace(/^pun-/, ''),
+    page: root.id.replace(/^pun-/, '') || 'unknown',
     forumId: getNumericParam('id', /^\/viewforum\.php$/),
     topicId: getNumericParam('id', /^\/viewtopic\.php$/),
     userId: getNumericParam('id', /^\/profile\.php$/),
