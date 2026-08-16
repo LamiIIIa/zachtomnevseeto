@@ -84,4 +84,45 @@
     width: 100%;
     margin: 0;
   }
+
+  /* Баннеры в футере раскрываются в горизонтальную скролл-ленту. */
+  #pun-about .bannerc,
+  .bannerc {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    height: 43px;
+    padding: 4px 0;
+    flex-wrap: nowrap;
+    gap: 3px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .bannerc .banner {
+    flex: 0 0 88px;
+    margin-left: 0;
+    scroll-snap-align: start;
+  }
+
+  /* В мобильной статистике оставляем только пользователей онлайн сейчас. */
+  #pun-index #pun-stats .container {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'active';
+  }
+
+  #pun-index #pun-stats .item1,
+  #pun-index #pun-stats .item2,
+  #pun-index #pun-stats .item3,
+  #pun-index #pun-stats .item4,
+  #pun-index #pun-stats .users_24h {
+    display: none !important;
+  }
+
+  #pun-index #pun-stats .onlinelist {
+    margin-top: 0;
+    text-align: left;
+  }
 }

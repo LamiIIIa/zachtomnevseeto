@@ -48,3 +48,14 @@
   font-weight: 600;
 }
 
+/* На десктопе статистика всегда отображается полностью. */
+@media screen and (min-width: 701px) {
+  #pun-index #pun-stats .item1,
+  #pun-index #pun-stats .item2,
+  #pun-index #pun-stats .item3,
+  #pun-index #pun-stats .item4,
+  #pun-index #pun-stats .onlinelist,
+  #pun-index #pun-stats .users_24h {
+    display: block !important;
+  }
+}
