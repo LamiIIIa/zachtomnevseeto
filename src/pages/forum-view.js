@@ -29,9 +29,21 @@ function convertTopicRow(row, headers) {
   const cells = Array.from(row.cells)
   const topic = document.createElement('article')
   const oldIcon = cells[0]?.querySelector('.icon')
+  const iconElements = oldIcon ? [oldIcon, ...oldIcon.querySelectorAll('*')] : []
+  const iconClasses = new Set(iconElements.flatMap((element) => [...element.classList]))
+  const hasNewMessages = Boolean(
+    row.classList.contains('inew') ||
+      iconClasses.has('inew') ||
+      iconClasses.has('icon-new') ||
+      oldIcon?.title === 'Есть новые сообщения' ||
+      cells[0]?.querySelector('.newtext')
+  )
+  const inheritedStates = ['isticky', 'iclosed', 'ipinned', 'pinned', 'important'].filter(
+    (state) => iconClasses.has(state)
+  )
 
-  if (row.classList.contains('altstyle')) {
-    console.log('[viewforum: active topic]', {
+  if (hasNewMessages) {
+    console.log('[viewforum: unread topic]', {
       rowClass: row.className,
       rowId: row.id,
       icon: oldIcon?.outerHTML,
@@ -46,18 +58,6 @@ function convertTopicRow(row, headers) {
       })),
     })
   }
-
-  const iconElements = oldIcon ? [oldIcon, ...oldIcon.querySelectorAll('*')] : []
-  const iconClasses = new Set(iconElements.flatMap((element) => [...element.classList]))
-  const hasNewMessages = Boolean(
-    row.classList.contains('inew') ||
-      iconClasses.has('inew') ||
-      iconClasses.has('icon-new') ||
-      cells[0]?.querySelector('.newtext')
-  )
-  const inheritedStates = ['isticky', 'iclosed', 'ipinned', 'pinned', 'important'].filter(
-    (state) => iconClasses.has(state)
-  )
 
   // Состояние темы остаётся на карточке, поэтому старая системная иконка не нужна.
   oldIcon?.remove()
