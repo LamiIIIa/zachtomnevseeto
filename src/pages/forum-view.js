@@ -29,10 +29,16 @@ function convertTopicRow(row, headers) {
   const cells = Array.from(row.cells)
   const topic = document.createElement('article')
   const oldIcon = cells[0]?.querySelector('.icon')
+  const iconElements = oldIcon ? [oldIcon, ...oldIcon.querySelectorAll('*')] : []
+  const iconClasses = new Set(iconElements.flatMap((element) => [...element.classList]))
   const hasNewMessages = Boolean(
     row.classList.contains('inew') ||
-      oldIcon?.matches('.inew, .icon-new') ||
-      oldIcon?.querySelector('.inew, .icon-new')
+      iconClasses.has('inew') ||
+      iconClasses.has('icon-new') ||
+      cells[0]?.querySelector('.newtext')
+  )
+  const inheritedStates = ['isticky', 'iclosed', 'ipinned', 'pinned', 'important'].filter(
+    (state) => iconClasses.has(state)
   )
 
   // Состояние темы остаётся на карточке, поэтому старая системная иконка не нужна.
@@ -40,6 +46,7 @@ function convertTopicRow(row, headers) {
 
   if (row.id) topic.id = row.id
   topic.className = `topic-card ${row.className}`.trim()
+  topic.classList.add(...inheritedStates)
   topic.classList.toggle('inew', hasNewMessages)
   topic.setAttribute('role', 'listitem')
 
