@@ -110,7 +110,7 @@
   /* В мобильной статистике оставляем только пользователей онлайн сейчас. */
   #pun-index #pun-stats .container {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: 'active';
+    grid-template-areas: "active";
   }
 
   #pun-index #pun-stats .item1,
@@ -124,5 +124,59 @@
   #pun-index #pun-stats .onlinelist {
     margin-top: 0;
     text-align: left;
+  }
+
+  /* Пользовательская панель между мобильной шапкой и категориями. */
+  #pun-index #pun-status {
+    display: block !important;
+    width: 100%;
+    margin: 20px 0 0;
+  }
+
+  #pun-index #pun-status .status-layout {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 76px;
+    padding: 12px;
+    border-radius: 16px;
+    background: var(--color-forum);
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    display: grid;
+  }
+
+  /* Слева: аватар и приветствие. */
+  #pun-index #pun-status .status-user {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* На мобильном оставляем только приветствие. */
+  #pun-index #pun-status .status-user__last-visit {
+    display: none;
+  }
+
+  /* Системную премиум-ссылку скрываем, оставляем донат. */
+  #pun-index #pun-status .status-action--premium {
+    display: none;
+  }
+
+  /* Кнопка поддержки форума. */
+  #pun-index #pun-status .status-action--support {
+    box-sizing: border-box;
+    min-height: 42px;
+    padding: 10px 14px;
+    border: 1px solid var(--color-link);
+    border-radius: 12px;
+    color: var(--color-forum);
+    background: var(--color-link);
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    text-align: center;
+    text-decoration: none;
   }
 }
