@@ -24,7 +24,7 @@
 }
 
 #pun-viewforum .topic-card::before {
-  content: '';
+  content: "";
   width: var(--topic-icon-size);
   aspect-ratio: 1;
   background-image: var(--topic-icon-image);
@@ -33,15 +33,16 @@
   background-size: contain;
 }
 
-#pun-viewforum .topic-card:is(
-  .altstyle,
-  .inew,
-  .isticky,
-  .iclosed,
-  .ipinned,
-  .pinned,
-  .important
-) {
+#pun-viewforum
+  .topic-card:is(
+    .altstyle,
+    .inew,
+    .isticky,
+    .iclosed,
+    .ipinned,
+    .pinned,
+    .important
+  ) {
   --topic-icon-image: var(--icon-inew);
 }
 
@@ -112,6 +113,10 @@
   color: var(--color-categoru-mobile) !important;
 }
 
+#pun-viewforum .topic-card__preview {
+  display: none;
+}
+
 @media screen and (max-width: 700px) {
   #pun-viewforum #pun-main.multipage {
     margin-top: 0;
@@ -133,8 +138,8 @@
       var(--mobile-topic-count-size);
     grid-template-rows: auto auto;
     grid-template-areas:
-      'avatar title date count'
-      'avatar preview preview count';
+      "avatar title date count"
+      "avatar preview preview count";
     gap: 4px 10px;
     min-height: 72px;
     padding: 10px;
@@ -167,7 +172,7 @@
     display: none;
   }
 
-  #pun-viewforum .topic-card__main a[href*='viewtopic.php']:first-of-type {
+  #pun-viewforum .topic-card__main a[href*="viewtopic.php"]:first-of-type {
     display: block;
     min-width: 0;
     overflow: hidden;
@@ -237,6 +242,7 @@
 
   /* Контейнер будет создан JS после получения последнего сообщения. */
   #pun-viewforum .topic-card__preview {
+    display: block;
     grid-area: preview;
     align-self: start;
     min-width: 0;
@@ -250,5 +256,4 @@
     text-transform: none;
     white-space: nowrap;
   }
-
 }
