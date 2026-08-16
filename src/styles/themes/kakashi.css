@@ -2,6 +2,7 @@ html.kakashi {
   --bg: url("https://forumstatic.ru/files/001c/6f/41/59020.webp")
     var(--bg-color);
   --title-img: url("https://forumstatic.ru/files/001c/6f/41/32910.png");
+  --title-img-mobile: none;
   --online: url() var(--color-hover);
   --ava-bg: url("https://forumstatic.ru/files/001c/6f/41/24932.webp");
   --qv-1: url("https://forumstatic.ru/files/001c/6f/41/67544.svg");

@@ -4,6 +4,7 @@ html:has(#pun-admain) {
   --bg: url("https://forumstatic.ru/files/001c/6f/41/92103.webp")
     var(--bg-color);
   --title-img: url("https://forumstatic.ru/files/001c/6f/41/93941.png");
+  --title-img-mobile: none;
   --online: url() #ff5602;
   --icon: url("https://forumstatic.ru/files/001c/6f/41/92920.png");
   --ava-bg: url("https://forumstatic.ru/files/001c/6f/41/49145.webp");

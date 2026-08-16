@@ -2,6 +2,7 @@ html.oto {
   --bg: url("https://forumstatic.ru/files/001c/6f/41/70517.webp")
     var(--bg-color);
   --title-img: url("https://forumstatic.ru/files/001c/6f/41/65220.png");
+  --title-img-mobile: none;
   --online: url() #b2a5c0;
   --ava-bg: url("https://forumstatic.ru/files/001c/6f/41/60364.png");
   --qv-1: url("https://forumstatic.ru/files/001c/6f/41/12237.svg");

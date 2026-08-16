@@ -61,5 +61,6 @@
 @import './pages/messages.css';
 @import './utilities/visibility.css';
 
-/* Последним перекрываем встроенный мобильный CSS MyBB. */
+/* Последними перекрываем встроенный мобильный CSS MyBB. */
 @import './responsive/mobile.css';
+@import './responsive/mobile-header.css';

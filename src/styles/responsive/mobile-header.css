@@ -1,0 +1,27 @@
+/* Отдельная шапка для мобильной версии форума. */
+@media screen and (max-width: 700px) {
+  /* Скрываем системную шапку, название форума и старое содержимое объявления. */
+  #html-header,
+  #pun-title,
+  #pun-announcement div.container {
+    margin: 0 auto !important;
+    overflow-x: auto !important;
+    display: none;
+  }
+
+  /* Показываем мобильную картинку темы на всю ширину экрана. */
+  #pun-announcement {
+    display: block !important;
+    order: -1;
+    position: relative !important;
+    inset: auto !important;
+    width: calc(100% + var(--main-p) * 2) !important;
+    height: auto !important;
+    aspect-ratio: 3 / 2;
+    margin: calc(0px - var(--main-p)) 0 0 calc(0px - var(--main-p)) !important;
+    background-image: var(--title-img-mobile);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+}
