@@ -148,71 +148,9 @@
     text-align: left;
   }
 
-  /* Пользовательская панель между мобильной шапкой и категориями. */
+  /* Пользовательская панель остаётся только в десктопной версии. */
   #pun-index #pun-status {
-    display: block !important;
-    width: 100%;
-    margin: 20px 0 0;
-  }
-
-  #pun-index #pun-status .status-layout {
-    box-sizing: border-box;
-    width: 100%;
-    min-height: 76px;
-    padding: 12px;
-    border-radius: 16px;
-    background: var(--color-forum);
-    align-items: center;
-    gap: 12px;
-    display: flex;
-  }
-
-  /* Аватар и приветствие образуют один надёжный горизонтальный ряд. */
-  #pun-index #pun-status .status-user {
-    width: 100%;
-    min-width: 0;
-    align-items: center;
-    gap: 12px;
-    display: flex;
-  }
-
-  #pun-index #pun-status .status-user__avatar {
-    flex: 0 0 46px;
-  }
-
-  #pun-index #pun-status .status-user__text {
-    min-width: 0;
-    flex: 1 1 auto;
-    align-items: center;
-    justify-content: center;
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    text-align: center;
-  }
-
-  #pun-index #pun-status .status-user__greeting {
-    width: 100%;
-    color: var(--color-txt1) !important;
-    font: 700 clamp(8px, 2.4vw, 10px)/1.3 var(--font) !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    overflow: hidden;
-    overflow-wrap: normal;
-    word-break: normal;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    text-align: center;
-  }
-
-  #pun-index #pun-status .status-actions {
     display: none !important;
-  }
-
-  /* На мобильном оставляем только приветствие. */
-  #pun-index #pun-status .status-user__last-visit {
-    display: none;
   }
 
 }

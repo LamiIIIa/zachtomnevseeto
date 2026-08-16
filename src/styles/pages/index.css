@@ -171,6 +171,11 @@
 }
 
 @media screen and (max-width: 700px) {
+  /* Первая категория начинается почти сразу после мобильной шапки. */
+  #pun-index .category--first h2 {
+    margin-top: 6px;
+  }
+
   /* На мобильных все форумы располагаются одной вертикальной колонкой. */
   #pun-index .forum-list {
     grid-template-columns: minmax(0, 1fr);
