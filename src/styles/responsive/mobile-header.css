@@ -3,6 +3,10 @@
   display: none;
 }
 
+.mobile-important-links {
+  display: none;
+}
+
 @media screen and (max-width: 700px) {
   /* Скрываем системную шапку, название форума и старое содержимое объявления. */
   #html-header,
@@ -114,5 +118,43 @@
 
   .mobile-theme-picker #theme_switcher li input::before {
     margin-right: 0;
+  }
+
+  /* Важные ссылки закреплены в левом нижнем углу мобильной шапки. */
+  #pun-announcement > .mobile-important-links {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    z-index: 3;
+    display: block;
+  }
+
+  .mobile-important-links__button {
+    appearance: none;
+    box-sizing: border-box;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid rgb(255 255 255 / 30%);
+    border-radius: 12px;
+    color: white;
+    background: rgb(0 0 0 / 55%);
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    cursor: pointer;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+
+  .mobile-important-links__button::before {
+    content: '↑';
+    font: 600 22px/1 var(--font);
+    transition: transform 0.2s ease;
+  }
+
+  .mobile-important-links__button[aria-expanded='true']::before {
+    transform: rotate(180deg);
   }
 }
