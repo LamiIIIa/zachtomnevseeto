@@ -91,5 +91,6 @@
   }
   .FNTslider {
     border: 1px solid var(--color-categoru-mobile);
+    width: 90px !important;
   }
 }

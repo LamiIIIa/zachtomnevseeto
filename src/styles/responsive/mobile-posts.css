@@ -391,4 +391,97 @@
     top: 15px;
     left: 30px;
   }
+
+  #pun-viewtopic .post-links ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    margin: 5px;
+    padding: 8px 10px;
+  }
+
+  #pun-viewtopic .post-links li {
+    margin: 0 !important;
+    padding: 0 10px;
+    display: flex;
+  }
+
+  #pun-viewtopic .post-links a {
+    box-sizing: border-box;
+    width: 34px;
+    height: 34px;
+    margin: 0;
+    padding: 0;
+
+    color: var(--color-link) !important;
+    background: var(--color-forum);
+    border: 1px solid var(--color-link);
+    border-radius: 5px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 0 !important;
+    letter-spacing: 0;
+  }
+  #pun-viewtopic .post-links a::before {
+    position: static;
+    width: auto;
+    height: auto;
+
+    background: none;
+    border-radius: 0;
+
+    opacity: 1;
+    transform: none;
+    transition: none;
+
+    color: currentColor;
+    font: 400 20px/1 var(--mat);
+  }
+  #pun-viewtopic .post-links a[href*="profile.php"]::before {
+    content: "\e7fd";
+  }
+  #pun-viewtopic .post-links a[href*="messages.php?action=new"]::before {
+    content: "\e0be";
+  }
+  #pun-viewtopic .post-links a[href^="mailto:"]::before {
+    content: "\e158";
+  }
+  #pun-viewtopic .post-links .pl-website a::before {
+    content: "\e894";
+  }
+  #pun-viewtopic .post-links a[href*="delete.php"]::before {
+    content: "\e872";
+  }
+  #pun-viewtopic .post-links a[href*="edit.php"]::before {
+    content: "\e3c9";
+  }
+  #pun-viewtopic .post-links a[href^="javascript:quote"]::before {
+    content: "\e244";
+  }
+
+  #pun-viewtopic .post-links a:hover,
+  #pun-viewtopic .post-links a:active,
+  #pun-viewtopic .post-links a:focus-visible {
+    color: var(--color-forum) !important;
+    background: var(--color-link);
+  }
+
+  #pun-viewtopic .post-links a:focus-visible {
+    outline: 2px solid var(--color-link);
+    outline-offset: 2px;
+  }
+
+  /* Линия над датой */
+  #pun-viewtopic .post > h3 {
+    border-top: 1px solid var(--color-link);
+  }
+  /* Нумерация постов */
+  #pun-viewtopic .post > h3 > span > strong {
+    display: none !important;
+  }
 }
