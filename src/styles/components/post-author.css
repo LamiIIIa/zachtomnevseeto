@@ -206,7 +206,7 @@
 }
 
 .pa-posts .fld-name::before {
-  content: "\ue0b7";
+  content: "\e705";
   color: var(--color-link);
   font: 400 16px/1 var(--mat);
 }
