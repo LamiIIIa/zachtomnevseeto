@@ -675,4 +675,9 @@
     border: 1px solid var(--color-link);
     border-radius: 10px;
   }
+
+  .post-sig {
+    border-top: 1px solid var(--color-link);
+    padding-top: 10px;
+  }
 }
