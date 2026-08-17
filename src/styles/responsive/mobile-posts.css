@@ -65,7 +65,7 @@
       transparent 34px
     );
     display: grid;
-    grid-template-columns: 48px 42px 42px minmax(60px, 1fr) max-content;
+    grid-template-columns: 48px 42px 42px 150px minmax(0, 1fr);
     grid-template-rows: 34px 52px auto;
     column-gap: 6px;
     row-gap: 8px;
@@ -283,14 +283,15 @@
 
   #pun-viewtopic .pa-fld3 {
     white-space: normal;
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
     grid-area: 2/5;
-    place-self: center;
-    width: 150px;
+    place-self: center stretch;
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     padding: 0;
     margin: 0 !important;
-    text-align: end;
+    text-align: left;
   }
 
   #pun-viewtopic .pa-fld4 {
