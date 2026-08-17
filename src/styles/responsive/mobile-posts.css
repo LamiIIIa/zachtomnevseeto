@@ -417,6 +417,10 @@
     box-shadow: 1px 3px 5px var(--shedow1);
   }
 
+  .quote-box > blockquote {
+    margin: 20px 0 !important;
+  }
+
   .punbb .quote-box:not(.spoiler-box) > cite::before,
   .punbb .quote-box:not(.spoiler-box) > cite::after {
     content: none !important;
