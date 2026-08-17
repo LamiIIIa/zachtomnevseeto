@@ -300,6 +300,12 @@ del:hover {
   content: "\e3b5";
 }
 
+.editor-toolbar-button--dice::before {
+  content: "\eb40";
+  color: currentColor;
+  font: 400 20px/1 var(--mat);
+}
+
 /* Исходный селектор #button-Change&#209;ase невалиден и браузером игнорируется. */
 
 #button-sp-vote:before {
@@ -376,6 +382,46 @@ del:hover {
     width: 34px !important;
     min-width: 34px;
     height: 34px;
+  }
+
+  /* Контейнер кнопок отправки и предпросмотра. */
+  #post .formsubmit,
+  #post-form .formsubmit {
+    box-sizing: border-box;
+    position: static !important;
+    float: none !important;
+    visibility: visible !important;
+    width: 100%;
+    height: auto;
+    margin: 12px 0 !important;
+    padding: 0;
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 8px;
+    opacity: 1;
+  }
+
+  /* Отправить и Просмотр. */
+  #post .formsubmit input[type="submit"],
+  #post .formsubmit input[type="button"],
+  #post .formsubmit button,
+  #post-form .formsubmit input[type="submit"],
+  #post-form .formsubmit input[type="button"],
+  #post-form .formsubmit button {
+    box-sizing: border-box;
+    position: static !important;
+    float: none !important;
+    visibility: visible !important;
+    flex: 1 1 140px;
+    width: auto;
+    min-width: 0;
+    min-height: 44px;
+    margin: 0 !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
   }
 }
 

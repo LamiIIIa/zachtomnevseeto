@@ -150,36 +150,49 @@ function getLegacyDraftStorageKey(textarea) {
 
 function initDiceButton(root) {
   const toolbars = [];
-  if (root instanceof Element && root.id === "form-buttons")
+
+  if (root instanceof Element && root.id === "form-buttons") {
     toolbars.push(root);
+  }
+
   toolbars.push(...root.querySelectorAll("#form-buttons"));
 
   toolbars.forEach((toolbar) => {
-    if (toolbar.querySelector("#button-dice")) return;
+    let cell = toolbar.querySelector("#button-dice");
 
-    const row = toolbar.querySelector("tr");
-    if (!row) return;
+    if (!cell) {
+      const row = toolbar.querySelector("tr");
+      if (!row) return;
 
-    const cell = document.createElement("td");
+      cell = document.createElement("td");
+      cell.id = "button-dice";
+      row.append(cell);
+    }
+
+    if (cell.dataset.diceButtonReady) return;
+
     const button = document.createElement("button");
 
-    cell.id = "button-dice";
     cell.title = t("editor.dice.title");
     cell.dataset.i18nAttr = "title:editor.dice.title";
+
     button.type = "button";
     button.className = "editor-toolbar-button editor-toolbar-button--dice";
     button.setAttribute("aria-label", t("editor.dice.title"));
     button.dataset.i18nAttr = "aria-label:editor.dice.title";
-    button.innerHTML = '<span aria-hidden="true">casino</span>';
-    button.addEventListener("click", () => {
+
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+
       const textarea =
         toolbar.closest("form")?.querySelector(EDITOR_SELECTOR) ||
         document.querySelector(EDITOR_SELECTOR);
+
       if (textarea) rollDice(textarea);
     });
 
-    cell.append(button);
-    row.append(cell);
+    cell.replaceChildren(button);
+    cell.dataset.diceButtonReady = "true";
   });
 
   if (typeof window.dice !== "function") {
