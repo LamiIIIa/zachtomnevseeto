@@ -52,6 +52,7 @@
   }
 
   #pun-viewtopic .post-author ul {
+    position: relative;
     box-sizing: border-box;
     width: 100% !important;
     margin: 0;
@@ -170,14 +171,12 @@
   }
 
   #pun-viewtopic .pa-online {
-    position: relative !important;
-    grid-column: 1;
-    grid-row: 2;
-    align-self: start;
-    justify-self: end;
+    position: absolute !important;
+    top: 45px;
+    left: 46px;
     width: 8px !important;
     height: 8px !important;
-    margin: 7px 8px 0 0;
+    margin: 0;
     border: 1px solid var(--color-forum);
     background-size: cover;
     box-shadow: none;
@@ -227,6 +226,10 @@
     width: 42px !important;
     margin: 8px 0 0 !important;
     padding: 0;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     gap: 3px;
   }
 
@@ -288,20 +291,47 @@
   }
 
   #pun-viewtopic .pa-fld5 {
+    grid-column: 1 / 4;
+    grid-row: 5;
+    justify-self: start;
+    margin: 0 !important;
+    padding: 4px 7px;
+  }
+
+  #pun-viewtopic .pa-ua {
+    position: static !important;
+    box-sizing: border-box;
     grid-column: 4 / 6;
     grid-row: 3;
+    align-self: start;
     justify-self: center;
+    width: 100%;
     margin: 0 !important;
     padding: 0;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #pun-viewtopic .pa-ua .user-agent {
+    display: flex;
     flex-flow: row nowrap;
     align-items: center;
     justify-content: center;
     gap: 8px;
   }
 
-  #pun-viewtopic .pa-fld5 img {
+  #pun-viewtopic .pa-ua img,
+  #pun-viewtopic .pa-ua i {
+    display: block;
     width: 22px;
     height: 22px;
+    margin: 0;
+    font-size: 22px;
+    line-height: 22px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
     object-fit: contain;
   }
 
