@@ -1,14 +1,15 @@
 /* profile in post
 ------------------------------------------------------------------------------------*/
+/* Блок аватара */
 .post-author {
   width: var(--prof-w);
-  min-height: 85px;
-  position: relative;
-  background: var(--ava-bg) top no-repeat
-    var(--color-avatop);
+  background: var(--ava-bg) top no-repeat var(--color-avatop);
   border-top: 0px solid var(--color-txt1);
-  margin-bottom: 20px;
+  min-height: 85px;
   box-shadow: -5px 5px 10px var(--shedow1);
+  margin-bottom: 20px;
+  position: relative;
+  border-radius: 10px 30% 10% 10%;
 }
 
 .post-author:before {
@@ -21,20 +22,21 @@
   height: 6px;
 }
 
+/* Белая часть - список */
 .post-author ul {
-  display: flex;
-  flex-wrap: wrap;
   text-align: center;
-  justify-content: space-around;
   width: var(--prof-w);
-  gap: 0px;
-  padding: 10px;
   box-sizing: border-box;
-  margin: 125px 0 0px 0;
   border: 1px solid var(--color-txt2);
   background: var(--color-forum);
-  border-radius: 0% 50% 0px 0px;
+  border-radius: 0% 50% 10% 10%;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 0;
+  margin: 125px 0 0;
+  padding: 10px;
   list-style: none;
+  display: flex;
 }
 
 #pun-searchposts .post-author ul {
@@ -48,19 +50,20 @@
 }
 
 /* author & title */
+/* Ник */
 .pa-author {
-    font: 600 18px/15px var(--font-1);
-    height: 40px;
-    position: absolute !important;
-    top: 0;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    letter-spacing: 0.05em;
-    padding: 0 10px;
-    box-sizing: border-box;
-    text-align: center;
-    width: 100%;
+  font: 600 18px/15px var(--font-1);
+  letter-spacing: 0.05em;
+  box-sizing: border-box;
+  text-align: center;
+  justify-content: center;
+  align-items: flex-end;
+  width: 100%;
+  height: 40px;
+  padding: 0 10px;
+  display: flex;
+  top: 10px;
+  position: absolute !important;
 }
 
 .pa-author strong {
@@ -84,19 +87,20 @@
   top: 5px;
 } 
 
+/* Статус */
 .pa-title {
-  position: absolute !important;
-  top: 45px;
   height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
   color: var(--color-txt3);
   font: 600 8px var(--font) banner;
   letter-spacing: 0.15em;
-  padding: 0 10px;
   box-sizing: border-box;
   z-index: 100;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 10px;
+  display: flex;
+  top: 55px;
+  position: absolute !important;
 }
 
 
@@ -107,12 +111,15 @@
 
 .pa-avatar img,
 #pa-avatar img {
-  max-width: 180px;
-    max-height: 180px;
-    position: relative;
-    border: none;
   z-index: 100;
+  max-width: 180px;
+  max-height: 180px;
   box-shadow: -5px 5px 10px var(--shedow1);
+  border: none;
+  position: relative;
+  border: 1px solid var(--color-link);
+  padding: 3px;
+  border-radius: 10px;
 }
 
 /* posts/respect */
@@ -279,18 +286,18 @@ plash i {
 
 /* online */
 .pa-online {
-   position: absolute !important;
-    top: 70px;
-    right: 30px;
-    background: var(--online) no-repeat center bottom;
-    height: 15px;
-    width: 15px !important;
-    border-radius: 50%;
-    font-size: 0;
-    overflow: hidden;
-    transition: all .5s;
-    box-shadow: -1px 1px 5px var(--color-onlinesadow);
+  background: var(--online) no-repeat center bottom;
+  height: 15px;
+  box-shadow: -1px 1px 5px var(--color-onlinesadow);
   z-index: 400;
+  border-radius: 50%;
+  font-size: 0;
+  transition: all 0.5s;
+  top: 0px;
+  left: 0px;
+  overflow: hidden;
+  width: 15px !important;
+  position: absolute !important;
 }
 
 

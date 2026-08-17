@@ -1,66 +1,5 @@
 /* Тема: #pun-viewtopic, .topic, .post, .post-author, .post-content. */
 
-/* Блок аватара */
-.post-author {
-  width: var(--prof-w);
-  background: var(--ava-bg) top no-repeat var(--color-avatop);
-  border-top: 0px solid var(--color-txt1);
-  min-height: 85px;
-  box-shadow: -5px 5px 10px var(--shedow1);
-  margin-bottom: 20px;
-  position: relative;
-  border-radius: 10px 30% 10% 10%;
-}
-
-/* Белая часть - список */
-.post-author ul {
-  text-align: center;
-  width: var(--prof-w);
-  box-sizing: border-box;
-  border: 1px solid var(--color-txt2);
-  background: var(--color-forum);
-  border-radius: 0% 50% 10% 10%;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  gap: 0;
-  margin: 125px 0 0;
-  padding: 10px;
-  list-style: none;
-  display: flex;
-}
-
-/* Статус */
-.pa-title {
-  height: 30px;
-  color: var(--color-txt3);
-  font: 600 8px var(--font) banner;
-  letter-spacing: 0.15em;
-  box-sizing: border-box;
-  z-index: 100;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 0 10px;
-  display: flex;
-  top: 55px;
-  position: absolute !important;
-}
-
-/* Ник */
-.pa-author {
-  font: 600 18px/15px var(--font-1);
-  letter-spacing: 0.05em;
-  box-sizing: border-box;
-  text-align: center;
-  justify-content: center;
-  align-items: flex-end;
-  width: 100%;
-  height: 40px;
-  padding: 0 10px;
-  display: flex;
-  top: 10px;
-  position: absolute !important;
-}
-
 /* Протектор. На основном форуме сменить номер fld */
 
 .pa-fld1 {
@@ -71,44 +10,6 @@
   position: absolute !important;
 }
 
-.pa-online {
-  background: var(--online) no-repeat center bottom;
-  height: 15px;
-  box-shadow: -1px 1px 5px var(--color-onlinesadow);
-  z-index: 400;
-  border-radius: 50%;
-  font-size: 0;
-  transition: all 0.5s;
-  top: 0px;
-  left: 0px;
-  overflow: hidden;
-  width: 15px !important;
-  position: absolute !important;
-}
-
-.pa-avatar img,
-#pa-avatar img {
-  z-index: 100;
-  max-width: 180px;
-  max-height: 180px;
-  box-shadow: -5px 5px 10px var(--shedow1);
-  border: none;
-  position: relative;
-  border-radius: 10px;
-}
-
-.pa-avatar img,
-#pa-avatar img {
-  z-index: 100;
-  max-width: 180px;
-  max-height: 180px;
-  box-shadow: -5px 5px 10px var(--shedow1);
-  border: none;
-  position: relative;
-  border: 1px solid var(--color-link);
-  padding: 3px;
-  border-radius: 10px;
-}
 /* Нумерация страниц*/
 
 #pun-main .pagelink strong,
