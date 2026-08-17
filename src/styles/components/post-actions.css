@@ -153,20 +153,9 @@
 .subscribelink,
 #pun-viewforum .modmenu strong,
 .postlink .button {
-  font: 700 10px var(--font)!important;
+  font: 700 10px var(--font) !important;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-}
-
-.post h3 span a,
-.post-links a,
-.postlink a,
-.postlink,
-.pl-email a,
-.postlink .button,
-.subscribelink a,
-.editpole a {
-  color: var(--color-txt3) !important;
 }
 
 .post h3 span,
@@ -180,14 +169,28 @@
   position: relative;
   z-index: 9;
 }
-
+/* Здесь поменять на цвет форума */
 .post h3 span,
-.linkst, .linksb,
+.linkst,
+.linksb,
 .endpost .post-links,
 #pun-messages .post-links {
-  background: var(--color-sub);
+  background: var(--color-forum);
   padding: 8px 10px;
-  color: var(--color-txt3);
+  color: var(--color-txt1);
+}
+
+.post h3 span a,
+.post-links a,
+.postlink a,
+.postlink,
+.pl-email a,
+.postlink .button,
+.subscribelink a,
+.editpole a,
+#pun-main > div.linksb > div.pagelink > a,
+#pun-main > div.linkst > div.pagelink > a {
+  color: var(--color-link) !important;
 }
 
 .post h3 span,
@@ -199,14 +202,14 @@
 }
 
 .endpost .post-links {
-    margin-right: -20px;
+  margin-right: -20px;
 }
 
 .linksb,
 .linkst {
-    padding-top: 4px;
-    padding-bottom: 4px;
-    box-sizing: border-box;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  box-sizing: border-box;
 }
 
 #pun-viewtopic .linkst,
@@ -219,29 +222,39 @@
 }
 
 #pun-multimove .post {
-    margin-bottom: 30px;
+  margin-bottom: 30px;
 }
 
 .linkst {
   margin-bottom: 10px;
 }
 
-.permalink, .postlink a, .subscribelink {position: relative;}
-.post-links a:before, .permalink:before, .postlink a:before, .subscribelink:before {
-    content: '';
-    position: absolute;
-    width: 50px;
-    height: 1px;
-    border-radius: 50%;
-    background: var(--color-txt2);
-    left: calc(50% - 5px);
-    bottom: -5px;
-    transform: translateY(-10px);
-    transition: all .5s;
-    opacity: 0;
+.permalink,
+.postlink a,
+.subscribelink {
+  position: relative;
+}
+.post-links a:before,
+.permalink:before,
+.postlink a:before,
+.subscribelink:before {
+  content: "";
+  position: absolute;
+  width: 50px;
+  height: 1px;
+  border-radius: 50%;
+  background: var(--color-txt2);
+  left: calc(50% - 5px);
+  bottom: -5px;
+  transform: translateY(-10px);
+  transition: all 0.5s;
+  opacity: 0;
 }
 
-.post-links a:hover:before, .permalink:hover:before, .postlink a:hover:before, .subscribelink:hover:before {
-    transform: translate(-15px, 1px);
-    opacity: 1;
+.post-links a:hover:before,
+.permalink:hover:before,
+.postlink a:hover:before,
+.subscribelink:hover:before {
+  transform: translate(-15px, 1px);
+  opacity: 1;
 }
