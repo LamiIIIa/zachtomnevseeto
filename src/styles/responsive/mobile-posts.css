@@ -32,18 +32,17 @@
     gap: 0;
   }
 
-  #pun-viewtopic .post-author,
+  pun-viewtopic .post-author,
   #pun-searchposts .post-author {
     box-sizing: border-box;
-    width: 100% !important;
     min-height: 0;
-    margin: 0 !important;
+    box-shadow: -5px 5px 15px var(--shedow1);
+    background: var(--color-forum) !important;
+    border-radius: 10px;
     padding: 0;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
     overflow: visible;
+    width: 100% !important;
+    margin: 0 !important;
   }
 
   #pun-viewtopic .post-author::before,
@@ -58,7 +57,7 @@
     margin: 0;
     padding: 0 10px 10px;
     border: 0;
-    border-radius: 0;
+    border-radius: 10px;
     background: linear-gradient(
       to bottom,
       var(--color-avatop) 0,
@@ -270,11 +269,16 @@
   }
 
   #pun-viewtopic .pa-fld2 {
-    grid-column: 1 / 4;
-    grid-row: 3;
-    align-self: center;
-    justify-self: start;
+    grid-area: 3/1 / auto/4;
+    place-self: center start;
     margin: 0 !important;
+    background: var(--color-link);
+    border-radius: 10px;
+    color: var(--color-forum);
+  }
+
+  #pun-viewtopic .pa-fld2 a {
+    color: var(--color-forum);
   }
 
   #pun-viewtopic .pa-fld3 {
