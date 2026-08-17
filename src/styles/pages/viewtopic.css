@@ -20,8 +20,7 @@
 }
 
 @media screen and (max-width: 700px) {
-  .button,
-  .hvStickerPackModalTab {
+  .button .hvStickerPackModalTab {
     display: none;
   }
 
