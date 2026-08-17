@@ -208,7 +208,7 @@
 .pa-posts .fld-name::before {
   content: "\e705";
   color: var(--color-link);
-  font: 400 16px/1 var(--mat);
+  font: 400 24px/1 var(--mat);
 }
 
 .pa-respect img {
