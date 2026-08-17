@@ -85,9 +85,11 @@
     outline-offset: 2px;
   }
 
-  .FNTslider,
   .FNTslider .before,
   .FNTslider .thumb {
     background: var(--color-categoru-mobile);
+  }
+  .FNTslider {
+    border: 1px solid var(--color-categoru-mobile);
   }
 }

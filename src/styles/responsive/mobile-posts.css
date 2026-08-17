@@ -189,8 +189,8 @@
     grid-row: 2;
     align-self: center;
     justify-self: center;
-    width: 44px;
-    height: 36px;
+    width: 150px;
+    height: auto;
     margin: 0;
     padding: 0;
     display: flex !important;
@@ -207,13 +207,13 @@
   #pun-viewtopic .pa-fld1 img,
   #pun-viewtopic .pa-fld1 .band {
     box-sizing: border-box;
-    width: 44px !important;
-    height: 36px !important;
-    max-width: 44px !important;
-    max-height: 36px !important;
+    width: 150px !important;
+    height: auto !important;
+    max-width: 150px !important;
+    max-height: none;
     margin: 0;
     padding: 0;
-    background: none !important;
+    background: 0 0 !important;
     box-shadow: none;
     mix-blend-mode: normal;
     object-fit: contain;
@@ -282,11 +282,12 @@
     grid-row: 2;
     align-self: center;
     justify-self: center;
-    width: max-content;
-    min-width: max-content;
+    width: 100%;
+    min-width: 0;
     margin: 0 !important;
     padding: 0;
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: break-word;
   }
 
   #pun-viewtopic .pa-fld4 {
