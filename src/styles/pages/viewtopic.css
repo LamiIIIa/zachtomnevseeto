@@ -19,6 +19,11 @@
   border-radius: 3px;
 }
 
+.quote-box:before,
+.code-box:before {
+  display: none;
+}
+
 @media screen and (max-width: 700px) {
   #togglePreview {
     display: none;
