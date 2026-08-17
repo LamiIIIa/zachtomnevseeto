@@ -24,4 +24,31 @@
   .hvStickerPackModalTab {
     display: none;
   }
+
+  #pun-viewtopic .linkst,
+  #pun-searchposts .linkst,
+  #pun-multimove .linkst {
+    max-width: none;
+    color: var(--color-txt1);
+    background: var(--color-forum);
+    border: 0;
+    border-bottom: 1px solid var(--color-categoru-mobile);
+  }
+
+  #pun-main .pagelink strong,
+  #pun-main .pagelink a {
+    color: var(--color-txt1);
+  }
+
+  .postlink a {
+    color: var(--color-link) !important;
+  }
+
+  .linksb {
+    max-width: none;
+    color: var(--color-txt1);
+    background: var(--color-forum);
+    border: 0;
+    border-bottom: 1px solid var(--color-categoru-mobile);
+  }
 }
