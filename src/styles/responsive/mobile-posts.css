@@ -51,7 +51,19 @@
     content: none;
   }
 
-  #pun-viewtopic .post-author ul,
+  #pun-viewtopic .post-author ul {
+    display: grid;
+    grid-template-columns: 50px 34px minmax(0, 1fr) 42px 42px;
+    grid-template-rows: 34px auto auto auto;
+    gap: 6px;
+    align-items: center;
+
+    width: 100% !important;
+    margin: 0;
+    padding: 0 10px 10px;
+    box-sizing: border-box;
+  }
+
   #pun-searchposts .post-author ul {
     box-sizing: border-box;
     width: 100% !important;
