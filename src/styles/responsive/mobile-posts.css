@@ -488,4 +488,34 @@
   #pun-viewtopic .post > h3 > span > strong {
     display: none !important;
   }
+
+  /* Post content*/
+
+  /* Старые таблицы, использованные как каркас поста */
+  #pun-viewtopic .post-content table[style*="table-layout"] {
+    box-sizing: border-box;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    table-layout: auto !important;
+  }
+
+  #pun-viewtopic
+    .post-content
+    table[style*="table-layout"]
+    :is(tbody, tr, td, th) {
+    box-sizing: border-box;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  #pun-viewtopic .post-content table[style*="table-layout"] :is(p, span, a) {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
 }
