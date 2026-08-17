@@ -471,14 +471,14 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: flex-end;
-    gap: 6px;
+    gap: 0px;
     margin: 5px;
     padding: 8px 10px;
   }
 
   #pun-viewtopic .post-links li {
     margin: 0 !important;
-    padding: 0 10px;
+    padding: 0 5px;
     display: flex;
   }
 
