@@ -1,0 +1,25 @@
+.nvsscroll .news-item {
+  padding: 8px 10px;
+}
+
+.nvsscroll .news-item + .news-item {
+  border-top: 1px solid color-mix(in srgb, var(--color-nav) 25%, transparent);
+}
+
+.nvsscroll .news-item__date {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--color-link);
+  font-weight: 600;
+}
+
+.nvsscroll .news-item__text,
+.nvsscroll .news-item__status {
+  margin: 0;
+  color: var(--color-nav);
+  white-space: pre-line;
+}
+
+.nvsscroll .news-item__status {
+  padding: 12px;
+}

@@ -1,5 +1,9 @@
 import { t } from '../i18n/index.js'
+import { initEditors } from './editor/index.js'
+import { initForumElements } from './forum-elements.js'
 import { initMobileNavigation } from './mobile-navigation.js'
+import { initRadars } from './radar.js'
+import { initScrollControls } from './scroll-controls.js'
 
 export function initCommon({ root }) {
   // Отмечаем, что новый JavaScript-дизайн запущен на текущей странице.
@@ -10,6 +14,12 @@ export function initCommon({ root }) {
 
   // Создаём мобильную навигацию до подключения обработчиков раскрывающихся меню.
   initMobileNavigation({ root })
+
+  // Перенесённые из HTML-верх/низ функции работают на всех подходящих страницах.
+  initForumElements(root)
+  initEditors(root)
+  initRadars(root)
+  initScrollControls()
 
   // Переносим партнёрские баннеры из скрытого системного футера в видимый.
   initFooterBanners(root)

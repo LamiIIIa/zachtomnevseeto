@@ -33,4 +33,53 @@ export default {
   footer: {
     banners: 'Banners',
   },
+  header: {
+    news: {
+      loading: 'Loading news…',
+      unavailable: 'News is temporarily unavailable',
+      empty: 'There is no news yet',
+    },
+  },
+  scroll: {
+    toTop: 'Scroll to the top',
+    toBottom: 'Scroll to the bottom',
+  },
+  forumElements: {
+    noNewMessages: 'No new messages',
+    newMessages: 'New messages available',
+    importantTopic: 'Important topic',
+    closedTopic: 'Closed topic',
+    lastPost: 'Go to the latest post',
+    submit: 'Submit',
+    preview: 'Preview',
+    online: 'Online',
+    defaultAvatar: 'Default avatar',
+  },
+  editor: {
+    characters: 'Characters written:',
+    color: 'Text color: {{color}}',
+    dice: {
+      title: 'Dice',
+      countPrompt: 'Number of dice',
+      countError: 'That many dice cannot be rolled.',
+      sidesPrompt: 'How many sides should each die have?',
+      sidesError: 'A die cannot have that many sides.',
+      rollDescription: 'The player rolled {{count}} dice with {{sides}} sides.',
+      result: 'Roll result: ({{rolls}}) = {{total}}',
+    },
+  },
+  radar: {
+    labels: ['Nin', 'Tai', 'Gen', 'Tactics', 'Knowledge', 'Strength', 'Speed', 'Chakra', 'Health', 'Fuin'],
+    summary: 'Character stats: {{values}}',
+    invalid: 'The chart could not be built. Check the radar tag values.',
+  },
+  profile: {
+    editLocked: 'The forum administrator has disabled profile editing for your group.',
+  },
+  mutualPromotion: {
+    copy: 'Mutual promotion',
+    copied: 'Copied',
+    copyError: 'Could not copy',
+    backlink: 'Mutual promotion',
+  },
 }

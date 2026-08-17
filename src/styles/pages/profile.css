@@ -1,1 +1,11 @@
 /* Профиль: #pun-profile, .formal, .id-N, .groupN. */
+
+.profile-lock-notice {
+  color: var(--color-hover);
+  font-weight: 700;
+}
+
+.forum-design-profile :is(input, button):disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}

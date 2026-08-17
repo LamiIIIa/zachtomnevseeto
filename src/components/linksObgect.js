@@ -1,19 +1,23 @@
+import { forumConfig } from '../config/forum.js'
+
+const primaryOrigin = forumConfig.primaryOrigin
+
 const lonkObj = {
   linkForMobHead: {
     maketLD: {
-      link: "https://akatsukigood.forum.cool/viewtopic.php?id=68#p245",
+      link: `${primaryOrigin}/viewtopic.php?id=68#p245`,
       title: "Шаблон личного дела",
     },
     storyline: {
-      link: "https://akatsukigood.forum.cool/viewtopic.php?id=99",
+      link: `${primaryOrigin}/viewtopic.php?id=99`,
       title: "Сюжет",
     },
     looking: {
-      link: "https://akatsukigood.forum.cool/viewtopic.php?id=333",
+      link: `${primaryOrigin}/viewtopic.php?id=333`,
       title: "Игроки ищут!",
     },
     calc: {
-      link: "https://akatsukigood.forum.cool/pages/kalkulyator",
+      link: `${primaryOrigin}/pages/kalkulyator`,
       title: "Калькулятор",
     },
     map: {

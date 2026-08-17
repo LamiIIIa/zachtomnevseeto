@@ -21,6 +21,8 @@ const pageInitializers = {
   viewforum: initForumView,
   viewtopic: initTopicView,
   profile: initProfile,
+  changepass: initProfile,
+  upavatar: initProfile,
   userlist: initUserList,
   search: initSearch,
   messages: initMessages,

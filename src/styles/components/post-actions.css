@@ -36,6 +36,28 @@
   display: inline-block;
 }
 
+.post-link-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-txt3);
+  font: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+}
+
+.post-link-button:hover,
+.post-link-button:focus-visible {
+  color: var(--color-link);
+}
+
+.clipboard-fallback {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+}
+
 .pl-email {
   float: left;
 }

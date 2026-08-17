@@ -1,0 +1,51 @@
+.radar-wrapper {
+  box-sizing: border-box;
+  width: min(100%, 520px);
+  margin: 20px auto;
+  color: var(--color-txt1);
+}
+
+.radar {
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.radar-chart {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.radar-circle,
+.radar-line {
+  fill: none;
+  stroke: color-mix(in srgb, var(--color-txt1) 32%, transparent);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.radar-area {
+  fill: color-mix(in srgb, var(--color-link) 32%, transparent);
+  stroke: var(--color-link);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.radar-label {
+  fill: currentColor;
+  font: 600 12px var(--font);
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+@media screen and (max-width: 700px) {
+  .radar-wrapper {
+    width: min(100%, 420px);
+    padding-inline: 14px;
+  }
+
+  .radar-label {
+    font-size: 11px;
+  }
+}

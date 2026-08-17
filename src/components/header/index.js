@@ -1,6 +1,7 @@
 import { applyStoredTheme, initThemeSwitcher } from './theme-switcher.js'
 import { initUserStatus } from './status.js'
 import { initMobileImportantLinks } from './mobile-important-links.js'
+import { initHeaderNews } from './news.js'
 
 export { applyStoredTheme }
 
@@ -17,5 +18,6 @@ export function initHeader({ root }) {
 
   initThemeSwitcher(announcement)
   initMobileImportantLinks(announcement)
+  initHeaderNews(announcement)
   initUserStatus(root)
 }
