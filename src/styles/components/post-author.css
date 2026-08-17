@@ -336,3 +336,7 @@ plash i {
   width: 15px !important;
   position: absolute !important;
 }
+
+.pa-fld1 img {
+  filter: brightness(0) saturate(100%) invert(100%) !important;
+}
