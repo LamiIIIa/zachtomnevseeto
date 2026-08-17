@@ -8,13 +8,13 @@ textarea {
 }
 
 del {
-    filter: blur(3px);
-    text-decoration: none;
-    transition:.33s;
+  filter: blur(3px);
+  text-decoration: none;
+  transition: 0.33s;
 }
 del:hover {
-    filter: initial;
-    transition:.63s;
+  filter: initial;
+  transition: 0.63s;
 }
 
 /* answer form
@@ -39,11 +39,11 @@ del:hover {
 }
 
 #pun-edit #post .areafield span.input a {
-    margin: 10px 0;
-    display: block;
-    text-transform: lowercase;
-    letter-spacing: 0.5px;
-    font: 500 11px var(--font) text;
+  margin: 10px 0;
+  display: block;
+  text-transform: lowercase;
+  letter-spacing: 0.5px;
+  font: 500 11px var(--font) text;
 }
 
 #pun-edit #tags .container {
@@ -87,7 +87,6 @@ del:hover {
   justify-content: space-around;
   top: 10px;
 }
-
 
 #form-buttons td {
   display: flex;
@@ -179,130 +178,203 @@ del:hover {
 }
 
 #button-font:before {
-  content: '\e264';
+  content: "\e264";
 }
 
 #button-size:before {
-  content: '\eae2';
+  content: "\eae2";
 }
 
 #button-bold:before {
-  content: '\e238';
+  content: "\e238";
 }
 
 #button-italic:before {
-  content: '\e23f';
+  content: "\e23f";
 }
 
 #button-underline:before {
-  content: '\e249';
+  content: "\e249";
 }
 
 #button-strike:before {
-  content: '\e257';
+  content: "\e257";
 }
 
 #button-transL:before {
-  content: '\e8e2';
+  content: "\e8e2";
 }
 
 #button-indent:before {
-  content: '\e23e';
+  content: "\e23e";
 }
 
 #button-left:before {
-  content: '\e236';
+  content: "\e236";
 }
 
 #button-center:before {
-  content: '\e234';
+  content: "\e234";
 }
 
 #button-right:before {
-  content: '\e237';
+  content: "\e237";
 }
 
 #button-justify:before {
-  content: '\e235';
+  content: "\e235";
 }
 
 #button-link:before {
-  content: '\e157';
+  content: "\e157";
 }
 
 #button-spoiler:before {
-  content: '\e875';
+  content: "\e875";
 }
 
 #button-sspoiler:before {
-  content: '\ef9e';
+  content: "\ef9e";
 }
 
 #button-image:before {
-  content: '\e412';
+  content: "\e412";
 }
 
 #button-imagetwo:before {
-  content: '\e3f4';
+  content: "\e3f4";
 }
 
 #button-video:before {
-  content: '\e1c4';
+  content: "\e1c4";
 }
 
 #button-hide:before {
-  content: '\e898';
+  content: "\e898";
 }
 
 #button-quote:before {
-  content: '\e625';
+  content: "\e625";
 }
 
 #button-code:before {
-  content: '\ead1';
+  content: "\ead1";
 }
 
 #button-html:before {
-  content: '\ef54';
+  content: "\ef54";
 }
 
 #button-color:before {
-  content: '\e40a';
+  content: "\e40a";
 }
 
 #button-table:before {
-  content: '\f088';
+  content: "\f088";
 }
 
 #button-smile:before {
-  content: '\e87d';
+  content: "\e87d";
   display: none;
 }
 
 #button-sticker:before {
-  content: '\e813';
+  content: "\e813";
 }
 
 #button-keyboard:before {
-  content: '\f028';
+  content: "\f028";
 }
 
 #button-addition:before {
-  content: '\e145';
+  content: "\e145";
 }
 
 #button-mask:before {
-  content: '\e853';
+  content: "\e853";
 }
 
 #floatbut:before {
-  content: '\e3b5';
+  content: "\e3b5";
 }
 
 /* Исходный селектор #button-Change&#209;ase невалиден и браузером игнорируется. */
 
 #button-sp-vote:before {
-  content: '\e78f';
+  content: "\e78f";
+}
+
+/* Панель после преобразования таблицы в гибкую структуру. */
+#form-buttons.editor-toolbar-ready {
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  min-height: 40px;
+  margin: 0 0 3px;
+  padding: 5px;
+  display: block;
+  overflow: visible;
+}
+
+/* Гибкий список кнопок. */
+#form-buttons .editor-toolbar-items {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+}
+
+/* Одна кнопка редактора. */
+#form-buttons .editor-toolbar-item {
+  box-sizing: border-box;
+  position: relative;
+  flex: 0 0 30px;
+  width: 30px !important;
+  height: 30px;
+  min-width: 30px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Старое абсолютное положение иконок больше не требуется. */
+#form-buttons.editor-toolbar-ready .editor-toolbar-item::before {
+  position: static;
+  margin: 0;
+}
+
+/* Прозрачная картинка MyBB занимает кнопку целиком. */
+#form-buttons.editor-toolbar-ready .editor-toolbar-item > img {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 700px) {
+  #form-buttons.editor-toolbar-ready {
+    padding: 6px;
+  }
+
+  #form-buttons .editor-toolbar-items {
+    gap: 6px;
+  }
+
+  #form-buttons .editor-toolbar-item {
+    flex-basis: 34px;
+    width: 34px !important;
+    min-width: 34px;
+    height: 34px;
+  }
 }
 
 /* tags */
@@ -400,14 +472,14 @@ option,
   padding: 5px 7px;
   color: var(--color-txt1);
   box-sizing: border-box;
-    border-radius: 0px;
+  border-radius: 0px;
   transition: box-shadow 0.3s ease;
 }
 
 input:hover,
 select:hover,
 option:hover,
-.hvStickerPackModalTab{
+.hvStickerPackModalTab {
   box-shadow: -2px 2px 5px var(--shedow1);
 }
 
@@ -423,17 +495,16 @@ option {
 /* button */
 .button,
 .hvStickerPackModalTab {
-    background: var(--color-forum) !important;
-    border: none !important;
-    padding: 8px 15px !important;
-    text-transform: uppercase;
-    font-size: 10px !important;
-    color: var(--color-txt1);
-    font-weight: 700 !important;
-    transition: all 0.5s;
-    cursor: pointer;
-    min-width: max-content;
-    
+  background: var(--color-forum) !important;
+  border: none !important;
+  padding: 8px 15px !important;
+  text-transform: uppercase;
+  font-size: 10px !important;
+  color: var(--color-txt1);
+  font-weight: 700 !important;
+  transition: all 0.5s;
+  cursor: pointer;
+  min-width: max-content;
 }
 
 .button:hover,

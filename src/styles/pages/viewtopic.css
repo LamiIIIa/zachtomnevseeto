@@ -97,14 +97,30 @@
   border-radius: 10px;
 }
 
-.pa-avatar img,#pa-avatar img {
-    z-index: 100;
-    max-width: 180px;
-    max-height: 180px;
-    box-shadow: -5px 5px 10px var(--shedow1);
-    border: none;
-    position: relative;
-    border: 1px solid var(--color-link);
-    padding: 3px;
-    border-radius: 10px;
+.pa-avatar img,
+#pa-avatar img {
+  z-index: 100;
+  max-width: 180px;
+  max-height: 180px;
+  box-shadow: -5px 5px 10px var(--shedow1);
+  border: none;
+  position: relative;
+  border: 1px solid var(--color-link);
+  padding: 3px;
+  border-radius: 10px;
+}
+/* Нумерация страниц*/
+
+#pun-main .pagelink strong,
+#pun-main .pagelink a:hover {
+  color: var(--color-txt-3);
+  box-shadow: -2px 2px 5px var(--shedow1);
+  border-radius: 3px;
+}
+
+@media screen and (max-width: 700px) {
+  .button,
+  .hvStickerPackModalTab {
+    display: none;
+  }
 }
