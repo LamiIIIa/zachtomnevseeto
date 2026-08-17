@@ -63,7 +63,9 @@ form#post.container legend span,
 #pa-fld1 span:first-child,
 #pa-email span:first-child,
 #pa-fld3 span:first-child,
-#pa-fld4, .pa-from
+#pa-fld4,
+.pa-from,
+.sendemail
 {
   display: none !important;
 }
@@ -72,5 +74,4 @@ form#post.container legend span,
 .pun-modal.rating_theme h2 span {
   display: inline-block !important;
 }
-
 

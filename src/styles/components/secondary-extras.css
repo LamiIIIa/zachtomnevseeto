@@ -1,0 +1,88 @@
+/* Всплывающие подсказки из дополнительного стиля основного форума. */
+#tooltip {
+  position: absolute;
+  z-index: 999;
+  display: none;
+  max-width: 200px;
+  padding: 4px;
+  color: var(--color-txt3);
+  background-color: var(--bg-color);
+  box-shadow: -2px 2px 10px black;
+  font-family: var(--font);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* Декоративное оформление обычных цитат; спойлеры сюда не входят. */
+.punbb .post-content .quote-box:not(.spoiler-box) {
+  position: relative;
+  min-height: 35px !important;
+  margin: 10px 0;
+  padding: 10px 10px 5px;
+  overflow: hidden;
+}
+
+.punbb .quote-box:not(.spoiler-box) > blockquote > p {
+  margin-left: 10px;
+  color: var(--color-txt1);
+  font-size: 14px;
+  font-style: italic;
+  line-height: 25px;
+}
+
+.punbb .quote-box:not(.spoiler-box) > blockquote {
+  position: relative;
+  margin-top: 20px;
+  margin-left: 5px;
+  padding: 11px 20px 0 17px;
+  border-radius: 0;
+}
+
+.punbb .quote-box:not(.spoiler-box) > cite {
+  position: absolute;
+  top: 5px;
+  left: 60px;
+  z-index: 100;
+  display: block;
+  height: 32px;
+  color: var(--color-txt2);
+  background: var(--qv-2) top left repeat-x transparent;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 30px;
+  text-shadow: none;
+}
+
+.punbb .quote-box:not(.spoiler-box) > cite::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -11px;
+  z-index: -1;
+  width: 30px;
+  height: 38px !important;
+  background: var(--qv-1) no-repeat 0 0 transparent;
+}
+
+.punbb .quote-box:not(.spoiler-box) > cite::after {
+  content: '';
+  position: absolute;
+  right: -36px;
+  width: 36px;
+  height: 32px;
+  background: var(--qv-3) no-repeat 0 0 transparent;
+}
+
+.bbuline {
+  text-decoration: underline;
+  font-style: normal;
+}
+
+.post-vote-comment textarea {
+  color: var(--color-txt1) !important;
+}
+
+.tipsy-inner {
+  background-color: var(--color-sub) !important;
+}
