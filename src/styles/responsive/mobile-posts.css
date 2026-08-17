@@ -464,6 +464,12 @@
     align-items: center;
     justify-content: center;
     margin: 0 !important;
+    padding-right: 5px;
+    font: 400 20px/1 var(--mat);
+  }
+
+  .punbb .quote-box:not(.spoiler-box) > cite > .qc-post-link > a::before {
+    content: "\efd1";
   }
 
   #pun-viewtopic .post-links ul {
