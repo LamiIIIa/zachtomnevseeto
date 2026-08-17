@@ -13,7 +13,7 @@
 }
 
 .post-author:before {
-  content: '';
+  content: "";
   background: url();
   position: absolute;
   top: -6px;
@@ -40,8 +40,8 @@
 }
 
 #pun-searchposts .post-author ul {
-    background: transparent;
-    border: none;
+  background: transparent;
+  border: none;
 }
 
 .post-author li {
@@ -80,12 +80,11 @@
   color: var(--color-hover);
 }
 
-
 #tuser {
   position: absolute;
   right: 10px;
   top: 5px;
-} 
+}
 
 /* Статус */
 .pa-title {
@@ -102,7 +101,6 @@
   top: 55px;
   position: absolute !important;
 }
-
 
 /* avatar */
 .pa-avatar {
@@ -124,7 +122,7 @@
 
 /* posts/respect */
 .pa-respect,
-.pa-posts{
+.pa-posts {
   width: calc(calc(var(--prof-w) - 22px) / 3) !important;
   z-index: 3;
   -webkit-text-size-adjust: none;
@@ -139,10 +137,9 @@
   font: 400 12px var(--font-1);
 }
 
-
 .pa-respect,
 .pa-respect a,
-.pa-posts{
+.pa-posts {
   color: var(--color-txt2);
 }
 
@@ -165,25 +162,67 @@
   color: var(--color-txt2);
 }
 
-.pa-respect .fld-name a {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
+.pa-posts,
+.pa-respect {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.pa-posts .fld-name,
+.pa-respect .fld-name {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  font-size: 0;
+  line-height: 1;
+}
+
+.pa-posts .fld-name::before,
+.pa-respect .fld-name a::before {
+  display: block;
+  color: var(--color-link);
+  font: 400 24px/1 var(--mat);
+}
+
+.pa-respect .fld-name {
+  font-size: 0;
+}
+
+.pa-respect .fld-name a::before {
+  content: "\e8dc";
+  color: var(--color-link);
+  font: 400 24px/1 var(--mat);
+}
+
+.pa-posts .fld-name {
+  font-size: 0;
+}
+
+.pa-posts .fld-name::before {
+  content: "\ue0b7";
+  color: var(--color-link);
+  font: 400 16px/1 var(--mat);
 }
 
 .pa-respect img {
-    display: none;
+  display: none;
   filter: grayscale(1);
   vertical-align: middle;
   margin-top: -1px;
 }
 
-
 /* fld */
 
-.pa-fld4, .pa-fld2, .pa-fld3 {
+.pa-fld4,
+.pa-fld2,
+.pa-fld3 {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -196,7 +235,7 @@
 .pa-fld2 {
   text-transform: uppercase;
   border-bottom: 1px solid var(--color-sub);
-  padding-bottom: 5px
+  padding-bottom: 5px;
 }
 
 .pa-fld4 {
@@ -208,12 +247,11 @@
 }
 
 .pa-fld1 .fld-name,
-  .pa-fld2 .fld-name,
-  .pa-fld3 .fld-name,
-.pa-fld4 .fld-name
-{
-      display: none;
-  }
+.pa-fld2 .fld-name,
+.pa-fld3 .fld-name,
+.pa-fld4 .fld-name {
+  display: none;
+}
 
 lz2 {
   font: 500 9px/15px var(--font) banner;
@@ -248,41 +286,39 @@ plash i {
   margin-top: 20px;
 }
 
-
 .pa-fld1 {
-    position: absolute !important;
-    top: -10px;
-    display: flex;
-    justify-content: center;
+  position: absolute !important;
+  top: -10px;
+  display: flex;
+  justify-content: center;
   z-index: 10;
 }
 
 .pa-fld1:before {
-    content: '';
-    position: absolute;
-    background: var(--ava-bg);
-    width: 150px;
-    height: 50px;
-    border-radius: 50% 50% 0 0;
-    z-index: -100;
+  content: "";
+  position: absolute;
+  background: var(--ava-bg);
+  width: 150px;
+  height: 50px;
+  border-radius: 50% 50% 0 0;
+  z-index: -100;
 }
 
 .band {
-    max-width: 50%;
-    display: flex;
-    position: relative;
-    border-radius: 50%;
-    justify-content: center;
-    align-items: center;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    mix-blend-mode: darken;
+  max-width: 50%;
+  display: flex;
+  position: relative;
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  mix-blend-mode: darken;
 }
 
 .akatsuki .band {
   mix-blend-mode: hard-light;
 }
-
 
 /* online */
 .pa-online {
@@ -299,6 +335,3 @@ plash i {
   width: 15px !important;
   position: absolute !important;
 }
-
-
-
