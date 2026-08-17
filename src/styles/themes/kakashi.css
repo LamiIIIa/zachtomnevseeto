@@ -40,6 +40,7 @@ html.kakashi {
   --color-like: #4ab9fe;
 
   --color-categoru-mobile: var(--color-link);
+  --pagination-shadow-color: #232323;
 
   /* Графика главной страницы: заменить none на url(...) после экспорта файлов. */
   --category-heading-image: url(https://forumstatic.ru/files/001a/12/f3/81023.webp);

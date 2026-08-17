@@ -35,7 +35,6 @@
 
 #pun-viewforum
   .topic-card:is(
-    .altstyle,
     .inew,
     .isticky,
     .iclosed,
@@ -46,7 +45,6 @@
   --topic-icon-image: var(--icon-inew);
 }
 
-#pun-viewforum .topic-card.altstyle,
 #pun-viewforum .topic-card.inew {
   box-shadow: var(--topic-shadow-new);
 }
@@ -115,6 +113,12 @@
 
 #pun-viewforum .topic-card__preview {
   display: none;
+}
+
+#pun-viewforum .topic-card__count-link {
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
 }
 
 @media screen and (max-width: 700px) {
@@ -211,6 +215,7 @@
     color: var(--color-link);
     font-size: 10px;
     text-overflow: ellipsis;
+    text-decoration: none;
     white-space: nowrap;
   }
 
@@ -222,9 +227,12 @@
     display: contents;
   }
 
-  #pun-viewforum .topic-card__replies {
+  #pun-viewforum .topic-card__count-link {
     grid-area: count;
     place-self: center;
+  }
+
+  #pun-viewforum .topic-card__replies {
     display: grid;
     place-items: center;
     width: var(--mobile-topic-count-size);
@@ -254,6 +262,7 @@
     line-height: 1.3;
     text-overflow: ellipsis;
     text-transform: none;
+    text-decoration: none;
     white-space: nowrap;
   }
 }

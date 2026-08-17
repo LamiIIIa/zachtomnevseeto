@@ -88,7 +88,8 @@ function createTopicState(row) {
   return {
     id: getNumericUrlParameter(topicLink?.href, "id"),
     title: topicLink?.textContent.trim() ?? "",
-    url: topicLink?.href ?? "",
+    // Название темы всегда должно открывать её первую страницу.
+    url: getFirstTopicPageUrl(topicLink?.href),
     replyCount: getNumericText(cells[1]?.textContent),
     viewCount: getNumericText(cells[2]?.textContent),
     lastPostId: getPostId(lastPostLink?.href),
@@ -125,10 +126,19 @@ function renderTopicCard(row, headers, topicState) {
     topic.dataset.lastPostId = String(topicState.lastPostId);
   }
   topic.dataset.hasNewMessages = String(topicState.hasNewMessages);
-  topic.dataset.previewStatus = topicState.previewStatus
+  topic.dataset.previewStatus = topicState.previewStatus;
   if (topicState.unreadUrl) topic.dataset.unreadUrl = topicState.unreadUrl;
 
   const main = createBlock("topic-card__main tcl", cells[0], headers[0]);
+
+  // MyBB иногда добавляет к ссылке страницы или служебные параметры.
+  // Возвращаем заголовку нормализованный адрес первой страницы темы.
+  const titleLink = main.querySelector(
+    'a[href*="viewtopic.php"][href*="id="]:not([href*="action=new"])'
+  );
+
+  if (titleLink && topicState.url) titleLink.href = topicState.url;
+
   const replies = createBlock(
     "topic-card__stat topic-card__replies tc2",
     cells[1],
@@ -145,24 +155,42 @@ function renderTopicCard(row, headers, topicState) {
     headers[3]
   );
 
-  // Полную десктопную дату оставляем на месте и создаём её мобильную копию.
+  const lastPostUrl = topicState.lastPostUrl || topicState.url;
+
+  // Полную десктопную дату оставляем на месте и создаём мобильную ссылку.
+  const mobileDateLink = createTopicLink(
+    "topic-card__mobile-date",
+    lastPostUrl,
+    `Последнее сообщение: ${topicState.lastPostDate}`
+  );
   const mobileDate = document.createElement("time");
 
-  mobileDate.className = "topic-card__mobile-date";
   mobileDate.textContent = topicState.formattedDate;
   // Полная исходная дата остаётся доступной вспомогательным технологиям.
   mobileDate.setAttribute("aria-label", topicState.lastPostDate);
+  mobileDateLink.append(mobileDate);
 
-  const preview = document.createElement("p");
-  preview.className = "topic-card__preview";
-  preview.setAttribute("aria-label", "Последнее сообщение");
+  // Превью целиком является ссылкой на последнее сообщение.
+  const preview = createTopicLink(
+    "topic-card__preview",
+    lastPostUrl,
+    "Открыть последнее сообщение"
+  );
   preview.textContent = topicState.preview;
 
+  // Пока внутри находится число ответов. Позже здесь будет количество
+  // непрочитанных сообщений, но адрес уже ведёт на последний пост.
+  const countLink = createTopicLink(
+    "topic-card__count-link",
+    lastPostUrl,
+    "Перейти к последнему сообщению"
+  );
   const stats = document.createElement("div");
 
+  countLink.append(replies);
   stats.className = "topic-card__stats";
-  stats.append(replies, views);
-  topic.append(main, stats, lastPost, mobileDate, preview);
+  stats.append(countLink, views);
+  topic.append(main, stats, lastPost, mobileDateLink, preview);
 
   return topic;
 }
@@ -175,6 +203,32 @@ function createBlock(className, source, label) {
   if (source) block.append(...source.childNodes);
 
   return block;
+}
+
+function createTopicLink(className, href, label) {
+  const link = document.createElement("a");
+
+  link.className = className;
+  link.href = href;
+  link.setAttribute("aria-label", label);
+
+  return link;
+}
+
+function getFirstTopicPageUrl(href) {
+  if (!href) return "";
+
+  const url = new URL(href, window.location.href);
+  const topicId = url.searchParams.get("id");
+
+  if (!topicId) return href;
+
+  // Удаляем номер страницы, action и якорь последнего сообщения.
+  url.search = "";
+  url.searchParams.set("id", topicId);
+  url.hash = "";
+
+  return url.href;
 }
 
 function getNumericUrlParameter(href, parameter) {
@@ -395,7 +449,7 @@ async function loadTopicPreview(topicState, topicCard) {
     const data = await response.json();
 
     if (data.error || data.code) {
-      throw new Error("MyBB API вернл ошибку");
+      throw new Error("MyBB API вернул ошибку");
     }
 
     const posts = Array.isArray(data.response)

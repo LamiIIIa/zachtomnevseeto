@@ -102,9 +102,9 @@
 
 #pun-main .pagelink strong,
 #pun-main .pagelink a:hover {
-  box-shadow: -2px 2px 5px black;
   color: var(--color-link);
   border-radius: 3px;
+  box-shadow: -2px 2px 5px var(--pagination-shadow-color);
 }
 
 #pun-main .pagelink > :is(a, strong):first-child {
