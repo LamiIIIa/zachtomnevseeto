@@ -60,9 +60,6 @@ function createTopicState(row) {
   const topicLink = cells[0]?.querySelector(
     'a[href*="viewtopic.php"][href*="id="]:not([href*="action=new"])'
   );
-  const unreadLink = cells[0]?.querySelector(
-    'a[href*="viewtopic.php"][href*="action=new"]'
-  );
   const lastPostLink = cells[3]?.querySelector(
     'a[href*="viewtopic.php"][href*="#p"]'
   );
@@ -98,8 +95,6 @@ function createTopicState(row) {
     // Компактная подпись используется только отдельным мобильным элементом.
     formattedDate: formatTopicDate(lastPostDate),
     hasNewMessages,
-    unreadUrl: unreadLink?.href ?? "",
-    unreadCount: hasNewMessages ? null : 0,
     preview: "",
     previewStatus: "idle",
     rowId: row.id,
@@ -127,7 +122,6 @@ function renderTopicCard(row, headers, topicState) {
   }
   topic.dataset.hasNewMessages = String(topicState.hasNewMessages);
   topic.dataset.previewStatus = topicState.previewStatus;
-  if (topicState.unreadUrl) topic.dataset.unreadUrl = topicState.unreadUrl;
 
   const main = createBlock("topic-card__main tcl", cells[0], headers[0]);
 
@@ -178,19 +172,24 @@ function renderTopicCard(row, headers, topicState) {
   );
   preview.textContent = topicState.preview;
 
-  // Пока внутри находится число ответов. Позже здесь будет количество
-  // непрочитанных сообщений, но адрес уже ведёт на последний пост.
-  const countLink = createTopicLink(
-    "topic-card__count-link",
-    lastPostUrl,
-    "Перейти к последнему сообщению"
-  );
+  // MyBB уже отмечает непрочитанные темы классом inew. Для них создаём
+  // компактную мобильную плашку со ссылкой на последнее сообщение.
+  const unreadBadge = topicState.hasNewMessages
+    ? createTopicLink(
+        "topic-card__unread-badge",
+        lastPostUrl,
+        "Есть непрочитанные сообщения. Перейти к последнему сообщению"
+      )
+    : null;
+
+  if (unreadBadge) unreadBadge.textContent = "Есть непрочитанные";
+
   const stats = document.createElement("div");
 
-  countLink.append(replies);
   stats.className = "topic-card__stats";
-  stats.append(countLink, views);
+  stats.append(replies, views);
   topic.append(main, stats, lastPost, mobileDateLink, preview);
+  if (unreadBadge) topic.append(unreadBadge);
 
   return topic;
 }

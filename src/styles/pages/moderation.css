@@ -1,0 +1,279 @@
+/* Страница модерирования тем: #pun-modviewforum. */
+
+#pun-modviewforum .forum > h2 {
+  display: none;
+}
+
+#pun-modviewforum .moderation-topic-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+#pun-modviewforum .moderation-topic-card {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns:
+    var(--topic-icon-size)
+    minmax(0, 1fr)
+    15%
+    32%
+    24px;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+  padding: 12px 10px;
+  color: var(--color-dark);
+  background: var(--color-forum);
+  border: 1px solid var(--color-lnthoverbg);
+  border-radius: 14px;
+  font: 400 11px var(--font);
+  text-transform: uppercase;
+}
+
+/* Десктопная иконка использует те же переменные, что и карточка viewforum. */
+#pun-modviewforum .moderation-topic-card::before {
+  content: "";
+  width: var(--topic-icon-size);
+  aspect-ratio: 1;
+  background-image: var(--topic-icon-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+#pun-modviewforum
+  .moderation-topic-card:is(
+    .inew,
+    .isticky,
+    .iclosed,
+    .ipinned,
+    .pinned,
+    .important
+  ) {
+  --topic-icon-image: var(--icon-inew);
+}
+
+#pun-modviewforum .moderation-topic-card.inew {
+  box-shadow: var(--topic-shadow-new);
+}
+
+#pun-modviewforum .moderation-topic-card:is(.ipinned, .pinned) {
+  box-shadow: var(--topic-shadow-pinned);
+}
+
+#pun-modviewforum .moderation-topic-card:is(.isticky, .important) {
+  box-shadow: var(--topic-shadow-important);
+}
+
+#pun-modviewforum .moderation-topic-card__main,
+#pun-modviewforum .moderation-topic-card__last-post,
+#pun-modviewforum .moderation-topic-card__stat {
+  min-width: 0;
+}
+
+#pun-modviewforum .moderation-topic-card__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  text-align: right;
+}
+
+#pun-modviewforum .moderation-topic-card__last-post {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 7px;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: right;
+}
+
+#pun-modviewforum .moderation-topic-card__selection {
+  display: grid;
+  place-items: center;
+}
+
+#pun-modviewforum .moderation-topic-card__selection input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--color-link);
+}
+
+#pun-modviewforum .moderation-topic-list__empty {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 16px;
+  color: var(--color-txt1);
+  background: var(--color-forum);
+  border: 1px solid var(--color-lnthoverbg);
+  border-radius: 14px;
+  text-align: center;
+}
+
+/* Верхняя и нижняя пагинация повторяют оформление страницы viewforum. */
+#pun-modviewforum .linkst,
+#pun-modviewforum .linksb {
+  width: calc(100% + var(--main-p) + var(--main-p));
+  max-width: none;
+  margin-right: calc(0px - var(--main-p));
+  margin-left: calc(0px - var(--main-p));
+  padding-right: var(--main-p);
+  padding-left: var(--main-p);
+  color: var(--color-txt1);
+  background: var(--color-forum);
+  border: 0;
+  border-bottom: 1px solid var(--color-categoru-mobile);
+}
+
+#pun-modviewforum :is(.linkst, .linksb) .pagelink,
+#pun-modviewforum :is(.linkst, .linksb) .pagelink a {
+  color: var(--color-txt1) !important;
+}
+
+#pun-modviewforum :is(.linkst, .linksb) .pagelink strong {
+  color: var(--color-categoru-mobile) !important;
+}
+
+/* Кнопки модерирования остаются частью той же формы, что и checkbox. */
+#pun-modviewforum .modmenu .container {
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 12px 0;
+  padding: 10px;
+  color: var(--color-txt1);
+  background: var(--color-forum);
+  border: 1px solid var(--color-lnthoverbg);
+  border-radius: 12px;
+}
+
+#pun-modviewforum .modmenu strong {
+  margin-right: auto;
+}
+
+@media screen and (max-width: 700px) {
+  #pun-modviewforum #pun-main.multipage {
+    margin-top: 0;
+  }
+
+  #pun-modviewforum .moderation-topic-list {
+    gap: 10px;
+    margin: 12px 0;
+  }
+
+  #pun-modviewforum .moderation-topic-card {
+    --mobile-moderation-avatar-size: 48px;
+
+    grid-template-columns:
+      var(--mobile-moderation-avatar-size)
+      minmax(0, 1fr)
+      max-content
+      22px;
+    grid-template-areas: "avatar title date selection";
+    gap: 10px;
+    min-height: 72px;
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  /* В мобильной карточке тематическую иконку заменяет аватар автора поста. */
+  #pun-modviewforum .moderation-topic-card::before {
+    display: none;
+  }
+
+  #pun-modviewforum .moderation-topic-card__main {
+    grid-area: title;
+    min-width: 0;
+  }
+
+  #pun-modviewforum .moderation-topic-card__main .intd,
+  #pun-modviewforum .moderation-topic-card__main .tclcon {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+
+  #pun-modviewforum .moderation-topic-card__main .byuser {
+    display: none;
+  }
+
+  #pun-modviewforum .moderation-topic-card__main .newtext {
+    display: none;
+  }
+
+  #pun-modviewforum
+    .moderation-topic-card__main
+    a[href*="viewtopic.php"]:first-of-type {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #pun-modviewforum .moderation-topic-card__stats {
+    display: none;
+  }
+
+  /* Дочерние элементы последнего сообщения входят в grid самой карточки. */
+  #pun-modviewforum .moderation-topic-card__last-post {
+    display: contents;
+  }
+
+  #pun-modviewforum .moderation-topic-card__last-post .user-avatar {
+    grid-area: avatar;
+    align-self: center;
+    width: var(--mobile-moderation-avatar-size) !important;
+    height: var(--mobile-moderation-avatar-size) !important;
+    margin: 0 !important;
+  }
+
+  #pun-modviewforum .moderation-topic-card__last-post .avatar-image {
+    width: var(--mobile-moderation-avatar-size) !important;
+    height: var(--mobile-moderation-avatar-size) !important;
+  }
+
+  #pun-modviewforum
+    .moderation-topic-card__last-post
+    > a[href*="viewtopic.php"] {
+    grid-area: date;
+    align-self: center;
+    color: var(--color-link);
+    font-size: 10px;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  #pun-modviewforum .moderation-topic-card__last-post > .byuser {
+    display: none;
+  }
+
+  #pun-modviewforum .moderation-topic-card__selection {
+    grid-area: selection;
+    align-self: center;
+  }
+
+  #pun-modviewforum .moderation-topic-card__selection input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+
+  #pun-modviewforum .modmenu .container {
+    margin: 12px 0;
+  }
+
+  #pun-modviewforum .modmenu strong {
+    flex-basis: 100%;
+    margin: 0;
+  }
+
+  #pun-modviewforum .modmenu .button {
+    flex: 1 1 calc(50% - 4px);
+    width: auto !important;
+    min-width: 0;
+  }
+}

@@ -55,6 +55,7 @@
 @import './components/forms.css';
 @import './pages/index.css';
 @import './pages/viewforum.css';
+@import './pages/moderation.css';
 @import './pages/viewtopic.css';
 @import './pages/profile.css';
 @import './pages/userlist.css';

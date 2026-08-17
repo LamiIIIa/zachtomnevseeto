@@ -6,6 +6,7 @@ import { getPageContext } from './core/page-context.js'
 import { initI18n } from './i18n/index.js'
 import { initAuth } from './pages/auth.js'
 import { initForumIndex } from './pages/forum-index.js'
+import { initForumModeration } from './pages/forum-moderation.js'
 import { initForumView } from './pages/forum-view.js'
 import { initMessages } from './pages/messages.js'
 import { initPostEditor } from './pages/post-editor.js'
@@ -16,6 +17,7 @@ import { initUserList } from './pages/user-list.js'
 
 const pageInitializers = {
   index: initForumIndex,
+  modviewforum: initForumModeration,
   viewforum: initForumView,
   viewtopic: initTopicView,
   profile: initProfile,
