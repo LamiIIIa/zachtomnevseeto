@@ -9,7 +9,7 @@ html.kakashi {
   --qv-2: url("https://forumstatic.ru/files/001c/6f/41/15818.png");
   --qv-3: url("https://forumstatic.ru/files/001c/6f/41/73843.png");
   --icon: url("https://forumstatic.ru/files/001a/12/f3/85596.webp");
-  --icon-inew: url('https://forumstatic.ru/files/001a/12/f3/66874.webp');
+  --icon-inew: url("https://forumstatic.ru/files/001a/12/f3/66874.webp");
 
   --bg-color: #262728;
   --pun: #;
@@ -33,7 +33,7 @@ html.kakashi {
   --color-bb: var(--color-sub);
   --color-avatop: #4098fb;
   --color-onlinesadow: #f3fcfa;
-  --shedow1: #000201;
+  --shedow1: rgb(0, 0, 0, 0.5);
   --shedow2: #d5f8f5;
   --color-glass: rgba(38, 39, 40, 0.6);
   --color-nav: var(--shedow2);

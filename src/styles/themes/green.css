@@ -32,7 +32,7 @@ html.green {
   --color-bb: var(--color-sub);
   --color-avatop: var(--color-sub);
   --color-onlinesadow: #faa603;
-  --shedow1: var(--color-txt1);
+  --shedow1: rgb(0, 0, 0,0.5);
   --shedow2: var(--color-txt1);
   --color-glass: rgba(6, 25, 15, 0.6);
   --color-nav: var(--color-forum);

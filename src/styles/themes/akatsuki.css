@@ -32,7 +32,7 @@ html.akatsuki {
   --color-bb: var(--color-sub);
   --color-avatop: var(--color-link);
   --color-onlinesadow: #fc0202;
-  --shedow1: var(--color-txt1);
+  --shedow1: rgb(0, 0, 0, 0.5);
   --shedow2: var(--color-txt1);
   --color-glass: rgba(0, 0, 0, 0.75);
   --color-nav: var(--color-forum);
