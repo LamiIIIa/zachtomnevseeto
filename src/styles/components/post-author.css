@@ -3,7 +3,8 @@
 /* Блок аватара */
 .post-author {
   width: var(--prof-w);
-  background: var(--ava-bg) top no-repeat var(--color-avatop);
+  background: var(--ava-bg) var(--color-avatop);
+  background-size: cover;
   border-top: 0px solid var(--color-txt1);
   min-height: 85px;
   box-shadow: -5px 5px 10px var(--shedow1);
@@ -297,7 +298,7 @@ plash i {
 .pa-fld1:before {
   content: "";
   position: absolute;
-  background: var(--ava-bg);
+  background: transparent;
   width: 150px;
   height: 50px;
   border-radius: 50% 50% 0 0;

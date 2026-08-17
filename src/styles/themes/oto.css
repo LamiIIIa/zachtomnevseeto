@@ -4,7 +4,7 @@ html.oto {
   --title-img: url("https://forumstatic.ru/files/001c/6f/41/65220.png");
   --title-img-mobile: url(https://forumstatic.ru/files/001a/12/f3/50490.webp);
   --online: url() #b2a5c0;
-  --ava-bg: url("https://forumstatic.ru/files/001c/6f/41/60364.png");
+  --ava-bg: url("https://forumstatic.ru/files/001a/12/f3/35081.webp");
   --qv-1: url("https://forumstatic.ru/files/001c/6f/41/12237.svg");
   --qv-2: url("https://forumstatic.ru/files/001c/6f/41/13185.png");
   --qv-3: url("https://forumstatic.ru/files/001c/6f/41/24209.png");
@@ -19,7 +19,7 @@ html.oto {
   --color-txt1: var(--bg-color);
   --color-txt2: #565b68;
   --color-txt3: var(--color-forum);
-  --color-txt4: var(--color-txt1);
+  --color-txt4: var(--color-forum);
   --text-k: var(--color-txt3);
   --link-bg: var(--color-link);
   --color-link: #947faa;
@@ -33,7 +33,7 @@ html.oto {
   --color-bb: var(--color-link);
   --color-avatop: var(--color-link);
   --color-onlinesadow: #dfcff7;
-  --shedow1: rgb(0, 0, 0,0.5);
+  --shedow1: rgb(0, 0, 0, 0.5);
   --shedow2: var(--color-txt1);
   --color-glass: rgba(60, 59, 64, 0.6);
   --color-nav: var(--color-forum);
