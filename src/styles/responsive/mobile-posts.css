@@ -518,4 +518,79 @@
     overflow-wrap: anywhere;
     word-break: normal;
   }
+
+  /*Code Box*/
+
+  .code-box .legend.legend-processed {
+    position: absolute;
+    top: px;
+    right: 0px;
+    z-index: 10;
+
+    width: 30px;
+    height: 30px;
+    margin: 0;
+    padding: 0;
+
+    background: transparent !important;
+    border: 0;
+    border-radius: 5px;
+    box-shadow: none;
+  }
+
+  .code-box .legend.legend-processed a {
+    box-sizing: border-box;
+    width: 30px;
+    height: 30px;
+    margin: 0;
+    padding: 0;
+
+    color: var(--color-link);
+    background: var(--color-forum);
+    border: 1px solid var(--color-link);
+    border-radius: 5px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 0;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .code-box .legend.legend-processed a::before {
+    content: "\e14d";
+    color: currentColor;
+    font: 400 19px/1 var(--mat);
+  }
+
+  .code-box .legend.legend-processed a:hover,
+  .code-box .legend.legend-processed a:focus-visible {
+    color: var(--color-forum);
+    background: var(--color-link);
+  }
+
+  .code-box .legend.legend-processed a:focus-visible {
+    outline: 2px solid var(--color-link);
+    outline-offset: 2px;
+  }
+  .quote-box:before,
+  .code-box:before {
+    display: none;
+  }
+
+  blockquote,
+  .blockcode,
+  textarea,
+  .inner,
+  .modal-inner,
+  .editBookmark,
+  #MyBookmarks,
+  .hvStickerPackModal {
+    padding: 10px;
+    box-shadow: inset 5px 5px 10px var(--shedow1) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    background: var(--color-qv) !important;
+  }
 }
