@@ -158,4 +158,20 @@
     font-size: 9px;
     text-align: left !important;
   }
+
+  .post h3 span a,
+  .post-links a,
+  .postlink a,
+  .postlink,
+  .pl-email a,
+  .postlink .button,
+  .subscribelink a,
+  .editpole a {
+    color: var(--color-link) !important;
+  }
+
+  .endpost .post-links {
+    background: var(--color-forum);
+    color: var(--color-link);
+  }
 }
