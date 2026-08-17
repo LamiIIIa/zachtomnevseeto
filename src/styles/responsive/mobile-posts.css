@@ -110,6 +110,10 @@
     grid-column: 1;
   }
 
+  .pa-author a {
+    color: var(--color-forum) !important;
+  }
+
   #pun-viewtopic .pa-title,
   #pun-searchposts .pa-title {
     box-sizing: border-box;
@@ -679,5 +683,10 @@
   .post-sig {
     border-top: 1px solid var(--color-link);
     padding-top: 10px;
+  }
+
+  .post-rating p:before,
+  .post-vote p:before {
+    color: var(--shedow1);
   }
 }
