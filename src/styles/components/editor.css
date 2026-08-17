@@ -148,7 +148,9 @@ del:hover {
 }
 
 .editor-toolbar-button--dice span {
-  font: 500 18px var(--mat);
+  color: inherit;
+  font: 400 20px/1 var(--mat);
+  font-feature-settings: "liga";
 }
 
 .editor-color-swatch {
