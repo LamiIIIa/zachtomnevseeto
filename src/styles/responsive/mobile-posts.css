@@ -396,22 +396,25 @@
   }
 
   .punbb .quote-box:not(.spoiler-box) > cite {
-    position: relative;
-    inset: auto;
     z-index: 1;
     box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    gap: 7px;
     width: fit-content;
     max-width: 100%;
     height: auto;
-    margin: 0 0 8px;
-    padding: 0;
     color: var(--color-txt1);
-    background: none !important;
+    align-items: center;
+    gap: 4px;
+    padding: 0 5px;
     font-size: 0;
     line-height: 1.3;
+    display: flex;
+    position: absolute;
+    top: -10px;
+    inset: auto;
+    background: var(--color-qv) !important;
+    border: 1px solid var(--color-lnthoverbg);
+    border-radius: 5px;
+    box-shadow: 1px 3px 5px var(--shedow1);
   }
 
   .punbb .quote-box:not(.spoiler-box) > cite::before,
