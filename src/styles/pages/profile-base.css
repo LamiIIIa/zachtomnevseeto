@@ -50,18 +50,18 @@
   letter-spacing: 0.1em;
   text-align: center;
   box-sizing: border-box;
-  border: 1px solid var(--color-link);
-  border-radius: 30% 10% 30% 10%;
+  border: none;
   background: var(--ava-bg) top no-repeat var(--color-avatop);
+  border-radius: 30% 10%;
   flex-direction: column;
   flex: 0 0 260px;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  height: 100%;
-  display: flex;
+  justify-content: none;
+  align-items: none;
+  gap: 5px;
   max-width: 260px;
-  padding: 25px;
+  height: 100%;
+  padding: 0px;
+  display: flex;
 }
 
 #viewprofile .viewprofile-column {
@@ -106,22 +106,24 @@
 
 /* right part */
 #profile-right {
+  --profile-side-width: 190px;
+  --profile-fld1-top: 75px;
+
+  position: relative;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: minmax(70px, auto);
+  align-items: stretch;
+  gap: 10px;
   flex: 1 1 auto;
   width: auto !important;
   min-width: 0;
-  padding: 15px !important;
-  display: flex;
-  gap: 10px 5px;
-  position: relative;
-  overflow: visible !important;
-  flex-wrap: wrap;
-  justify-content: space-around;
   height: 100%;
-  align-items: baseline;
-  align-content: space-around;
-  box-sizing: border-box;
+  padding: 15px calc(var(--profile-side-width) + 20px) 60px 15px !important;
+  overflow: visible !important;
   background: var(--color-qv);
-  border: solid 3px var(--color-lnthoverbg);
+  border: 3px solid var(--color-lnthoverbg);
   border-radius: 10px;
 }
 
@@ -129,11 +131,19 @@
   background: var(--color-underava);
 }
 
-#profile-right .viewprofile-item {
+#profile-right
+  > .viewprofile-item:not(#pa-fld1):not(#pa-fld3):not(#pa-email) {
+  box-sizing: border-box;
+  order: 0 !important;
   display: flex;
-  gap: 5px;
-  text-transform: uppercase;
   flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 5px;
+  width: auto !important;
+  min-width: 0;
+  height: 100%;
+  text-transform: uppercase;
   font: 400 9px var(--font);
 }
 
@@ -142,7 +152,7 @@
   text-transform: uppercase;
   font-weight: 600;
   padding: 4px 15px;
-  border-radius: px;
+  border-radius: 5px;
   font-size: 11px;
   font-family: var(--font-1);
   text-align: center;
@@ -171,47 +181,28 @@
 
 #profile-right #pa-fld1 {
   position: absolute;
-  left: -260px;
-  top: 1px;
-  width: 35%;
+  top: var(--profile-fld1-top);
+  right: -8px;
+  left: auto;
+  z-index: 2;
+  box-sizing: border-box;
+  width: var(--profile-side-width);
+  margin: 0;
+  mix-blend-mode: multiply;
 }
 
 #profile-right #pa-fld1 strong {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
 }
 
-#profile-right #pa-fld1 {
-  mix-blend-mode: multiply;
-}
-
-#pa-posts {
-  order: 2;
-}
-
-#pa-respect {
-  order: 3;
-}
-
-#pa-positive {
-  order: 3;
-}
-
-#pa-fld2 {
-  order: 4;
-}
-
-#pa-posts,
-#pa-respect,
-#pa-positive,
-#pa-fld2,
-#pa-register-date,
-#pa-time-visit,
-#pa-last-post,
-#pa-last-visit {
-  width: calc(100% / 4.2);
+#profile-right #pa-fld1 img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
 }
 
 #pa-posts strong {
@@ -219,50 +210,75 @@
   flex-direction: column;
 }
 
-#pa-register-date {
-  order: 5;
-}
-
-#pa-time-visit {
-  order: 6;
-}
-
-#pa-last-post {
-  order: 7;
-}
-
-#pa-last-visit {
-  order: 8;
-}
-
 #profile-right #pa-email {
-  flex-direction: row;
-  width: 100%;
-  order: 9;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-#pa-email strong {
-  font-size: 0;
-  display: flex;
-  gap: 10px;
-}
-
-#pa-email strong a {
-  background: var(--color-forum);
-  color: var(--color-link);
-  font-weight: 700;
-}
-
-#pa-email strong a:hover {
-  color: var(--color-hover);
-}
-
-#pa-fld3 {
   position: absolute;
-  right: -8px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  width: auto !important;
+  margin: 0;
+  padding: 0;
+}
+
+#profile-right #pa-email > span:first-child {
+  display: none !important;
+}
+
+#profile-right #pa-email strong {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 0 !important;
+  font-size: 0;
+}
+
+#profile-right #pa-email strong a {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 0 !important;
+  color: var(--color-link);
+  background: var(--color-forum);
+  border: 1px solid var(--color-lnthoverbg);
+  border-radius: 5px;
+  font-size: 0 !important;
+  text-decoration: none;
+}
+
+#profile-right #pa-email .sendemail::before {
+  content: "\e0be";
+  color: currentColor;
+  font: 400 20px/1 var(--mat);
+}
+
+#profile-right #pa-email .sendpm::before {
+  content: "\e0b7";
+  color: currentColor;
+  font: 400 20px/1 var(--mat);
+}
+
+#profile-right #pa-email strong a:hover {
+  color: var(--color-forum);
+  background: var(--color-link);
+}
+
+#profile-right #pa-fld3 {
+  position: absolute;
   top: -8px;
+  right: -8px;
+  z-index: 3;
+  box-sizing: border-box;
+  width: var(--profile-side-width);
+  min-width: 0;
 }
 
 /* inside */

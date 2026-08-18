@@ -10,6 +10,35 @@
     width: 100% !important;
   }
 
+  #profile-right {
+    --profile-side-width: min(180px, calc(100% - 20px));
+    --profile-fld1-top: 65px;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(65px, auto);
+    gap: 8px;
+    width: 100% !important;
+    min-width: 0;
+    padding: 150px 10px 58px !important;
+  }
+
+  #profile-right #pa-fld3 {
+    top: -8px;
+    right: -8px;
+    width: var(--profile-side-width);
+  }
+
+  #profile-right #pa-fld1 {
+    top: var(--profile-fld1-top);
+    right: -8px;
+    width: var(--profile-side-width);
+  }
+
+  #profile-right #pa-email {
+    right: 10px;
+    bottom: 10px;
+  }
+
   #pun-profile #profilenav.profile-section-menu {
     position: relative;
     z-index: 20;
@@ -133,5 +162,11 @@
     > a {
     color: var(--color-forum);
     background: var(--color-link);
+  }
+}
+
+@media screen and (max-width: 380px) {
+  #profile-right {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
