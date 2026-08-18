@@ -1,74 +1,75 @@
 /* Снимок текущего дизайна. Порядок совпадает с порядком link на MyBB. */
-@import './legacy/header-external.css';
+@import "./legacy/header-external.css";
 
 /* Шрифты, общие переменные и независимые наборы тем. */
-@import './settings/fonts.css';
-@import './settings/variables.css';
-@import './themes/base.css';
-@import './themes/shinobi.css';
-@import './themes/oto.css';
-@import './themes/akatsuki.css';
-@import './themes/green.css';
-@import './themes/kakashi.css';
+@import "./settings/fonts.css";
+@import "./settings/variables.css";
+@import "./themes/base.css";
+@import "./themes/shinobi.css";
+@import "./themes/oto.css";
+@import "./themes/akatsuki.css";
+@import "./themes/green.css";
+@import "./themes/kakashi.css";
 
 /* Базовый каркас и компоненты в порядке исходного каскада MyBB. */
-@import './layout/forum-frame.css';
-@import './generic/links.css';
-@import './components/navigation-base.css';
-@import './components/status.css';
-@import './layout/table-structure.css';
-@import './components/scroll-controls.css';
-@import './components/header-news.css';
-@import './pages/index-base.css';
-@import './components/breadcrumbs.css';
-@import './components/statistics.css';
-@import './layout/footer.css';
-@import './components/post-author.css';
-@import './components/post-content.css';
-@import './components/editor.css';
-@import './components/post-actions.css';
-@import './components/post-rating.css';
-@import './components/font-size-slider.css';
-@import './components/topic-form.css';
-@import './pages/viewforum-base.css';
-@import './pages/profile-base.css';
-@import './pages/userlist-base.css';
-@import './pages/messages-base.css';
-@import './components/message-audio.css';
-@import './components/radar.css';
-@import './components/secondary-extras.css';
-@import './components/shop.css';
-@import './generic/browser.css';
-@import './utilities/content-visibility.css';
-@import './responsive/theme.css';
-@import './components/topic-links.css';
-@import './pages/admin.css';
+@import "./layout/forum-frame.css";
+@import "./generic/links.css";
+@import "./components/navigation-base.css";
+@import "./components/status.css";
+@import "./layout/table-structure.css";
+@import "./components/scroll-controls.css";
+@import "./components/header-news.css";
+@import "./pages/index-base.css";
+@import "./components/breadcrumbs.css";
+@import "./components/statistics.css";
+@import "./layout/footer.css";
+@import "./components/post-author.css";
+@import "./components/post-content.css";
+@import "./components/editor.css";
+@import "./components/post-actions.css";
+@import "./components/post-rating.css";
+@import "./components/font-size-slider.css";
+@import "./components/topic-form.css";
+@import "./pages/viewforum-base.css";
+@import "./pages/profile-base.css";
+@import "./pages/userlist-base.css";
+@import "./pages/messages-base.css";
+@import "./components/message-audio.css";
+@import "./components/radar.css";
+@import "./components/secondary-extras.css";
+@import "./components/shop.css";
+@import "./generic/browser.css";
+@import "./utilities/content-visibility.css";
+@import "./responsive/theme.css";
+@import "./components/topic-links.css";
+@import "./pages/admin.css";
 
 /* Оставшиеся снимки старого дизайна. */
-@import './legacy/extra.css';
+@import "./legacy/extra.css";
 
 /* mobile.css подключается самим MyBB и не должен дублироваться в сборке. */
 
 /* Новые общие правила и страничные переопределения. */
-@import './generic/reset.css';
-@import './layout/forum-shell.css';
-@import './components/navigation.css';
-@import './components/header.css';
-@import './components/theme-switcher.css';
-@import './components/pagination.css';
-@import './components/forms.css';
-@import './pages/index.css';
-@import './pages/viewforum.css';
-@import './pages/moderation.css';
-@import './pages/viewtopic.css';
-@import './pages/profile.css';
-@import './pages/userlist.css';
-@import './pages/messages.css';
-@import './utilities/visibility.css';
+@import "./generic/reset.css";
+@import "./layout/forum-shell.css";
+@import "./components/navigation.css";
+@import "./components/header.css";
+@import "./components/theme-switcher.css";
+@import "./components/pagination.css";
+@import "./components/forms.css";
+@import "./pages/index.css";
+@import "./pages/viewforum.css";
+@import "./pages/moderation.css";
+@import "./pages/viewtopic.css";
+@import "./pages/profile.css";
+@import "./pages/userlist.css";
+@import "./pages/messages.css";
+@import "./utilities/visibility.css";
 
 /* Последними перекрываем встроенный мобильный CSS MyBB. */
-@import './responsive/mobile.css';
-@import './responsive/mobile-header.css';
-@import './components/mobile-navigation.css';
-@import './responsive/z-fold.css';
-@import './responsive/mobile-posts.css';
+@import "./responsive/mobile.css";
+@import "./responsive/mobile-header.css";
+@import "./components/mobile-navigation.css";
+@import "./responsive/z-fold.css";
+@import "./responsive/mobile-posts.css";
+@import "./responsive/mobile-profile.css";

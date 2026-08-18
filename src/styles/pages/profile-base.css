@@ -1,18 +1,18 @@
 /* vievprofile
 ------------------------------------------------------------------------------------*/
-#viewprofile tr {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  font: 500 11px var(--font) text;
+#viewprofile .viewprofile-layout {
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
   gap: 20px;
-  align-items: center;
-  margin: 30px;
+  width: 100%;
+  min-width: 0;
+  font: 500 11px var(--font) text;
   border: px solid var(--color-sub);
   background: var(--color-forum);
-  padding: 20px;
 }
 
-#profile-signature tr {
+#viewprofile .viewprofile-layout {
   display: block;
   margin: 0px 0 0 0;
   border: none !important;
@@ -22,11 +22,12 @@
   margin-top: -30px;
 }
 
-#profile-signature ul {
+#profile-signature .viewprofile-signature-content {
+  display: block;
+  margin: 0;
+  padding: 0 !important;
   border: none !important;
-  padding: 0px !important;
 }
-
 
 /* left part */
 #viewprofile #profile-left {
@@ -43,40 +44,39 @@
   justify-content: center;
   border: 1px solid var(--color-link);
   padding-top: 25px !important;
-  background: var(--ava-bg) top no-repeat
-    var(--color-avatop);
+  background: var(--ava-bg) top no-repeat var(--color-avatop);
 }
 
-#viewprofile #profile-left::after {
-  content: '';
-  width: calc(var(--prof-w) + 8px);
-  height: 240px;
-  top: 321px;
-  position: absolute;
-  background: var(--color-forum);
-  border-radius: 0 50% 0 0;
-  z-index: 1;
+#viewprofile .viewprofile-column {
+  box-sizing: border-box;
+  min-width: 0;
 }
 
+#viewprofile .viewprofile-column--left {
+  flex: 0 0 260px;
+  width: 260px;
+}
 
-#profile-left li {
+#viewprofile .viewprofile-column--right {
+  flex: 1 1 auto;
+  width: auto;
+}
+
+#profile-left .viewprofile-item {
   list-style: none;
-  z-index: 3
+  z-index: 3;
 }
-
 
 #profile-name strong {
   font: 700 20px var(--font-1) !important;
   color: var(--color-txt4);
   text-transform: uppercase;
   padding-top: 20px;
-
 }
 #profile-left #profile-title strong {
   color: var(--color-txt4);
   font: 600 9px var(--font) !important;
 }
-
 
 #profile-left #pa-online strong {
   color: var(--color-txt2);
@@ -116,10 +116,9 @@
 
 #profile-right::before {
   background: var(--color-underava);
-  
 }
 
-#profile-right li {
+#profile-right .viewprofile-item {
   display: flex;
   gap: 5px;
   text-transform: uppercase;
@@ -127,7 +126,7 @@
   font: 400 9px var(--font);
 }
 
-#profile-right li span:first-child,
+#profile-right .viewprofile-item > span:first-child,
 #pa-email strong a {
   text-transform: uppercase;
   font-weight: 600;
@@ -138,14 +137,14 @@
   text-align: center;
 }
 
-#profile-right li span:first-child{
+#profile-right .viewprofile-item > span:first-child {
   color: var(--color-txt1);
   background: var(--color-forum);
 }
 
-#profile-right li span:first-child a {
+#profile-right .viewprofile-item > span:first-child a {
   color: var(--color-txt1);
-} 
+}
 
 #profile-right strong {
   font-weight: 600;
@@ -160,10 +159,10 @@
 }
 
 #profile-right #pa-fld1 {
-position: absolute;
+  position: absolute;
   left: -260px;
   top: 1px;
-width: 35%;
+  width: 35%;
 }
 
 #profile-right #pa-fld1 strong {
@@ -173,7 +172,7 @@ width: 35%;
   gap: 10px;
 }
 
-#profile-right #pa-fld1{
+#profile-right #pa-fld1 {
   mix-blend-mode: multiply;
 }
 
@@ -250,11 +249,10 @@ width: 35%;
 }
 
 #pa-fld3 {
-    position: absolute;
-    right: -8px;
-    top: -8px;
+  position: absolute;
+  right: -8px;
+  top: -8px;
 }
-
 
 /* inside */
 #profilenav,
@@ -304,4 +302,3 @@ width: 35%;
 #pun-profile #profile {
   min-height: 280px;
 }
-
