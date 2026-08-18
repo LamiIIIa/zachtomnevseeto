@@ -163,8 +163,8 @@
   color: var(--color-txt3);
 }
 
-.post h3 {
-  border-bottom: 1px solid var(--color-link) !important;
+#pun-viewtopic .post > h3 {
+  border-top: 1px solid var(--color-link);
 }
 
 .post-links a,

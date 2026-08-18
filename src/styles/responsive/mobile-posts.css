@@ -222,6 +222,10 @@
     object-fit: contain;
   }
 
+  .pa-fld1 img {
+    filter: none !important;
+  }
+
   html.kakashi #pun-viewtopic .pa-fld1 img {
     filter: brightness(0) saturate(100%) invert(100%) !important;
   }
