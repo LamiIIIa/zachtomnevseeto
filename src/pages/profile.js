@@ -130,7 +130,7 @@ function initProfileNavigationDropdown(root) {
     linkList.id = "profile-navigation-links";
   }
 
-  inkList.classList.add("profile-section-menu__items");
+  LinkList.classList.add("profile-section-menu__items");
 
   button.type = "button";
   button.className = "profile-navigation-toggle";
@@ -138,14 +138,6 @@ function initProfileNavigationDropdown(root) {
   button.setAttribute("aria-controls", linkList.id);
 
   buttonText.textContent = "Разделы профиля";
-
-  if (!linkList.id) {
-    linkList.id = "profile-navigation-links";
-  }
-
-  linkList.classList.add("profile-section-menu__items");
-
-  button.setAttribute("aria-controls", linkList.id);
   button.append(buttonText);
 
   navigation.prepend(button);
