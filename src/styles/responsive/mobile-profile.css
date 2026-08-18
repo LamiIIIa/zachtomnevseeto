@@ -1,39 +1,12 @@
 @media screen and (max-width: 700px) {
   #viewprofile .viewprofile-layout {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    gap: 8px;
-    width: 100%;
-    min-width: 0;
+    flex-direction: column;
+    gap: 10px;
   }
 
-  #viewprofile #profile-left {
-    flex: 0 0 100px;
-    width: 100px !important;
-    min-width: 0;
-    padding: 10px 5px !important;
-  }
-
-  #viewprofile #profile-right {
-    flex: 1 1 0;
-    width: auto !important;
-    min-width: 0;
-    padding: 8px !important;
-  }
-
-  #viewprofile #pa-avatar,
-  #viewprofile #pa-avatar div {
-    width: 80px;
-    max-width: 80px;
-  }
-
-  #viewprofile #pa-avatar img {
-    box-sizing: border-box;
-    display: block;
-    width: 80px !important;
-    height: 80px !important;
-    max-width: 100%;
-    object-fit: cover;
+  #viewprofile .viewprofile-column--left,
+  #viewprofile .viewprofile-column--right {
+    flex: 0 1 auto;
+    width: 100% !important;
   }
 }
