@@ -5,8 +5,8 @@ export function initProfile({ root, main, userId }) {
   main?.classList.add("forum-design-profile");
   if (userId !== null) main?.setAttribute("data-user-id", String(userId));
 
-  transformViewProfileLayout(main);
   placeProfileNavigation(root, main);
+  transformViewProfileLayout(main);
   lockRestrictedProfile(main);
 }
 
@@ -17,7 +17,7 @@ function transformViewProfileLayout(main) {
 
   if (!viewProfile) return;
 
-  if (viewProfile.dataset.blocklayoutReady === "true") return;
+  if (viewProfile.dataset.blockLayoutReady === "true") return;
 
   const container = viewProfile.querySelector(":scope > .container");
   const contentList = container?.querySelector(":scope > ul");
@@ -36,7 +36,7 @@ function transformViewProfileLayout(main) {
   const leftBlock = createProfileBlock(
     profileLeft,
     "viewprofile-column",
-    "viewprofile-column--right"
+    "viewprofile-column--left"
   );
 
   const rightBlock = createProfileBlock(
@@ -61,7 +61,7 @@ function transformViewProfileLayout(main) {
 }
 
 function createProfileBlock(source, ...classNames) {
-  const block = document.querySelector("div");
+  const block = document.createElement("div");
 
   Array.from(source.attributes).forEach((attribute) => {
     block.setAttribute(attribute.name, attribute.value);
@@ -74,7 +74,7 @@ function createProfileBlock(source, ...classNames) {
 }
 
 function transformProfileItems(column) {
-  const items = column.querySelector(":scope > li");
+  const items = column.querySelectorAll(":scope > li");
 
   items.forEach((item) => {
     const block = createProfileBlock(item, "viewprofile-item");
@@ -100,18 +100,13 @@ function transformProfileSignature(viewProfile) {
 function placeProfileNavigation(root, main) {
   if (!root || !main) return;
 
-  const viewProfile = main.querySelector("#viewprofile");
-  if (!viewProfile) return;
+  const profilePage = main.querySelector("#viewprofile, #profile");
+  const profileNavigation = root.querySelector("#profilenav");
+  const topCrumbsSection = root.querySelector("#pun-crumbs1");
 
-  const profileNavigation = root.querySelector(
-    "#viewprofile-next > #profilenav"
-  );
+  if (!profilePage || !profileNavigation || !topCrumbsSection) return;
 
-  const topCrumbs = root.querySelector("#pun-crumbs1 .crumbs");
-
-  if (!profileNavigation || !topCrumbs) return;
-
-  topCrumbs.replaceWith(profileNavigation);
+  topCrumbsSection.replaceWith(profileNavigation);
 
   profileNavigation.style.removeProperty("display");
   profileNavigation.removeAttribute("hidden");
