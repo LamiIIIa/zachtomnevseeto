@@ -31,13 +31,16 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
-  gap: 7px;
+  flex-wrap: nowrap;
+  gap: 0;
 
   width: 100%;
   margin: 0;
   padding: 0;
   list-style: none;
+
+  border: 1px solid var(--color-link);
+  border-radius: 10px;
 }
 
 #pun-profile #profilenav.profile-section-menu li {
@@ -53,8 +56,12 @@
 
   color: var(--color-link);
   background: var(--color-forum);
-  border: 1px solid var(--color-lnthoverbg);
-  border-radius: 5px;
+  border: none;
+  border-radius: 9px;
+}
+
+#pun-profile #profilenav.profile-section-menu li a:hover {
+  background: var(--color-lnthoverbg);
 }
 
 #pun-profile #profilenav.profile-section-menu .isactive a {
