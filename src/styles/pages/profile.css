@@ -9,3 +9,55 @@
   cursor: not-allowed;
   opacity: 0.55;
 }
+
+#pun-profile #profilenav.profile-section-menu {
+  box-sizing: border-box;
+  float: none;
+  width: 100%;
+  margin: 0 0 20px;
+  padding: 10px;
+}
+
+#pun-profile #profilenav.profile-section-menu h2 {
+  margin: 0 0 10px;
+  color: var(--color-link);
+  background: var(--color-forum);
+}
+
+#pun-profile #profilenav.profile-section-menu ul {
+  position: static;
+  left: auto;
+
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 7px;
+
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#pun-profile #profilenav.profile-section-menu li {
+  margin: 0;
+  padding: 0;
+}
+
+#pun-profile #profilenav.profile-section-menu a {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 7px 10px;
+
+  color: var(--color-link);
+  background: var(--color-forum);
+  border: 1px solid var(--color-lnthoverbg);
+  border-radius: 5px;
+}
+
+#pun-profile #profilenav.profile-section-menu .isactive a {
+  color: var(--color-forum);
+  background: var(--color-link);
+}
