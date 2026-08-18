@@ -5,14 +5,14 @@ export function initProfile({ root, main, userId }) {
   main?.classList.add("forum-design-profile");
   if (userId !== null) main?.setAttribute("data-user-id", String(userId));
 
-  placePrifileNavigation(root, main);
+  placeProfileNavigation(root, main);
   lockRestrictedProfile(main);
 }
 
-function placePrifileNavigation(root, main) {
+function placeProfileNavigation(root, main) {
   if (!root || !main) return;
 
-  const viewProfile = main.querySelector("viewprofile");
+  const viewProfile = main.querySelector("#viewprofile");
   if (!viewProfile) return;
 
   const profileNavigation = root.querySelector(
@@ -21,8 +21,9 @@ function placePrifileNavigation(root, main) {
 
   const topCrumbs = root.querySelector("#pun-crumbs1 .crumbs");
 
-  if (!profileNavigation || !topCrumbs)
-    topCrumbs.replaceWith(profileNavigation);
+  if (!profileNavigation || !topCrumbs) return;
+
+  topCrumbs.replaceWith(profileNavigation);
 
   profileNavigation.style.removeProperty("display");
   profileNavigation.removeAttribute("hidden");
