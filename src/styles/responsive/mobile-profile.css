@@ -9,4 +9,125 @@
     flex: 0 1 auto;
     width: 100% !important;
   }
+
+  #pun-profile #profilenav.profile-section-menu {
+    position: relative;
+    z-index: 20;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0 0 15px;
+    padding: 0;
+  }
+
+  #pun-profile #profilenav.profile-section-menu > h2 {
+    display: none;
+  }
+
+  #pun-profile .profile-navigation-toggle {
+    appearance: none;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+    min-height: 42px;
+    margin: 0;
+    padding: 10px 14px;
+
+    color: var(--color-link);
+    background: var(--color-forum);
+    border: 1px solid var(--color-lnthoverbg);
+    border-radius: 5px;
+
+    font: 700 11px/1.2 var(--font);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  #pun-profile .profile-navigation-toggle::after {
+    content: "▼";
+    display: block;
+    font-size: 10px;
+    transition: transform 0.2s ease;
+  }
+
+  #pun-profile
+    #profilenav.profile-section-menu--open
+    .profile-navigation-toggle::after {
+    transform: rotate(180deg);
+  }
+
+  #pun-profile #profilenav.profile-section-menu > .profile-section-menu__items {
+    position: absolute;
+    top: calc(100% + 5px);
+    right: 0;
+    left: 0;
+    z-index: 30;
+
+    box-sizing: border-box;
+    display: none !important;
+    flex-direction: column;
+    gap: 5px;
+
+    width: 100%;
+    margin: 0;
+    padding: 8px;
+
+    background: var(--color-forum);
+    border: 1px solid var(--color-lnthoverbg);
+    border-radius: 5px;
+    box-shadow: 0 6px 15px var(--shedow1);
+  }
+
+  #pun-profile
+    #profilenav.profile-section-menu--open
+    > .profile-section-menu__items {
+    display: flex !important;
+  }
+
+  #pun-profile
+    #profilenav.profile-section-menu
+    > .profile-section-menu__items
+    > li {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  #pun-profile
+    #profilenav.profile-section-menu
+    > .profile-section-menu__items
+    > li
+    > a {
+    box-sizing: border-box;
+    display: flex;
+    width: 100%;
+    padding: 9px 10px;
+
+    color: var(--color-link);
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+  }
+
+  #pun-profile
+    #profilenav.profile-section-menu
+    > .profile-section-menu__items
+    > li
+    > a:hover,
+  #pun-profile #profilenav.profile-section-menu > ul > li > a:active {
+    background: var(--color-lnthoverbg);
+  }
+
+  #pun-profile
+    #profilenav.profile-section-menu
+    > .profile-section-menu__items
+    > li.isactive
+    > a {
+    color: var(--color-forum);
+    background: var(--color-link);
+  }
 }

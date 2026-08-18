@@ -7,6 +7,7 @@ export function initProfile({ root, main, userId }) {
 
   placeProfileNavigation(root, main);
   transformViewProfileLayout(main);
+  initProfileNavigationDropdown(root);
   lockRestrictedProfile(main);
 }
 
@@ -111,6 +112,58 @@ function placeProfileNavigation(root, main) {
   profileNavigation.style.removeProperty("display");
   profileNavigation.removeAttribute("hidden");
   profileNavigation.classList.add("profile-section-menu");
+}
+
+function initProfileNavigationDropdown(root) {
+  if (!root) return;
+
+  const navigation = root.querySelector("#profilenav");
+  const linkList = navigation?.querySelector(":scope > ul");
+
+  if (!navigation || !linkList) return;
+
+  const button = document.createElement("button");
+  const buttonText = document.createElement("span");
+
+  button.type = "button";
+  button.className = "profile-navigation-toggle";
+  button.setAttribute("aria-expanded", "false");
+
+  button.textContent = "Резделы профиля";
+
+  if (!linkList.id) {
+    linkList.id = "profile-navigation-links";
+  }
+
+  button.setAttribute("aria-controls", linksList.id);
+  button.append(buttonText);
+
+  navigation.prepend(button);
+
+  button.addEventListener("click", () => {
+    const isOpen = navigation.classList.toggle("profile-section-menu--open");
+
+    button.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  linkList.addEventListener("click", (event) => {
+    if (!event.target.closest("a")) return;
+
+    closeProfileNavigation(navigation, button);
+  });
+
+  document.addEventListener("click", (event) => {
+    if (navigation.contains(event.target)) return;
+
+    closeProfileNavigation(navigation, button);
+  });
+
+  navigation.dataset.dropdownReady = "true";
+}
+
+function closeProfileNavigation(navigation, button) {
+  navigation.classList.remove("profile-section-menu--open");
+  button.setAttribute("aria-expanded", "false");
 }
 
 function lockRestrictedProfile(main) {

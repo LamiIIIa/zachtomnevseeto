@@ -61,3 +61,7 @@
   color: var(--color-forum);
   background: var(--color-link);
 }
+
+.profile-navigation-toggle {
+  display: none;
+}
