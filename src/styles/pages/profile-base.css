@@ -54,18 +54,19 @@
   letter-spacing: 0.1em;
   text-align: center;
   box-sizing: border-box;
-  border: none;
   background: var(--ava-bg) top no-repeat var(--color-avatop);
+  justify-content: center;
+  align-items: center;
+  border: none;
   border-radius: 30% 10%;
   flex-direction: column;
   flex: 0 0 260px;
-  justify-content: none;
-  align-items: none;
   gap: 5px;
   max-width: 260px;
   height: 100%;
-  padding: 0px;
   display: flex;
+  margin: 20px;
+  padding: 5px 0;
 }
 
 #viewprofile #pa-avatar > div > img {
