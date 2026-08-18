@@ -160,13 +160,13 @@
   }
 
   #profile-left #profile-name {
-    background-color: none;
+    background-color: none !important;
     border: none !important;
     border-width: 4px 0 !important;
   }
 
   #profile-left #profile-title {
-    background-color: none;
+    background-color: none !important;
   }
 }
 
