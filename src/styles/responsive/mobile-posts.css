@@ -567,6 +567,7 @@
   /* Линия над датой */
   #pun-viewtopic .post > h3 {
     border-top: 1px solid var(--color-link);
+    border-bottom: none;
   }
   /* Нумерация постов */
   #pun-viewtopic .post > h3 > span > strong {
