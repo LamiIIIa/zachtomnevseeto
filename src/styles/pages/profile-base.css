@@ -46,21 +46,22 @@
 
 /* left part */
 #viewprofile #profile-left {
-  flex: 0 0 260px;
-  width: 260px !important;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   text-align: center;
-  height: 100%;
   box-sizing: border-box;
-  justify-content: center;
   border: 1px solid var(--color-link);
-  padding-top: 25px !important;
+  border-radius: 30% 10% 30% 10%;
   background: var(--ava-bg) top no-repeat var(--color-avatop);
+  flex-direction: column;
+  flex: 0 0 260px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  height: 100%;
+  display: flex;
+  max-width: 260px;
+  padding: 25px;
 }
 
 #viewprofile .viewprofile-column {
@@ -95,22 +96,12 @@
 }
 
 #profile-left #pa-online strong {
-  color: var(--color-txt2);
+  color: var(--color-txt3);
   font: 600 9px var(--font) !important;
 }
 
 #pa-edit a {
-  color: var(--color-txt2);
-  border: 1px solid var(--color-sub);
-  padding: 3px 15px !important;
-  display: block;
-  border-radius: px;
-  font: 700 11px var(--font);
-}
-
-#pa-edit a:hover {
-  background: var(--color-forum);
-  color: var(--color-hover);
+  display: none;
 }
 
 /* right part */
@@ -129,7 +120,9 @@
   align-items: baseline;
   align-content: space-around;
   box-sizing: border-box;
-  border: solid 3px var(--color-underava);
+  background: var(--color-qv);
+  border: solid 3px var(--color-lnthoverbg);
+  border-radius: 10px;
 }
 
 #profile-right::before {
