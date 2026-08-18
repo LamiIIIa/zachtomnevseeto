@@ -8,6 +8,10 @@
   width: 100%;
 }
 
+#pun-messages #profile > .container > fieldset + form#messages {
+  grid-column: 1 / -1;
+}
+
 #pun-messages #profilenav.messages-navigation {
   float: none;
   box-sizing: border-box;
@@ -44,6 +48,11 @@
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+#pun-messages #profilenav.messages-navigation > ul > li,
+#pun-messages .messages-mobile-navigation__menu > li {
+  margin-left: 0;
 }
 
 #pun-messages #profilenav.messages-navigation li,
