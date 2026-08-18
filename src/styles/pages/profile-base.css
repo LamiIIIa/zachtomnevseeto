@@ -68,6 +68,11 @@
   display: flex;
 }
 
+pa-avatar > div > img {
+  width: auto !important;
+  max-height: 200px !important;
+}
+
 #viewprofile .viewprofile-column {
   box-sizing: border-box;
   min-width: 0;
