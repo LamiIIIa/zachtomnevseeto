@@ -1,3 +1,9 @@
+import {
+  createCardFromRow,
+  moveCellToBlock,
+  replaceTableWithCardList,
+} from "../components/table-card-layout.js";
+
 const ACTIVE_TOPIC_STATES = [
   "isticky",
   "iclosed",
@@ -13,37 +19,15 @@ export function initForumModeration({ main }) {
 
   if (!table) return;
 
-  const topicList = createModerationTopicList(table);
-
-  table.replaceWith(topicList);
+  replaceTableWithCardList(table, {
+    listClassName: "moderation-topic-list",
+    renderRow: ({ row, headers, cells }) =>
+      createModerationTopicCard(row, headers, cells),
+  });
   main.dataset.moderationLayout = "cards";
 }
 
-function createModerationTopicList(table) {
-  const topicList = document.createElement("div");
-  const headers = Array.from(table.tHead?.rows[0]?.cells ?? []).map((cell) =>
-    cell.textContent.trim()
-  );
-  const rows = Array.from(table.tBodies).flatMap((body) =>
-    Array.from(body.rows)
-  );
-
-  topicList.className = "moderation-topic-list";
-  topicList.setAttribute("role", "list");
-
-  const label = table.getAttribute("summary");
-
-  if (label) topicList.setAttribute("aria-label", label);
-
-  rows.forEach((row) => {
-    topicList.append(createModerationTopicCard(row, headers));
-  });
-
-  return topicList;
-}
-
-function createModerationTopicCard(row, headers) {
-  const cells = Array.from(row.cells);
+function createModerationTopicCard(row, headers, cells) {
 
   // MyBB может вывести вместо тем одну служебную строку с сообщением.
   if (cells.length < 5) {
@@ -71,46 +55,36 @@ function createModerationTopicCard(row, headers) {
       icon?.title === "Есть новые сообщения" ||
       cells[0]?.querySelector(".newtext")
   );
-  const topicCard = document.createElement("article");
+  const topicCard = createCardFromRow(row, {
+    className: "moderation-topic-card",
+  });
 
   // Иконка будет нарисована псевдоэлементом карточки на десктопе.
   icon?.remove();
 
-  topicCard.className = [
-    "moderation-topic-card",
-    ...Array.from(row.classList),
-    ...inheritedStates,
-  ].join(" ");
+  topicCard.classList.add(...inheritedStates);
   topicCard.classList.toggle("inew", hasNewMessages);
-  topicCard.setAttribute("role", "listitem");
 
-  if (row.id) topicCard.id = row.id;
-
-  const main = createBlock(
-    "moderation-topic-card__main tcl",
-    cells[0],
-    headers[0]
-  );
-  const replies = createBlock(
-    "moderation-topic-card__stat moderation-topic-card__replies tc2",
-    cells[1],
-    headers[1]
-  );
-  const views = createBlock(
-    "moderation-topic-card__stat moderation-topic-card__views tc3",
-    cells[2],
-    headers[2]
-  );
-  const lastPost = createBlock(
-    "moderation-topic-card__last-post tcr",
-    cells[3],
-    headers[3]
-  );
-  const selection = createBlock(
-    "moderation-topic-card__selection tcmod",
-    cells[4],
-    headers[4]
-  );
+  const main = moveCellToBlock(cells[0], {
+    className: "moderation-topic-card__main tcl",
+    label: headers[0],
+  });
+  const replies = moveCellToBlock(cells[1], {
+    className: "moderation-topic-card__stat moderation-topic-card__replies tc2",
+    label: headers[1],
+  });
+  const views = moveCellToBlock(cells[2], {
+    className: "moderation-topic-card__stat moderation-topic-card__views tc3",
+    label: headers[2],
+  });
+  const lastPost = moveCellToBlock(cells[3], {
+    className: "moderation-topic-card__last-post tcr",
+    label: headers[3],
+  });
+  const selection = moveCellToBlock(cells[4], {
+    className: "moderation-topic-card__selection tcmod",
+    label: headers[4],
+  });
   const stats = document.createElement("div");
   const topicTitle = main
     .querySelector('a[href*="viewtopic.php"]')
@@ -126,14 +100,4 @@ function createModerationTopicCard(row, headers) {
   topicCard.append(main, stats, lastPost, selection);
 
   return topicCard;
-}
-
-function createBlock(className, source, label) {
-  const block = document.createElement("div");
-
-  block.className = className;
-  if (label) block.dataset.label = label;
-  if (source) block.append(...source.childNodes);
-
-  return block;
 }

@@ -1,1 +1,373 @@
-/* Личные сообщения: #pun-messages, form#messages, .messages-container. */
+/* Личные сообщения: #pun-messages. */
+
+#pun-messages #profile > .container {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(170px, var(--profnav-w)) minmax(0, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+#pun-messages #profilenav.messages-navigation {
+  float: none;
+  box-sizing: border-box;
+  width: auto;
+  margin: 10px 0 0;
+  padding: 12px;
+  background: var(--color-forum);
+  border: 1px solid var(--color-lnthoverbg);
+  border-radius: 14px;
+  align-self: start;
+}
+
+#pun-messages #profilenav.messages-navigation h2 {
+  margin: 0 0 8px;
+  padding: 8px 10px;
+  color: var(--color-txt1);
+  background: var(--color-forum);
+  border-bottom: 1px solid var(--color-link);
+  font: 700 11px/1.2 var(--font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+#pun-messages #profilenav.messages-navigation h2:not(:first-child) {
+  margin-top: 16px;
+}
+
+#pun-messages #profilenav.messages-navigation ul {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#pun-messages #profilenav.messages-navigation li,
+#pun-messages #profilenav.messages-navigation li a {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+#pun-messages #profilenav.messages-navigation li a {
+  display: block;
+  padding: 8px 10px;
+  color: var(--color-link);
+  border: 1px solid transparent;
+  border-radius: 7px;
+  text-decoration: none;
+}
+
+#pun-messages #profilenav.messages-navigation li a:hover,
+#pun-messages #profilenav.messages-navigation li.isactive a {
+  color: var(--color-forum);
+  background: var(--color-link);
+}
+
+#pun-messages form#messages {
+  min-width: 0;
+}
+
+#pun-messages form#messages > fieldset,
+#pun-messages form#messages > fieldset > .fs-box,
+#pun-messages form#messages > fieldset > .fs-box > .container {
+  width: 100%;
+  min-width: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#pun-messages .message-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  margin: 10px 0 20px;
+}
+
+#pun-messages .message-card {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns:
+    var(--topic-icon-size)
+    minmax(0, 1fr)
+    minmax(120px, 20%)
+    minmax(90px, 14%)
+    36px;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  padding: 12px 10px;
+  color: var(--color-dark);
+  background: var(--color-forum);
+  border: 1px solid var(--color-lnthoverbg);
+  border-radius: 14px;
+  font: 400 11px var(--font);
+  text-transform: uppercase;
+}
+
+#pun-messages .message-card::before {
+  content: "";
+  width: var(--topic-icon-size);
+  aspect-ratio: 1;
+  background-image: var(--topic-icon-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+#pun-messages .message-card.inew {
+  --topic-icon-image: var(--icon-inew);
+
+  box-shadow: var(--topic-shadow-new);
+}
+
+#pun-messages .message-card__subject,
+#pun-messages .message-card__sender,
+#pun-messages .message-card__date,
+#pun-messages .message-card__selection {
+  min-width: 0;
+}
+
+#pun-messages .message-card__subject .intd,
+#pun-messages .message-card__subject .tclcon {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+#pun-messages .message-card__subject a {
+  color: var(--color-link);
+}
+
+#pun-messages .message-card__sender {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 7px;
+  text-align: right;
+}
+
+#pun-messages .message-card__selection {
+  display: flex;
+  justify-content: center;
+}
+
+#pun-messages .message-list__empty {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 20px;
+  color: var(--color-txt1);
+  background: var(--color-forum);
+  border: 1px solid var(--color-lnthoverbg);
+  border-radius: 14px;
+  text-align: center;
+}
+
+#pun-messages .messages-mobile-navigation {
+  display: none;
+}
+
+@media screen and (max-width: 700px) {
+  #pun-messages #profile > .container {
+    display: block;
+  }
+
+  #pun-messages #profilenav.messages-navigation {
+    display: none;
+  }
+
+  #pun-messages #pun-crumbs1 > .crumbs {
+    display: none !important;
+  }
+
+  #pun-messages #pun-crumbs1 {
+    overflow: visible;
+  }
+
+  #pun-messages .messages-mobile-navigation {
+    position: relative;
+    z-index: 40;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+  }
+
+  #pun-messages .messages-mobile-navigation__group {
+    position: relative;
+    min-width: 0;
+  }
+
+  #pun-messages .messages-mobile-navigation__button {
+    appearance: none;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 40px;
+    margin: 0;
+    padding: 9px 12px;
+    color: var(--color-link);
+    background: var(--color-forum);
+    border: 1px solid var(--color-lnthoverbg);
+    border-radius: 7px;
+    font: 700 10px/1.2 var(--font);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  #pun-messages .messages-mobile-navigation__button::after {
+    content: "▼";
+    font-size: 8px;
+    transition: transform 0.2s ease;
+  }
+
+  #pun-messages
+    .messages-mobile-navigation__group--open
+    .messages-mobile-navigation__button::after {
+    transform: rotate(180deg);
+  }
+
+  #pun-messages .messages-mobile-navigation__menu {
+    position: absolute;
+    top: calc(100% + 5px);
+    right: 0;
+    left: 0;
+    z-index: 50;
+    box-sizing: border-box;
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+    margin: 0;
+    padding: 7px;
+    background: var(--color-forum);
+    border: 1px solid var(--color-lnthoverbg);
+    border-radius: 7px;
+    box-shadow: 0 6px 15px var(--shedow1);
+    list-style: none;
+  }
+
+  #pun-messages
+    .messages-mobile-navigation__group--open
+    .messages-mobile-navigation__menu {
+    display: flex;
+  }
+
+  #pun-messages .messages-mobile-navigation__menu li,
+  #pun-messages .messages-mobile-navigation__menu a {
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  #pun-messages .messages-mobile-navigation__menu a {
+    display: block;
+    padding: 8px;
+    color: var(--color-link);
+    border-radius: 5px;
+    text-decoration: none;
+  }
+
+  #pun-messages .messages-mobile-navigation__menu a:hover,
+  #pun-messages .messages-mobile-navigation__menu .isactive a {
+    color: var(--color-forum);
+    background: var(--color-link);
+  }
+
+  #pun-messages .message-list {
+    gap: 10px;
+    margin: 12px 0;
+  }
+
+  #pun-messages .message-card {
+    --mobile-message-avatar-size: 48px;
+
+    position: relative;
+    grid-template-columns:
+      var(--mobile-message-avatar-size)
+      minmax(0, 1fr)
+      max-content;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "avatar subject date"
+      "avatar sender selection";
+    gap: 4px 10px;
+    min-height: 72px;
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  #pun-messages .message-card::before {
+    display: none;
+  }
+
+  #pun-messages .message-card__subject {
+    grid-area: subject;
+    align-self: end;
+  }
+
+  #pun-messages .message-card__subject a {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #pun-messages .message-card__sender {
+    display: contents;
+  }
+
+  #pun-messages .message-card__sender .user-avatar {
+    grid-area: avatar;
+    align-self: center;
+    width: var(--mobile-message-avatar-size) !important;
+    height: var(--mobile-message-avatar-size) !important;
+    margin: 0 !important;
+  }
+
+  #pun-messages .message-card__sender .avatar-image {
+    width: var(--mobile-message-avatar-size) !important;
+    height: var(--mobile-message-avatar-size) !important;
+  }
+
+  #pun-messages .message-card__sender > a {
+    grid-area: sender;
+    align-self: start;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--color-txt1);
+    font: 400 10px/1.2 var(--font-g);
+    text-overflow: ellipsis;
+    text-transform: none;
+    white-space: nowrap;
+  }
+
+  #pun-messages .message-card__date {
+    grid-area: date;
+    align-self: end;
+    color: var(--color-link);
+    font-size: 9px;
+    white-space: nowrap;
+  }
+
+  #pun-messages .message-card__selection {
+    grid-area: selection;
+    align-self: start;
+  }
+
+  #pun-messages .message-card__selection input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+  }
+}

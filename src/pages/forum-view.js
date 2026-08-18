@@ -1,3 +1,9 @@
+import {
+  createCardFromRow,
+  moveCellToBlock,
+  replaceTableWithCardList,
+} from "../components/table-card-layout.js";
+
 const MOBILE_VIEWFORUM_QUERY = "(max-width: 700px)";
 
 const forumViewState = {
@@ -15,27 +21,15 @@ export function initForumView({ main, forumId }) {
   forumViewState.topics.clear();
   main
     .querySelectorAll(".forum > .container > table")
-    .forEach(convertTopicTable);
+    .forEach((table) => {
+      replaceTableWithCardList(table, {
+        listClassName: "topic-list",
+        renderRow: ({ row, headers }) => convertTopicRow(row, headers),
+      });
+    });
 
   initTopicPreviews(main);
   main.dataset.forumLayout = "cards";
-}
-
-function convertTopicTable(table) {
-  const list = document.createElement("div");
-  const headers = Array.from(table.tHead?.rows[0]?.cells ?? []).map((cell) =>
-    cell.textContent.trim()
-  );
-
-  list.className = "topic-list";
-  list.setAttribute("role", "list");
-
-  const rows = Array.from(table.tBodies).flatMap((body) =>
-    Array.from(body.rows)
-  );
-  rows.forEach((row) => list.append(convertTopicRow(row, headers)));
-
-  table.replaceWith(list);
 }
 
 function convertTopicRow(row, headers) {
@@ -105,16 +99,13 @@ function createTopicState(row) {
 
 function renderTopicCard(row, headers, topicState) {
   const cells = Array.from(row.cells);
-  const topic = document.createElement("article");
+  const topic = createCardFromRow(row, { className: "topic-card" });
 
   // Состояние темы остаётся на карточке, поэтому старая системная иконка не нужна.
   cells[0]?.querySelector(".icon")?.remove();
 
-  if (topicState.rowId) topic.id = topicState.rowId;
-  topic.className = ["topic-card", ...topicState.rowClasses].join(" ");
   topic.classList.add(...topicState.inheritedStates);
   topic.classList.toggle("inew", topicState.hasNewMessages);
-  topic.setAttribute("role", "listitem");
 
   if (topicState.id !== null) topic.dataset.topicId = String(topicState.id);
   if (topicState.lastPostId !== null) {
@@ -123,7 +114,10 @@ function renderTopicCard(row, headers, topicState) {
   topic.dataset.hasNewMessages = String(topicState.hasNewMessages);
   topic.dataset.previewStatus = topicState.previewStatus;
 
-  const main = createBlock("topic-card__main tcl", cells[0], headers[0]);
+  const main = moveCellToBlock(cells[0], {
+    className: "topic-card__main tcl",
+    label: headers[0],
+  });
 
   // MyBB иногда добавляет к ссылке страницы или служебные параметры.
   // Возвращаем заголовку нормализованный адрес первой страницы темы.
@@ -133,21 +127,18 @@ function renderTopicCard(row, headers, topicState) {
 
   if (titleLink && topicState.url) titleLink.href = topicState.url;
 
-  const replies = createBlock(
-    "topic-card__stat topic-card__replies tc2",
-    cells[1],
-    headers[1]
-  );
-  const views = createBlock(
-    "topic-card__stat topic-card__views tc3",
-    cells[2],
-    headers[2]
-  );
-  const lastPost = createBlock(
-    "topic-card__last-post tcr",
-    cells[3],
-    headers[3]
-  );
+  const replies = moveCellToBlock(cells[1], {
+    className: "topic-card__stat topic-card__replies tc2",
+    label: headers[1],
+  });
+  const views = moveCellToBlock(cells[2], {
+    className: "topic-card__stat topic-card__views tc3",
+    label: headers[2],
+  });
+  const lastPost = moveCellToBlock(cells[3], {
+    className: "topic-card__last-post tcr",
+    label: headers[3],
+  });
 
   const lastPostUrl = topicState.lastPostUrl || topicState.url;
 
@@ -192,16 +183,6 @@ function renderTopicCard(row, headers, topicState) {
   if (unreadBadge) topic.append(unreadBadge);
 
   return topic;
-}
-
-function createBlock(className, source, label) {
-  const block = document.createElement("div");
-
-  block.className = className;
-  if (label) block.dataset.label = label;
-  if (source) block.append(...source.childNodes);
-
-  return block;
 }
 
 function createTopicLink(className, href, label) {

@@ -1,4 +1,9 @@
 import quotesK from "../components/main_components/quotesK.js";
+import {
+  createCardFromRow,
+  moveCellToBlock,
+  replaceTableWithCardList,
+} from "../components/table-card-layout.js";
 
 const CATEGORY_QUOTE_KEYS = [
   "citatas.first",
@@ -51,26 +56,10 @@ export function initForumIndex({ main, root }) {
 
 // Заменяет одну таблицу категории контейнером с карточками форумов.
 function convertCategoryTable(table) {
-  // Создаём блочный список вместо элемента table.
-  const list = document.createElement("div");
-
-  // Назначаем новый класс, который не зависит от табличных стилей MyBB.
-  list.className = "forum-list";
-
-  // Сохраняем семантику списка для вспомогательных технологий.
-  list.setAttribute("role", "list");
-
-  // Сохраняем строки в обычный массив до начала изменения DOM.
-  const rows = Array.from(table.tBodies[0]?.rows ?? []);
-
-  // Преобразуем каждую строку таблицы в отдельную карточку.
-  rows.forEach((row) => {
-    // Добавляем готовую карточку в новый блочный список.
-    list.append(convertForumRow(row));
+  replaceTableWithCardList(table, {
+    listClassName: "forum-list",
+    renderRow: ({ row }) => convertForumRow(row),
   });
-
-  // Удаляем исходную таблицу и ставим на её место новый список.
-  table.replaceWith(list);
 }
 
 // Собирает карточку форума из четырёх ячеек исходной строки.
@@ -102,13 +91,7 @@ function convertForumRow(row) {
   messageIcon?.remove();
 
   // Создаём самостоятельную карточку форума.
-  const card = document.createElement("article");
-
-  // Сохраняем системный идентификатор MyBB вида forum_f3.
-  card.id = row.id;
-
-  // Сохраняем классы состояния строки и добавляем новый класс карточки.
-  card.className = `forum-card ${row.className}`;
+  const card = createCardFromRow(row, { className: "forum-card" });
 
   // Рамка и фоновая картинка будут зависеть от этого смыслового класса.
   card.classList.toggle("forum-card--unread", hasNewMessages);
@@ -116,11 +99,10 @@ function convertForumRow(row) {
   // Data-атрибут оставляет состояние доступным для будущих вариантов графики.
   card.dataset.messageState = hasNewMessages ? "unread" : "read";
 
-  // Помечаем карточку как элемент созданного выше списка.
-  card.setAttribute("role", "listitem");
-
   // Переносим основное содержимое, сохраняя старый класс tcl для совместимости.
-  const content = createBlock("forum-card__main tcl", titleCell);
+  const content = moveCellToBlock(titleCell, {
+    className: "forum-card__main tcl",
+  });
 
   // Создаём общий контейнер для двух счётчиков.
   const stats = document.createElement("div");
@@ -129,13 +111,19 @@ function convertForumRow(row) {
   stats.classList.add("forum-card__stats", "hidden");
 
   // Переносим количество тем в отдельный блок.
-  const topics = createBlock("forum-card__stat forum-card__topics", topicsCell);
+  const topics = moveCellToBlock(topicsCell, {
+    className: "forum-card__stat forum-card__topics",
+  });
 
   // Переносим количество сообщений в отдельный блок.
-  const posts = createBlock("forum-card__stat forum-card__posts", postsCell);
+  const posts = moveCellToBlock(postsCell, {
+    className: "forum-card__stat forum-card__posts",
+  });
 
   // Переносим последнее сообщение и сохраняем класс tcr для старых стилей.
-  const lastPost = createBlock("forum-card__last-post tcr", lastPostCell);
+  const lastPost = moveCellToBlock(lastPostCell, {
+    className: "forum-card__last-post tcr",
+  });
 
   makeLastPostInLink(lastPost);
 
@@ -147,21 +135,6 @@ function convertForumRow(row) {
 
   // Возвращаем готовую карточку в преобразователь категории.
   return card;
-}
-
-// Создаёт div и переносит в него существующие дочерние узлы ячейки.
-function createBlock(className, source) {
-  // Создаём новый блочный контейнер.
-  const block = document.createElement("div");
-
-  // Устанавливаем переданные классы нового интерфейса.
-  block.className = className;
-
-  // Переносим узлы, сохраняя ссылки, аватары и обработчики событий.
-  if (source) block.append(...source.childNodes);
-
-  // Возвращаем заполненный блок вызывающей функции.
-  return block;
 }
 
 function initIndexQuotes(root) {
