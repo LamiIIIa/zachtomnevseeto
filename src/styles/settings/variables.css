@@ -18,25 +18,27 @@
   --main-icon-h: 20px;
   --topic-icon-size: 48px;
   --topic-icon-image: var(--icon);
-  --topic-shadow-new: 0 8px 22px color-mix(in srgb, var(--color-link) 28%, transparent);
-  --topic-shadow-pinned: 0 8px 22px color-mix(in srgb, var(--color-sub) 28%, transparent);
-  --topic-shadow-important: 0 8px 24px color-mix(in srgb, var(--color-hover) 38%, transparent);
+  --topic-shadow-new: 0 8px 22px
+    color-mix(in srgb, var(--color-link) 28%, transparent);
+  --topic-shadow-pinned: 0 8px 22px
+    color-mix(in srgb, var(--color-sub) 28%, transparent);
+  --topic-shadow-important: 0 8px 24px
+    color-mix(in srgb, var(--color-hover) 38%, transparent);
   --arrows: 50px;
   --ls-w: 900px;
   --ls-h: 374px;
 
   --anim: all 0.7s;
   --border: 1px solid #d1b48c;
-  --content-icon: '\2AF8';
 
-  --mat: 'Material Symbols Outlined';
-  --mat1: 'Material Symbols Rounded';
-  --faw: 'Font Awesome 5 Pro';
-  --font-k: normal 700 25px 'Russo One';
-  --font-kb: normal 700 10px 'Oswald';
-  --font-1: 'Russo One';
-  --font: 'Oswald';
-  --font-g: 'Nunito Sans';
+  --mat: "Material Symbols Outlined";
+  --mat1: "Material Symbols Rounded";
+  --faw: "Font Awesome 5 Pro";
+  --font-k: normal 700 25px "Russo One";
+  --font-kb: normal 700 10px "Oswald";
+  --font-1: "Russo One";
+  --font: "Oswald";
+  --font-g: "Nunito Sans";
 
   --fd-content-width: 1180px;
   --fd-space-xs: 0.25rem;

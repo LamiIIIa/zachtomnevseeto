@@ -21,12 +21,10 @@ textarea {
   color: var(--color-txt1);
 }
 
-
 .code-box {
   display: flex;
   flex-direction: column;
 }
-
 
 .code-box {
   margin: 30px 15px;
@@ -39,14 +37,12 @@ td .spoiler-box {
 
 .quote-box:before,
 .code-box:before {
-  content: '';
+  content: "";
   width: 100%;
   height: 30px;
   border: 1px solid var(--color-txt1);
   box-sizing: border-box;
 }
-
-
 
 .quote-box.answer-box:before,
 .hide-box:before {
@@ -71,40 +67,39 @@ td .spoiler-box {
   align-items: flex-end;
 }
 
-
-.code-box .legend{
+.code-box .legend {
   display: block;
-    position: relative;
-    margin: 0 30px;
-    padding: 7px 27px;
-    text-transform: uppercase;
-    box-sizing: border-box;
-    text-align: center;
-    letter-spacing: 0.1em;
-    background: var(--color-qv) !important;
-    font: 700 9px var(--font) banner;
-    border-radius: 0px;
-    z-index: 9;
+  position: relative;
+  margin: 0 30px;
+  padding: 7px 27px;
+  text-transform: uppercase;
+  box-sizing: border-box;
+  text-align: center;
+  letter-spacing: 0.1em;
+  background: var(--color-qv) !important;
+  font: 700 9px var(--font) banner;
+  border-radius: 0px;
+  z-index: 9;
   box-shadow: -2px 2px 10px var(--shedow1);
 }
 .spoiler-box > div {
-    display: block;
-    position: relative;
-    margin: 0 30px;
-    padding: 7px 27px;
-    text-transform: uppercase;
-    box-sizing: border-box;
-    text-align: center;
-    letter-spacing: 0.1em;
-    background: var(--color-forum) !important;
-    font: 700 9px var(--font) banner;
-    border-radius: 0px;
-    z-index: 9;
+  display: block;
+  position: relative;
+  margin: 0 30px;
+  padding: 7px 27px;
+  text-transform: uppercase;
+  box-sizing: border-box;
+  text-align: center;
+  letter-spacing: 0.1em;
+  background: var(--color-forum) !important;
+  font: 700 9px var(--font) banner;
+  border-radius: 10px;
+  border: 1px solid var(--color-link);
+  z-index: 9;
   margin-bottom: 10px;
   margin-top: 10px;
-  box-shadow: -2px 2px 10px var(--shedow1);
+  box-shadow: none;
 }
-
 
 .code-box .legend,
 .code-box .legend a,
@@ -135,7 +130,7 @@ td .spoiler-box {
 a.qc-post-link:before {
   font: 100 11px var(--mat);
   margin: -1px 0 0 5px;
-  content: '\e0e6';
+  content: "\e0e6";
   vertical-align: middle;
   display: inline-block;
 }
@@ -143,7 +138,6 @@ a.qc-post-link:before {
 a.qc-post-link img {
   display: none;
 }
-
 
 .blockcode {
   padding: 20px 30px 10px 30px !important;
@@ -153,8 +147,6 @@ a.qc-post-link img {
   box-sizing: border-box;
   background: #fce6c8;
 }
-
-
 
 .scrollbox {
   overflow: auto;

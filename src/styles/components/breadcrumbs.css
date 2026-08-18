@@ -25,10 +25,18 @@
 
 .crumbs a:after,
 #pun-searchposts h3 span a:after {
-  content: var(--content-icon);
-  margin: -5px 0px -2px 9px;
-  font-size: 16px;
-  color: var(--color-sub);
+  content: "";
+  display: inline-block;
+
+  width: 14px;
+  height: 14px;
+
+  margin: -5px 0 -2px 9px;
+
+  background-image: var(--content-icon);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
   opacity: 0.4;
 }
-

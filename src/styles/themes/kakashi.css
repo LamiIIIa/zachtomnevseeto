@@ -2,7 +2,7 @@ html.kakashi {
   --bg: url("https://forumstatic.ru/files/001c/6f/41/59020.webp")
     var(--bg-color);
   --title-img: url("https://forumstatic.ru/files/001c/6f/41/32910.png");
-  --title-img-mobile: url(https://forumstatic.ru/files/001a/12/f3/94281.webp);
+  --title-img-mobile: url("https://forumstatic.ru/files/001a/12/f3/94281.webp");
   --online: url() var(--color-hover);
   --ava-bg: url("https://forumstatic.ru/files/001a/12/f3/48938.webp");
   --qv-1: url("https://forumstatic.ru/files/001c/6f/41/67544.svg");
@@ -10,6 +10,7 @@ html.kakashi {
   --qv-3: url("https://forumstatic.ru/files/001c/6f/41/73843.png");
   --icon: url("https://forumstatic.ru/files/001a/12/f3/85596.webp");
   --icon-inew: url("https://forumstatic.ru/files/001a/12/f3/66874.webp");
+  --content-icon: url("https://forumstatic.ru/files/001a/12/f3/23265.webp");
 
   --bg-color: #262728;
   --pun: #;
