@@ -8,6 +8,24 @@
   width: 100%;
 }
 
+#pun-messages #profile > .container > #profilenav {
+  grid-column: 1;
+}
+
+#pun-messages #profile > .container > #notify-settings {
+  grid-column: 2;
+  width: 100%;
+  min-width: 0;
+  margin: 0 !important;
+}
+
+#pun-messages #profile > .container > fieldset,
+#pun-messages #profile > .container > form#messages {
+  grid-column: 2;
+  width: 100%;
+  min-width: 0;
+}
+
 #pun-messages #profile > .container > fieldset + form#messages {
   grid-column: 1 / -1;
 }
