@@ -8,7 +8,7 @@
   display: flex;
   position: relative;
   z-index: 8;
-  top: -10px;
+  top: 15px;
   color: var(--color-link);
 }
 
@@ -18,28 +18,28 @@
 
 #volSlider.vol_slider {
   width: 180px;
-    height: 10px;
-    border: 1px solid var(--color-sub) !important;
-    box-sizing: border-box;
-    border-radius: 10px !important;
+  height: 10px;
+  border: 1px solid var(--color-sub) !important;
+  box-sizing: border-box;
+  border-radius: 10px !important;
   box-shadow: none;
 }
 
 #volSlider .before {
-    height: 8px !important;
-    margin: -1px 0 0 0px;
-    background: var(--color-sub) !important;
+  height: 8px !important;
+  margin: -1px 0 0 0px;
+  background: var(--color-sub) !important;
 }
 
 #volSlider .thumb {
   width: 5px !important;
-    height: 14px !important;
-    position: relative;
-    top: -12px !important;
-    cursor: pointer;
-    background: var(--color-sub) !important;
-    margin-left: -2px;
-    border-radius: 50%;
+  height: 14px !important;
+  position: relative;
+  top: -12px !important;
+  cursor: pointer;
+  background: var(--color-sub) !important;
+  margin-left: -2px;
+  border-radius: 50%;
   box-shadow: none !important;
 }
 
@@ -49,5 +49,3 @@
   text-transform: uppercase;
   align-items: center;
 }
-
-

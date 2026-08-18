@@ -315,6 +315,12 @@
     border-radius: 12px;
   }
 
+  .fs-box > #p1 > h3 > span {
+    background-color: transparent !important;
+    border: 1px solid var(--color-link);
+    border-radius: 10px;
+  }
+
   #pun-messages .message-card::before {
     display: none;
   }
