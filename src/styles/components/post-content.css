@@ -112,14 +112,23 @@ td .spoiler-box {
 }
 
 .post-content .spoiler-box > div:before {
-  content: var(--content-icon);
-  font: 500 15px var(--mat1);
+  content: "";
   display: inline-block;
-  transition: all 0.2s;
-  vertical-align: middle;
-  height: 10px;
-  line-height: 4px;
+
+  width: 15px;
+  height: 15px;
+
   margin-right: 10px;
+  vertical-align: middle;
+
+  background-image: var(--content-icon);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
+  opacity: 0.4;
+
+  transition: all 0.2s;
 }
 
 .post-content .spoiler-box > div.visible:before {
