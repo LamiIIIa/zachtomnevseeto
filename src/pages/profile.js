@@ -130,7 +130,7 @@ function initProfileNavigationDropdown(root) {
     linkList.id = "profile-navigation-links";
   }
 
-  LinkList.classList.add("profile-section-menu__items");
+  linkList.classList.add("profile-section-menu__items");
 
   button.type = "button";
   button.className = "profile-navigation-toggle";
