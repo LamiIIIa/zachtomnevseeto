@@ -106,9 +106,6 @@
 
 /* right part */
 #profile-right {
-  --profile-side-width: 190px;
-  --profile-fld1-top: 75px;
-
   position: relative;
   box-sizing: border-box;
   display: grid;
@@ -120,7 +117,7 @@
   width: auto !important;
   min-width: 0;
   height: 100%;
-  padding: 15px calc(var(--profile-side-width) + 20px) 60px 15px !important;
+  padding: 15px !important;
   overflow: visible !important;
   background: var(--color-qv);
   border: 3px solid var(--color-lnthoverbg);
@@ -180,13 +177,17 @@
 }
 
 #profile-right #pa-fld1 {
-  position: absolute;
-  top: var(--profile-fld1-top);
-  right: -8px;
-  left: auto;
-  z-index: 2;
+  position: static;
   box-sizing: border-box;
-  width: var(--profile-side-width);
+  display: flex;
+  grid-column: 3;
+  grid-row: 1;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  width: auto !important;
+  min-width: 0;
+  height: 100%;
   margin: 0;
   mix-blend-mode: multiply;
 }
@@ -202,6 +203,7 @@
   width: 100%;
   height: auto;
   max-width: 100%;
+  max-height: 50px;
   object-fit: contain;
 }
 
@@ -211,15 +213,17 @@
 }
 
 #profile-right #pa-email {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  z-index: 4;
+  position: static;
+  box-sizing: border-box;
   display: flex;
+  grid-column: 4;
+  grid-row: 1;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 7px;
   width: auto !important;
+  min-width: 0;
+  height: 100%;
   margin: 0;
   padding: 0;
 }
@@ -272,13 +276,17 @@
 }
 
 #profile-right #pa-fld3 {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  z-index: 3;
+  position: static;
   box-sizing: border-box;
-  width: var(--profile-side-width);
+  display: flex;
+  grid-column: 1 / span 2;
+  grid-row: 1;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  width: auto !important;
   min-width: 0;
+  height: 100%;
 }
 
 /* inside */
