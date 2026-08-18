@@ -68,7 +68,7 @@
   display: flex;
 }
 
-.pa-avatar > div > img {
+#viewprofile #pa-avatar > div > img {
   width: auto !important;
   max-height: 200px !important;
 }
