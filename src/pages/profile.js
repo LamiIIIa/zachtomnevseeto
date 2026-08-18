@@ -121,21 +121,31 @@ function initProfileNavigationDropdown(root) {
   const linkList = navigation?.querySelector(":scope > ul");
 
   if (!navigation || !linkList) return;
+  if (navigation.dataset.dropdownReady === "true") return;
 
   const button = document.createElement("button");
   const buttonText = document.createElement("span");
-
-  button.type = "button";
-  button.className = "profile-navigation-toggle";
-  button.setAttribute("aria-expanded", "false");
-
-  button.textContent = "Резделы профиля";
 
   if (!linkList.id) {
     linkList.id = "profile-navigation-links";
   }
 
-  button.setAttribute("aria-controls", linksList.id);
+  inkList.classList.add("profile-section-menu__items");
+
+  button.type = "button";
+  button.className = "profile-navigation-toggle";
+  button.setAttribute("aria-expanded", "false");
+  button.setAttribute("aria-controls", linkList.id);
+
+  buttonText.textContent = "Разделы профиля";
+
+  if (!linkList.id) {
+    linkList.id = "profile-navigation-links";
+  }
+
+  linkList.classList.add("profile-section-menu__items");
+
+  button.setAttribute("aria-controls", linkList.id);
   button.append(buttonText);
 
   navigation.prepend(button);

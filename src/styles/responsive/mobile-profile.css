@@ -118,7 +118,11 @@
     > .profile-section-menu__items
     > li
     > a:hover,
-  #pun-profile #profilenav.profile-section-menu > ul > li > a:active {
+  #pun-profile
+    #profilenav.profile-section-menu
+    > .profile-section-menu__items
+    > li
+    > a:active {
     background: var(--color-lnthoverbg);
   }
 
