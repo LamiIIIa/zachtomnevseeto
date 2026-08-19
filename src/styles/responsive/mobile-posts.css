@@ -679,4 +679,42 @@
   .post-vote p:before {
     color: var(--shedow1);
   }
+
+  #pun-viewtopic .post-table-scroll {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #pun-viewtopic .post-table-scroll > table {
+    display: table !important;
+    width: 100% !important;
+    min-width: max(100%, var(--post-table-min-width)) !important;
+    max-width: none !important;
+    table-layout: fixed !important;
+  }
+
+  #pun-viewtopic .post-table-scroll > table > tbody {
+    display: table-row-group !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+
+  #pun-viewtopic .post-table-scroll > table tr {
+    display: table-row !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+
+  #pun-viewtopic .post-table-scroll > table :is(td, th) {
+    display: table-cell !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    vertical-align: middle;
+  }
 }
