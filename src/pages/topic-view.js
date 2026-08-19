@@ -1,4 +1,5 @@
 import { initMutualPromotion } from "../components/mutual-promotion.js";
+import { initScrollablePostTables } from "../components/post-components/tables-in-posts.js";
 
 export function initTopicView({ main, topicId }) {
   main?.classList.add("forum-design-topic");
@@ -9,5 +10,5 @@ export function initTopicView({ main, topicId }) {
   });
 
   initMutualPromotion(main);
-  initScrollablePostTables();
+  initScrollablePostTables(main ?? document);
 }
