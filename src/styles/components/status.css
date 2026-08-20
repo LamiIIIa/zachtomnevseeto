@@ -100,3 +100,16 @@ p > span.status-actions > a:hover {
 #pun-status .status-action a {
   display: block;
 }
+
+/*
+ * На главной статус занимает подготовленное для него место в шапке.
+ * На внутренних десктопных страницах такого свободного места нет, поэтому
+ * возвращаем панель в поток документа и не даём ей перекрывать крошки и контент.
+ */
+@media screen and (min-width: 701px) {
+  #pun:not(#pun-index) #pun-status .container {
+    position: relative;
+    inset: auto;
+    margin: 10px 0;
+  }
+}

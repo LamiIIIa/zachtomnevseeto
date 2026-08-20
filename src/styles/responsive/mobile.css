@@ -148,9 +148,13 @@
     text-align: left;
   }
 
-  /* Пользовательская панель остаётся только в десктопной версии. */
-  #pun-index #pun-status {
+  /* На мобильном статус показывается только на главной странице. */
+  #pun:not(#pun-index) #pun-status {
     display: none !important;
+  }
+
+  #pun-index #pun-status {
+    display: block !important;
   }
 
 }
