@@ -9,6 +9,7 @@ export function initMessages({ root, main }) {
 
   main.classList.add("forum-design-messages");
   initMessagesNavigation(root, main);
+  initMessagesPreviewToggle(main);
 
   if (main.dataset.messagesLayout === "cards") return;
 
@@ -23,6 +24,70 @@ export function initMessages({ root, main }) {
   });
 
   main.dataset.messagesLayout = "cards";
+}
+
+function initMessagesPreviewToggle(main) {
+  const postForm = main.querySelector("form#post");
+  const postFormBody = postForm?.querySelector("#post-form");
+  const actions = postFormBody
+    ?.querySelector('input[name="preview"]')
+    ?.closest("p");
+
+  if (
+    !postForm ||
+    !postFormBody ||
+    !actions ||
+    postForm.querySelector("#togglePreview")
+  ) {
+    return;
+  }
+
+  const enableLabel = "Включить быстрый предпросмотр";
+  const disableLabel = "Отключить быстрый предпросмотр";
+  const toggle = document.createElement("small");
+  const button = document.createElement("input");
+
+  toggle.id = "togglePreview";
+  toggle.dataset.previewState = "on";
+  button.type = "button";
+  button.className = "button";
+  button.value = disableLabel;
+  button.title = disableLabel;
+  button.setAttribute("aria-label", disableLabel);
+
+  button.addEventListener("click", () => {
+    if (typeof window.togglePreview !== "function") return;
+
+    window.togglePreview(button);
+    syncMessagesPreviewState(postForm, toggle, button, enableLabel);
+  });
+
+  toggle.append(button);
+  actions.before(toggle);
+
+  if (readCookie("_PreviewToggle") === "OFF") {
+    button.click();
+  }
+}
+
+function syncMessagesPreviewState(postForm, toggle, button, enableLabel) {
+  const isEnabled = button.value !== enableLabel;
+
+  toggle.dataset.previewState = isEnabled ? "on" : "off";
+  postForm.querySelectorAll("#post-preview").forEach((preview) => {
+    preview.hidden = !isEnabled;
+    preview.style.display = isEnabled ? "" : "none";
+  });
+}
+
+function readCookie(name) {
+  const prefix = `${encodeURIComponent(name)}=`;
+  const cookie = document.cookie
+    .split(";")
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(prefix));
+
+  return cookie ? decodeURIComponent(cookie.slice(prefix.length)) : null;
 }
 
 function createMessageCard(row, cells, headers) {
