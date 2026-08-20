@@ -360,29 +360,36 @@
   }
 
   #pun-messages .message-card {
-    --mobile-message-avatar-size: 48px;
+    --mobile-message-avatar-size: 40px;
 
     position: relative;
     grid-template-columns:
       var(--mobile-message-avatar-size)
       minmax(0, 1fr)
-      minmax(68px, 28%);
+      minmax(92px, 38%);
     grid-template-rows: auto auto;
     grid-template-areas:
       "avatar subject date"
       "avatar sender selection";
-    gap: 4px 10px;
+    gap: 4px 6px;
+    max-width: 100%;
     min-height: 72px;
-    padding: 10px;
+    padding: 10px 8px;
     border-radius: 12px;
+    overflow: hidden;
   }
 
-  /* У пользователя без аватара не оставляем пустую первую колонку. */
-  #pun-messages .message-card:not(:has(.user-avatar)) {
-    grid-template-columns: minmax(0, 1fr) minmax(68px, 28%);
+  /* Стандартная заглушка форума не считается настоящим аватаром. */
+  #pun-messages
+    .message-card:not(:has(.user-avatar:not(.no-avatar))) {
+    grid-template-columns: minmax(0, 1fr) minmax(92px, 38%);
     grid-template-areas:
       "subject date"
       "sender selection";
+  }
+
+  #pun-messages .message-card .user-avatar.no-avatar {
+    display: none !important;
   }
 
   .fs-box > #p1 > h3 > span {
@@ -440,15 +447,27 @@
   #pun-messages .message-card__date {
     grid-area: date;
     align-self: end;
-    justify-self: end;
+    justify-self: stretch;
+    box-sizing: border-box;
+    width: 100%;
     min-width: 0;
     max-width: 100%;
+    padding-right: 2px;
     color: var(--color-link);
-    font-size: 9px;
+    font: 700 8px/1.2 var(--font);
+    letter-spacing: 0;
     line-height: 1.25;
     text-align: right;
     overflow-wrap: anywhere;
-    white-space: normal;
+    word-break: normal;
+    white-space: normal !important;
+  }
+
+  #pun-messages .message-card__date > * {
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    white-space: normal !important;
   }
 
   #pun-messages .message-card__selection {
