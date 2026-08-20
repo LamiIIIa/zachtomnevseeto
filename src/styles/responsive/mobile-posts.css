@@ -335,10 +335,10 @@
     justify-self: center;
     width: 100%;
     margin: 0 !important;
-    padding-left: 10px;
+    padding-top: 5px;
     display: flex !important;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
   }
 
   #pun-viewtopic .pa-ua .user-agent {
