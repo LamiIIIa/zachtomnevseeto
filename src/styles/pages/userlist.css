@@ -71,9 +71,49 @@
   border-bottom: 1px solid var(--color-categoru-mobile);
 }
 
+#userlist > fieldset > legend > span {
+  font: 400 normal 14px var(--font-1) !important;
+  text-transform: uppercase;
+  color: var(--color-link);
+}
+
 @media screen and (max-width: 700px) {
   #pun-userlist #pun-main.multipage {
     margin-top: 0;
+  }
+
+  /* Фильтры списка участников: четыре поля в сетке 2 × 2. */
+  #pun-userlist .fs-box.inline {
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 12px 10px;
+    width: 100%;
+    margin-top: 0;
+  }
+
+  #pun-userlist
+    .fs-box.inline
+    > :is(.inputfield, .selectfield, .infofield) {
+    box-sizing: border-box;
+    min-width: 0;
+    margin: 0;
+  }
+
+  #pun-userlist .fs-box.inline .input {
+    display: block;
+    width: 100%;
+  }
+
+  #pun-userlist .fs-box.inline :is(input, select) {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  #pun-userlist .fs-box.inline > .infofield {
+    grid-column: 1 / -1;
   }
 
   #pun-userlist .user-card {
