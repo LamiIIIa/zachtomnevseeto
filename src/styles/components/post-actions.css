@@ -238,27 +238,12 @@
 .subscribelink {
   position: relative;
 }
-.post-links a:before,
-.permalink:before,
-.postlink a:before,
-.subscribelink:before {
-  content: "";
-  position: absolute;
-  width: 50px;
-  height: 1px;
-  border-radius: 50%;
-  background: var(--color-txt2);
-  left: calc(50% - 5px);
-  bottom: -5px;
-  transform: translateY(-10px);
-  transition: all 0.5s;
-  opacity: 0;
-}
 
-.post-links a:hover:before,
-.permalink:hover:before,
-.postlink a:hover:before,
-.subscribelink:hover:before {
-  transform: translate(-15px, 1px);
-  opacity: 1;
+#pun-main > div.topic > div > div > div.post-links > ul > li > a {
+  position: absolute;
+  right: 0;
+  bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid var(--color-link);
+  padding: 5px;
 }
