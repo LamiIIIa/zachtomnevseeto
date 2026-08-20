@@ -24,7 +24,7 @@
 
 #pun-navlinks li,
 #pun-ulinks li {
-display: inline-block;
+  display: inline-block;
 }
 
 /* navlinks */
@@ -36,34 +36,34 @@ display: inline-block;
 }
 
 #pun-navlinks li {
-margin: 0 5px;
+  margin: 0 5px;
 }
 
 /* ulinks */
 #pun-ulinks .container {
-  font: 500 12px var(--font) ;
+  font: 300 12px var(--font);
   letter-spacing: 0.1em;
   padding: 0px 0 15px 0;
   margin-bottom: -10px;
 }
 
 #pun-ulinks li {
-margin: 0 5px;
+  margin: 0 5px;
 }
 
 /* links color and animation */
 #pun-navlinks a {
-color: var(--color-link);
+  color: var(--color-link);
 }
 
 #pun-navlinks a:hover {
-color: var(--color-hover);
+  color: var(--color-hover);
 }
 
 #pun-ulinks a {
-color: var(--color-txt2);
+  color: var(--color-txt2);
 }
 
 #pun-ulinks a:hover {
-color: var(--color-hover);
+  color: var(--color-hover);
 }

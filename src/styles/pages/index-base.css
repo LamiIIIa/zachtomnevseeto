@@ -115,13 +115,13 @@ podfor {
 .tclcon #lintop a {
   box-sizing: border-box;
   background: var(--color-forum);
-  width: 150px;
-  height: 30px;
-  color: var(--color-linkintopik) !important;
-  padding-top: 5px;
   border: 1px solid var(--color-lnthoverbg);
-  transition: box-shadow 0.3s ease;
   border-radius: 10px;
+  width: auto;
+  height: 30px;
+  padding: 5px;
+  transition: box-shadow 0.3s;
+  color: var(--color-linkintopik) !important;
 }
 
 .tclcon #lintop a:hover {
