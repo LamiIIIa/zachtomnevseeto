@@ -14,8 +14,9 @@
   margin: 0;
   padding: 0;
   background: none;
-  border: 0;
-  box-shadow: none;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
   cursor: pointer;
 }
 
