@@ -1,5 +1,5 @@
 /* Строка статуса пользователя. */
-#pun-index #pun-status .container {
+#pun-status .container {
   font: 200 9px var(--font);
   text-transform: uppercase;
   color: var(--color-txt1);
@@ -64,7 +64,7 @@ p > span.status-actions > a:hover {
 }
 
 /* Собственный аватар не использует конфликтующий старый класс .user-avatar. */
-#pun-index #pun-status .status-user__avatar {
+#pun-status .status-user__avatar {
   display: block;
   flex: 0 0 46px;
   width: 46px;
@@ -72,31 +72,31 @@ p > span.status-actions > a:hover {
   margin: 0;
 }
 
-#pun-index #pun-status .status-user__avatar a,
-#pun-index #pun-status .status-user__avatar-image {
+#pun-status .status-user__avatar a,
+#pun-status .status-user__avatar-image {
   display: block;
   width: 46px;
   height: 46px;
 }
 
-#pun-index #pun-status .status-user__avatar-image {
+#pun-status .status-user__avatar-image {
   object-fit: cover;
   border-radius: 30% 20%;
 }
 
 /* Цвет ссылок и выделенных данных пользователя. */
-#pun-index #pun-status strong,
-#pun-index #pun-status a,
-#pun-index #pun-status .status-right a {
+#pun-status strong,
+#pun-status a,
+#pun-status .status-right a {
   color: var(--color-txt2);
 }
 
-#pun-index #pun-status .status-actions .status-right {
+#pun-status .status-actions .status-right {
   float: none;
   padding: 0;
 }
 
-#pun-index #pun-status .status-action,
-#pun-index #pun-status .status-action a {
+#pun-status .status-action,
+#pun-status .status-action a {
   display: block;
 }
