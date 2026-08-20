@@ -48,6 +48,20 @@ textarea,
   width: 180px !important;
 }
 
+#sTheme,
+#isk {
+  border: none;
+}
+
+#isk {
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  background: var(--color-link);
+  margin-left: 3px;
+  color: var(--color-txt3);
+}
+
 @media screen and (max-width: 700px) {
   #togglePreview {
     display: none;
