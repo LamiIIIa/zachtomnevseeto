@@ -1,62 +1,7 @@
 /* Раздел: #pun-viewforum, .forum, .linkst, .linksb. */
 
-#pun-viewforum .topic-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin: 20px 0;
-}
-
 #pun-viewforum .topic-card {
-  box-sizing: border-box;
-  display: grid;
   grid-template-columns: var(--topic-icon-size) minmax(0, 1fr) 15% 32%;
-  gap: 10px;
-  align-items: center;
-  min-width: 0;
-  padding: 12px 10px;
-  color: var(--color-dark);
-  background: var(--color-forum);
-  border: 1px solid var(--color-lnthoverbg);
-  border-radius: 14px;
-  font: 400 11px var(--font);
-  text-transform: uppercase;
-}
-
-#pun-viewforum .topic-card::before {
-  content: "";
-  width: var(--topic-icon-size);
-  aspect-ratio: 1;
-  background-image: var(--topic-icon-image);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-}
-
-#pun-viewforum
-  .topic-card:is(
-    .inew,
-    .isticky,
-    .iclosed,
-    .ipinned,
-    .pinned,
-    .important
-  ) {
-  --topic-icon-image: var(--icon-inew);
-}
-
-#pun-viewforum .topic-card.inew {
-  box-shadow: var(--topic-shadow-new);
-}
-
-#pun-viewforum .topic-card.ipinned,
-#pun-viewforum .topic-card.pinned {
-  box-shadow: var(--topic-shadow-pinned);
-}
-
-#pun-viewforum .topic-card.isticky,
-#pun-viewforum .topic-card.important {
-  box-shadow: var(--topic-shadow-important);
 }
 
 #pun-viewforum .topic-card__main,

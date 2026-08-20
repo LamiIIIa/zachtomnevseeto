@@ -57,8 +57,10 @@
 @import "./components/theme-switcher.css";
 @import "./components/pagination.css";
 @import "./components/forms.css";
+@import "./components/forum-card-list.css";
 @import "./pages/index.css";
 @import "./pages/viewforum.css";
+@import "./pages/search.css";
 @import "./pages/moderation.css";
 @import "./pages/viewtopic.css";
 @import "./pages/profile.css";

@@ -25,6 +25,7 @@ const pageInitializers = {
   upavatar: initProfile,
   userlist: initUserList,
   search: initSearch,
+  searchtopics: initSearch,
   messages: initMessages,
   post: initPostEditor,
   edit: initPostEditor,

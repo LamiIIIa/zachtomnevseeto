@@ -1,5 +1,7 @@
 import {
+  applyTopicCardAppearance,
   createCardFromRow,
+  getTopicCardAppearance,
   moveCellToBlock,
   replaceTableWithCardList,
 } from "../components/table-card-layout.js";
@@ -23,7 +25,7 @@ export function initForumView({ main, forumId }) {
     .querySelectorAll(".forum > .container > table")
     .forEach((table) => {
       replaceTableWithCardList(table, {
-        listClassName: "topic-list",
+        listClassName: "topic-list forum-card-list",
         renderRow: ({ row, headers }) => convertTopicRow(row, headers),
       });
     });
@@ -44,34 +46,13 @@ function convertTopicRow(row, headers) {
 
 function createTopicState(row) {
   const cells = Array.from(row.cells);
-  const oldIcon = cells[0]?.querySelector(".icon");
-  const iconElements = oldIcon
-    ? [oldIcon, ...oldIcon.querySelectorAll("*")]
-    : [];
-  const iconClasses = new Set(
-    iconElements.flatMap((element) => [...element.classList])
-  );
+  const appearance = getTopicCardAppearance(row, cells[0]);
   const topicLink = cells[0]?.querySelector(
     'a[href*="viewtopic.php"][href*="id="]:not([href*="action=new"])'
   );
   const lastPostLink = cells[3]?.querySelector(
     'a[href*="viewtopic.php"][href*="#p"]'
   );
-  const hasNewMessages = Boolean(
-    row.classList.contains("inew") ||
-      iconClasses.has("inew") ||
-      iconClasses.has("icon-new") ||
-      oldIcon?.title === "Есть новые сообщения" ||
-      cells[0]?.querySelector(".newtext")
-  );
-  const inheritedStates = [
-    "isticky",
-    "iclosed",
-    "ipinned",
-    "pinned",
-    "important",
-  ].filter((state) => iconClasses.has(state));
-
   // Сохраняем исходную подпись MyBB: «Сегодня 12:30», «Вчера 18:45» или дату.
   const lastPostDate =
     lastPostLink?.textContent.replace(/\s+/g, " ").trim() ?? "";
@@ -88,30 +69,26 @@ function createTopicState(row) {
     lastPostDate,
     // Компактная подпись используется только отдельным мобильным элементом.
     formattedDate: formatTopicDate(lastPostDate),
-    hasNewMessages,
+    ...appearance,
     preview: "",
     previewStatus: "idle",
     rowId: row.id,
     rowClasses: Array.from(row.classList),
-    inheritedStates,
   };
 }
 
 function renderTopicCard(row, headers, topicState) {
   const cells = Array.from(row.cells);
-  const topic = createCardFromRow(row, { className: "topic-card" });
+  const topic = createCardFromRow(row, {
+    className: "topic-card forum-list-card forum-topic-card",
+  });
 
-  // Состояние темы остаётся на карточке, поэтому старая системная иконка не нужна.
-  cells[0]?.querySelector(".icon")?.remove();
-
-  topic.classList.add(...topicState.inheritedStates);
-  topic.classList.toggle("inew", topicState.hasNewMessages);
+  applyTopicCardAppearance(topic, cells[0], topicState);
 
   if (topicState.id !== null) topic.dataset.topicId = String(topicState.id);
   if (topicState.lastPostId !== null) {
     topic.dataset.lastPostId = String(topicState.lastPostId);
   }
-  topic.dataset.hasNewMessages = String(topicState.hasNewMessages);
   topic.dataset.previewStatus = topicState.previewStatus;
 
   const main = moveCellToBlock(cells[0], {

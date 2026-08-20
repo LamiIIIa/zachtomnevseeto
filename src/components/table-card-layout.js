@@ -64,3 +64,36 @@ export function moveCellToBlock(
 
   return block;
 }
+
+export function getTopicCardAppearance(row, mainCell = row?.cells?.[0]) {
+  const oldIcon = mainCell?.querySelector(".icon");
+  const iconElements = oldIcon
+    ? [oldIcon, ...oldIcon.querySelectorAll("*")]
+    : [];
+  const iconClasses = new Set(
+    iconElements.flatMap((element) => Array.from(element.classList))
+  );
+  const inheritedStates = [
+    "isticky",
+    "iclosed",
+    "ipinned",
+    "pinned",
+    "important",
+  ].filter((state) => iconClasses.has(state));
+  const hasNewMessages = Boolean(
+    row?.classList.contains("inew") ||
+      iconClasses.has("inew") ||
+      iconClasses.has("icon-new") ||
+      oldIcon?.title === "Есть новые сообщения" ||
+      mainCell?.querySelector(".newtext")
+  );
+
+  return { hasNewMessages, inheritedStates };
+}
+
+export function applyTopicCardAppearance(card, mainCell, appearance) {
+  mainCell?.querySelector(".icon")?.remove();
+  card.classList.add(...appearance.inheritedStates);
+  card.classList.toggle("inew", appearance.hasNewMessages);
+  card.dataset.hasNewMessages = String(appearance.hasNewMessages);
+}

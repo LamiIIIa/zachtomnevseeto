@@ -239,7 +239,7 @@
   position: relative;
 }
 
-#pun-main > div.topic > div > div > div.post-links > ul > li > a {
+.show-users-posts > div.topic > div > div > div.post-links > ul > li > a {
   position: absolute;
   right: 0;
   bottom: 10px;

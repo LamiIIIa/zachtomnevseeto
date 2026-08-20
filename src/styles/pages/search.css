@@ -1,0 +1,174 @@
+/* Результаты поиска по темам: recent, replies и unanswered. */
+#pun-searchtopics .forum-design-topic-search .forum > h2 {
+  color: var(--color-link);
+  background: var(--color-forum);
+}
+
+#pun-searchtopics .search-topic-card {
+  grid-template-columns:
+    var(--topic-icon-size)
+    minmax(0, 1fr)
+    18%
+    10%
+    30%;
+}
+
+#pun-searchtopics
+  .search-topic-card
+  :is(
+    .search-topic-card__subject,
+    .search-topic-card__forum,
+    .search-topic-card__replies,
+    .search-topic-card__last-post
+  ) {
+  min-width: 0;
+}
+
+#pun-searchtopics .search-topic-card__last-post {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 7px;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: right;
+}
+
+#pun-searchtopics .search-topic-card__forum,
+#pun-searchtopics .search-topic-card__replies {
+  text-align: center;
+}
+
+#pun-searchtopics .search-topic-list__empty {
+  display: block;
+  margin: 0;
+  text-align: center;
+}
+
+#pun-searchtopics .forum-design-topic-search :is(.linkst, .linksb) {
+  width: calc(100% + var(--main-p) + var(--main-p));
+  max-width: none;
+  margin-right: calc(0px - var(--main-p));
+  margin-left: calc(0px - var(--main-p));
+  padding-right: var(--main-p);
+  padding-left: var(--main-p);
+  color: var(--color-txt1);
+  background: var(--color-forum);
+  border: 0;
+  border-bottom: 1px solid var(--color-categoru-mobile);
+}
+
+#pun-searchtopics
+  .forum-design-topic-search
+  :is(.linkst, .linksb)
+  :is(.pagelink, .pagelink a) {
+  color: var(--color-txt1) !important;
+}
+
+#pun-searchtopics
+  .forum-design-topic-search
+  :is(.linkst, .linksb)
+  :is(.pagelink strong, .postlink, .postlink a) {
+  color: var(--color-categoru-mobile) !important;
+}
+
+@media screen and (max-width: 700px) {
+  #pun-searchtopics #pun-main.multipage {
+    margin-top: 0;
+  }
+
+  #pun-searchtopics .search-topic-card {
+    --mobile-search-avatar-size: 48px;
+
+    position: relative;
+    grid-template-columns:
+      var(--mobile-search-avatar-size)
+      minmax(0, 1fr)
+      max-content;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "avatar subject date"
+      "avatar forum forum";
+    gap: 4px 10px;
+    min-height: 72px;
+  }
+
+  #pun-searchtopics .search-topic-card::before {
+    display: none;
+  }
+
+  #pun-searchtopics .search-topic-card__subject {
+    grid-area: subject;
+    align-self: end;
+  }
+
+  #pun-searchtopics .search-topic-card__subject :is(.intd, .tclcon) {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+
+  #pun-searchtopics
+    .search-topic-card__subject
+    a[href*="viewtopic.php"]:first-of-type {
+    display: block;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  #pun-searchtopics
+    .search-topic-card__subject
+    :is(.byuser, .newtext, .pagestext) {
+    display: none;
+  }
+
+  #pun-searchtopics .search-topic-card__forum {
+    grid-area: forum;
+    align-self: start;
+    font-size: 10px;
+    text-align: left;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  #pun-searchtopics .search-topic-card__forum::before {
+    content: attr(data-label) ": ";
+    color: var(--color-txt1);
+  }
+
+  #pun-searchtopics .search-topic-card__replies {
+    display: none;
+  }
+
+  #pun-searchtopics .search-topic-card__last-post {
+    display: contents;
+  }
+
+  #pun-searchtopics .search-topic-card__last-post .user-avatar {
+    grid-area: avatar;
+    align-self: center;
+    width: var(--mobile-search-avatar-size) !important;
+    height: var(--mobile-search-avatar-size) !important;
+    margin: 0 !important;
+  }
+
+  #pun-searchtopics .search-topic-card__last-post .avatar-image {
+    width: var(--mobile-search-avatar-size) !important;
+    height: var(--mobile-search-avatar-size) !important;
+  }
+
+  #pun-searchtopics .search-topic-card__last-post > a {
+    grid-area: date;
+    align-self: end;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--color-link);
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #pun-searchtopics .search-topic-card__last-post > .byuser {
+    display: none;
+  }
+}
