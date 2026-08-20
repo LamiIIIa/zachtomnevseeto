@@ -219,6 +219,8 @@
     box-shadow: none;
     mix-blend-mode: normal;
     object-fit: contain;
+    position: relative;
+    left: -20px;
   }
 
   .pa-fld1 img {
