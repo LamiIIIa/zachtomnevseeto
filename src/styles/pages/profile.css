@@ -179,7 +179,9 @@
 #user-topics,
 #email > span > a.sendmail,
 #email > span > a.sendpm,
-#profile1 > fieldset > div > p.datafield > span.input > a {
+#profile1 > fieldset > div > p.datafield > span.input > a,
+#profile4 > fieldset > div > p.inputfield > a,
+#profile4 > fieldset > div > p.datafield > a {
   display: inline-block;
   max-width: 200px;
   box-sizing: border-box;
@@ -194,7 +196,9 @@
 #user-topics:hover,
 #email > span > a.sendmail:hover,
 #email > span > a.sendpm:hover,
-#profile1 > fieldset > div > p.datafield > span.input > a:hover {
+#profile1 > fieldset > div > p.datafield > span.input > a:hover,
+#profile4 > fieldset > div > p.inputfield > a:hover,
+#profile4 > fieldset > div > p.datafield > a:hover {
   background: var(--color-hover);
 }
 

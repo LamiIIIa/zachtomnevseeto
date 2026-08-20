@@ -48,10 +48,10 @@
   margin-top: 3px;
 }
 .post-rating p:before {
-  content: '\e87d';
+  content: "\e87d";
 }
 .post-vote p:before {
-  content: '\e147';
+  content: "\e147";
 }
 .post-rating:hover p:before,
 .post-vote:hover p:before {
@@ -111,22 +111,22 @@
 }
 
 #topic-users-in a:after {
-  content: ',';
+  content: ",";
   margin-right: 2px;
 }
 
 .formsubmit {
-  display: flex;
-  gap: 10px;
-  align-items: center;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: var(--color-txt2);
-  font: 500 10px var(--font);
+  color: var(--color-txt1);
+  font: 200 10px var(--font-g);
+  align-items: center;
+  gap: 10px;
+  display: flex;
 }
 
 #post-form ~ .post {
-    margin-top: 40px;
+  margin-top: 40px;
 }
 
 #pun-post #post-preview legend span,
@@ -143,6 +143,5 @@
 }
 
 #pun-post .post h3 span {
-    margin-top: 0px;
+  margin-top: 0px;
 }
-
