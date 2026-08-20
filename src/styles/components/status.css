@@ -12,6 +12,10 @@
   left: 0;
 }
 
+#pun-profile > #pun-status {
+  display: none;
+}
+
 /* Слева находятся аватар и приветствие, справа — ссылки действий. */
 #pun-status .status-layout {
   box-sizing: border-box;
