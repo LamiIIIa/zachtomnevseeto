@@ -239,11 +239,18 @@
   position: relative;
 }
 
-.show_user_posts > div.topic > div > div > div.post-links > ul > li > a {
+.show_user_posts > div.topic > div > div > div.post-links > ul > li > a,
+.search > div.topic > div > div > div.post-links > ul > li > a {
   position: absolute;
   right: 0;
   bottom: 10px;
   border-radius: 5px;
   border: 1px solid var(--color-link);
   padding: 5px;
+}
+
+.show_user_posts > div.topic > div > div > div.post-links > ul > li > a:hover,
+.search > div.topic > div > div > div.post-links > ul > li > a:hover {
+  background: var(--color-link);
+  color: var(--color-txt3) !important;
 }
