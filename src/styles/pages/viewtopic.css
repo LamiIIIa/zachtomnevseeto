@@ -63,10 +63,6 @@ textarea,
 }
 
 @media screen and (max-width: 700px) {
-  #togglePreview {
-    display: none;
-  }
-
   #pun-viewtopic .linkst,
   #pun-searchposts .linkst,
   #pun-multimove .linkst {
