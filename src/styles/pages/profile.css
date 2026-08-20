@@ -98,8 +98,21 @@
   background: var(--color-hover);
 }
 
-#profile1 > fieldset > legend > span {
+#profile1 > fieldset > legend > span,
+#profile2 > fieldset > legend > span,
+#profile4 > fieldset > legend > span,
+#profile5 > fieldset > legend > span,
+#profile6 > fieldset > legend > span,
+#profile7 > fieldset > legend > span,
+#profile8 > fieldset > legend > span,
+#profile9 > fieldset > legend > span,
+#profile10 > fieldset > legend > span,
+#profile11 > fieldset > legend > span {
   font: 400 normal 14px var(--font-1);
   text-transform: uppercase;
   color: var(--color-link);
+}
+
+#profile11 > fieldset:nth-child(1) > div > p > label {
+  display: none;
 }
