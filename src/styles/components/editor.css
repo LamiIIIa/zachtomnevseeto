@@ -313,6 +313,17 @@ del:hover {
 }
 
 /* Панель после преобразования таблицы в гибкую структуру. */
+#plng,
+  .editor-character-count {
+    position: static;
+    right: auto;
+    top: auto;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 0 8px auto;
+    padding: 2px 8px;
+  }
+
 #form-buttons.editor-toolbar-ready {
   box-sizing: border-box;
   width: 100%;
