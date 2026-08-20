@@ -192,7 +192,7 @@
     grid-row: 2;
     align-self: center;
     justify-self: center;
-    width: 150px;
+    width: auto;
     height: auto;
     margin: 0;
     padding: 0;
@@ -210,9 +210,8 @@
   #pun-viewtopic .pa-fld1 img,
   #pun-viewtopic .pa-fld1 .band {
     box-sizing: border-box;
-    width: 150px !important;
     height: auto !important;
-    max-width: 150px !important;
+    max-width: auto !important;
     max-height: none;
     margin: 0;
     padding: 0;
