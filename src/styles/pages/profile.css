@@ -72,3 +72,34 @@
 .profile-navigation-toggle {
   display: none;
 }
+
+/* Правила для внутренних страниц */
+
+#user-posts,
+#user-topics,
+#email > span > a.sendmail,
+#email > span > a.sendpm,
+#profile1 > fieldset > div > p.datafield > span.input > a {
+  display: inline-block;
+  max-width: 200px;
+  box-sizing: border-box;
+  text-align: center;
+  background: var(--color-link);
+  color: var(--color-txt3);
+  padding: 5px;
+  border-radius: 10px;
+}
+
+#user-posts:hover,
+#user-topics:hover,
+#email > span > a.sendmail:hover,
+#email > span > a.sendpm:hover,
+#profile1 > fieldset > div > p.datafield > span.input > a:hover {
+  background: var(--color-hover);
+}
+
+#profile1 > fieldset > legend > span {
+  font: 400 normal 14px var(--font-1);
+  text-transform: uppercase;
+  color: var(--color-link);
+}
