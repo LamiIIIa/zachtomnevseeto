@@ -346,7 +346,7 @@ html.kakashi #viewprofile #pa-fld1 img {
   text-transform: lowercase;
   font: 500 11px var(--font) text;
   letter-spacing: 0.5px;
-  margin-left: var(--profnav-w) !important;
+  margin-left: 10px !important;
 }
 
 #profile fieldset fieldset {
