@@ -87,6 +87,15 @@
   top: 5px;
 }
 
+@media screen and (min-width: 701px) {
+  #tuser {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: auto;
+  }
+}
+
 /* Статус */
 .pa-title {
   height: 30px;
