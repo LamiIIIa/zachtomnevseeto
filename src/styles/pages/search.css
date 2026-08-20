@@ -81,7 +81,46 @@
   color: var(--color-categoru-mobile) !important;
 }
 
+#punbbsearch > fieldset > legend > span {
+  font: 400 normal 14px var(--font-1) !important;
+  text-transform: uppercase;
+  color: var(--color-link);
+}
+
 @media screen and (max-width: 700px) {
+  /* Форма поиска: поля в колонках, общая подсказка под ними. */
+  #pun-search .fs-box.inline {
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 12px 10px;
+    width: 100%;
+  }
+
+  #pun-search
+    .fs-box.inline
+    > :is(.inputfield, .selectfield, .infofield) {
+    box-sizing: border-box;
+    min-width: 0;
+    margin: 0;
+  }
+
+  #pun-search .fs-box.inline .input {
+    display: block;
+    width: 100%;
+  }
+
+  #pun-search .fs-box.inline :is(input, select) {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  #pun-search .fs-box.inline > .infofield {
+    grid-column: 1 / -1;
+  }
+
   #pun-searchtopics #pun-main.multipage {
     margin-top: 0;
   }
