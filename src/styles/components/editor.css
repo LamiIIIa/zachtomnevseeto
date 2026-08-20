@@ -544,16 +544,17 @@ option {
 /* button */
 .button,
 .hvStickerPackModalTab {
-  background: var(--color-forum) !important;
-  border: none !important;
-  padding: 8px 15px !important;
   text-transform: uppercase;
-  font-size: 10px !important;
-  color: var(--color-txt1);
-  font-weight: 700 !important;
-  transition: all 0.5s;
+  color: var(--color-link);
   cursor: pointer;
   min-width: max-content;
+  transition: all 0.5s;
+  background: var(--color-forum) !important;
+  border: 1px solid !important;
+  margin: 5px;
+  padding: 8px 15px !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
 }
 
 .button:hover,

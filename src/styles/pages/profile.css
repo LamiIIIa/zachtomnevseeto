@@ -75,6 +75,106 @@
 
 /* Правила для внутренних страниц */
 
+/* Чекбоксы и переключатели оформлены как карточки списка тем. */
+#pun-profile
+  #profile
+  :is(p.checkfield, div.checkfield, fieldset.radiofield > span.radio) {
+  box-sizing: border-box;
+  display: grid !important;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  margin: 8px 0;
+  padding: 10px 12px !important;
+  color: var(--color-txt1);
+  background: var(--color-forum);
+  border: 1px solid var(--color-lnthoverbg);
+  border-radius: 14px;
+  font: 400 11px/1.45 var(--font);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+#pun-profile
+  #profile
+  :is(p.checkfield, div.checkfield, fieldset.radiofield > span.radio):hover {
+  border-color: var(--color-link);
+}
+
+#pun-profile
+  #profile
+  :is(p.checkfield, div.checkfield, fieldset.radiofield > span.radio):has(
+    > input:checked
+  ) {
+  border-color: var(--color-link);
+  box-shadow: var(--topic-shadow-new);
+}
+
+#pun-profile #profile input:is([type="checkbox"], [type="radio"]) {
+  appearance: none;
+  box-sizing: border-box;
+  display: grid !important;
+  place-content: center;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 0 !important;
+  color: var(--color-forum);
+  background: var(--color-forum);
+  border: 1px solid var(--color-link);
+  cursor: pointer;
+}
+
+#pun-profile #profile input[type="checkbox"] {
+  border-radius: 5px;
+}
+
+#pun-profile #profile input[type="radio"] {
+  border-radius: 50%;
+}
+
+#pun-profile #profile input:is([type="checkbox"], [type="radio"])::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: var(--color-link);
+  transform: scale(0);
+  transition: transform 0.15s ease-in-out;
+}
+
+#pun-profile #profile input[type="checkbox"]::before {
+  clip-path: polygon(14% 44%, 0 59%, 40% 100%, 100% 20%, 84% 5%, 39% 70%);
+}
+
+#pun-profile #profile input[type="radio"]::before {
+  border-radius: 50%;
+}
+
+#pun-profile
+  #profile
+  input:is([type="checkbox"], [type="radio"]):checked::before {
+  transform: scale(1);
+}
+
+#pun-profile
+  #profile
+  input:is([type="checkbox"], [type="radio"]):focus-visible {
+  outline: 2px solid var(--color-link);
+  outline-offset: 3px;
+}
+
+#pun-profile
+  #profile
+  :is(p.checkfield, div.checkfield, fieldset.radiofield > span.radio)
+  > label {
+  min-width: 0;
+  margin: 0;
+  padding: 0 !important;
+  color: var(--color-txt1);
+  cursor: pointer;
+}
+
 #user-posts,
 #user-topics,
 #email > span > a.sendmail,
@@ -113,6 +213,18 @@
   color: var(--color-link);
 }
 
+#profile2 > fieldset > div > .inputfield > label,
+#about-me > label,
+#sex {
+  font: 400 normal 14px var(--font-1) !important;
+  text-transform: uppercase;
+  color: var(--color-link);
+}
+
 #profile11 > fieldset:nth-child(1) > div > p > label {
   display: none;
+}
+
+#setmods > dl > dl > dt {
+  font: 400 12px var(--font-1) !important;
 }
