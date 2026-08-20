@@ -4,6 +4,16 @@
   background: var(--color-forum);
 }
 
+/* По умолчанию у результата поиска обычная иконка */
+#pun-searchtopics .search-topic-card {
+  --topic-icon-image: var(--icon);
+}
+
+/* Иконка новых сообщений — исключительно у непрочитанной темы */
+#pun-searchtopics .search-topic-card.inew {
+  --topic-icon-image: var(--icon-inew);
+}
+
 #pun-searchtopics .search-topic-card {
   grid-template-columns:
     var(--topic-icon-size)
