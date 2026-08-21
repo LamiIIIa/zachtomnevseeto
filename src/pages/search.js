@@ -9,6 +9,7 @@ import {
 const TOPIC_SEARCH_ACTIONS = new Set([
   "show_recent",
   "show_replies",
+  "show_subscriptions",
   "show_unanswered",
 ]);
 
