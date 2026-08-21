@@ -58,6 +58,7 @@
 @import "./components/viewport-mode.css";
 @import "./components/pagination.css";
 @import "./components/forms.css";
+@import "./components/forum-icons.css";
 @import "./components/forum-card-list.css";
 @import "./pages/index.css";
 @import "./pages/viewforum.css";

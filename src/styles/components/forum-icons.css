@@ -1,0 +1,92 @@
+/* Системный набор иконок MyBB. Источники указаны для обоих форумов. */
+@font-face {
+  font-family: "forum-icons";
+  src:
+    url("https://akatsukigood.forum.cool/style/res/font/icons.woff2?3") format("woff2"),
+    url("https://akatsukigood.forum.cool/style/res/font/icons.woff?3") format("woff"),
+    url("https://zachtomnewseeto.mybb.ru/style/res/font/icons.woff2?3") format("woff2"),
+    url("https://zachtomnewseeto.mybb.ru/style/res/font/icons.woff?3") format("woff");
+  font-style: normal;
+  font-weight: normal;
+  font-display: block;
+}
+
+i[class^="icons-"]::before,
+i[class*=" icons-"]::before,
+.i[class^="icons-"]::before,
+.i[class*=" icons-"]::before {
+  display: inline-block;
+  width: 1em;
+  margin-right: 0.2em;
+  margin-left: 0.2em;
+  font-family: "forum-icons" !important;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  line-height: 1;
+  text-align: center;
+  text-decoration: inherit;
+  text-transform: none;
+  speak: never;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icons-search::before { content: "\e095"; }
+.icons-font::before { content: "\e800"; }
+.icons-size::before { content: "\e801"; }
+.icons-video::before { content: "\e802"; }
+.icons-image::before { content: "\e803"; }
+.icons-plus::before { content: "\e804"; }
+.icons-cancel::before { content: "\e805"; }
+.icons-minus::before { content: "\e806"; }
+.icons-star::before { content: "\e807"; }
+.icons-cog::before { content: "\e808"; }
+.icons-play::before { content: "\e809"; }
+.icons-pause::before { content: "\e80a"; }
+.icons-fast-fw::before { content: "\e80b"; }
+.icons-fast-bw::before { content: "\e80c"; }
+.icons-code::before { content: "\e80d"; }
+.icons-table::before { content: "\e80e"; }
+.icons-spoiler::before { content: "\e80f"; }
+.icons-calendar::before { content: "\e810"; }
+.icons-pencil::before { content: "\e811"; }
+.icons-hide::before { content: "\e812"; }
+.icons-list::before { content: "\e813"; }
+.icons-indent-left::before { content: "\e814"; }
+.icons-indent-right::before { content: "\e815"; }
+.icons-trash-empty::before { content: "\e816"; }
+.icons-off::before { content: "\e817"; }
+.icons-heart::before { content: "\e818"; }
+.icons-user::before { content: "\e819"; }
+.icons-left::before { content: "\e81a"; }
+.icons-center::before { content: "\e81b"; }
+.icons-right::before { content: "\e81c"; }
+.icons-italic::before { content: "\e81d"; }
+.icons-bold::before { content: "\e81e"; }
+.icons-comment::before { content: "\e81f"; }
+.icons-resize-full::before { content: "\e820"; }
+.icons-resize-small::before { content: "\e821"; }
+.icons-quote::before { content: "\e822"; }
+.icons-share::before { content: "\e823"; }
+.icons-smile::before { content: "\e824"; }
+.icons-youtube::before { content: "\e825"; }
+.icons-link::before { content: "\e826"; }
+.icons-volume-off::before { content: "\e827"; }
+.icons-volume-down::before { content: "\e828"; }
+.icons-volume::before { content: "\e829"; }
+.icons-volume-up::before { content: "\e82a"; }
+.icons-addition::before { content: "\e82b"; }
+.icons-infinity::before { content: "\e82c"; }
+.icons-cancel-outline::before { content: "\e82d"; }
+.icons-ok-outline::before { content: "\e82e"; }
+.icons-facebook::before { content: "\f09a"; }
+.icons-strike::before { content: "\f0cc"; }
+.icons-underline::before { content: "\f0cd"; }
+.icons-mail::before { content: "\f0e0"; }
+.icons-keyboard::before { content: "\f11c"; }
+.icons-help::before { content: "\f128"; }
+.icons-vkontakte::before { content: "\f189"; }
+.icons-color::before { content: "\f1fb"; }
+.icons-odnoklassniki::before { content: "\f263"; }
+.icons-vimeo::before { content: "\f27d"; }

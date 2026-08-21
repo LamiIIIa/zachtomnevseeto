@@ -59,7 +59,8 @@ textarea,
   height: 46px;
   border-radius: 5px;
   cursor: pointer;
-  font-family: var(--mat) !important;
+  font-family: "forum-icons" !important;
+  font-size: 18px !important;
   font-weight: 400 !important;
   line-height: 1 !important;
   background: var(--color-link);

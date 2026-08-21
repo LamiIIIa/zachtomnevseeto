@@ -27,7 +27,7 @@ function initTopicTools(main) {
 
   const searchButton = search.querySelector("#isk");
 
-  if (searchButton) searchButton.value = "\ue8b6";
+  if (searchButton) searchButton.value = "\ue095";
 
   const toolbar = document.createElement("div");
 
