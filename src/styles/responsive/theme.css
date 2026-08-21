@@ -37,17 +37,6 @@
     -webkit-appearance: none !important;
     border-radius: 0px !important;
   }
-    .go-up,.go-down {
-      display: none;
-  }
-  
-  .upper::before,
-.dvnr::before {
-    display: none;
-}
- 
-
-  
   #pun-announcement {
   width: calc(var(--main-w) + 0px);
   height: 386px;

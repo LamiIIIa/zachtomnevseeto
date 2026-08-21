@@ -632,11 +632,6 @@
     outline: 2px solid var(--color-link);
     outline-offset: 2px;
   }
-  .quote-box:before,
-  .code-box:before {
-    display: none;
-  }
-
   .spoiler-box > div {
     box-shadow: none !important;
     border: 1px solid var(--color-link);

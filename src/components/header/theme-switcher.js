@@ -1,7 +1,7 @@
 import { t } from '../../i18n/index.js'
+import { MOBILE_LAYOUT_QUERY } from '../../config/layout.js'
 
 const STORAGE_KEY = 'selectedTheme'
-const MOBILE_HEADER_QUERY = '(max-width: 700px)'
 
 const THEMES = [
   { name: 'shinobi', titleKey: 'themes.shinobi' },
@@ -75,7 +75,7 @@ function initMobilePlacement(switcher, header) {
   picker.append(button)
   header.append(picker)
 
-  const media = window.matchMedia(MOBILE_HEADER_QUERY)
+  const media = window.matchMedia(MOBILE_LAYOUT_QUERY)
   const updatePlacement = () => {
     if (media.matches) {
       picker.append(switcher)

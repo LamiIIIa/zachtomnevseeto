@@ -25,17 +25,15 @@ export function initEditors(root) {
 }
 
 function processEditorContent(root) {
-  const editors = [];
+  const editors = collectMatchingElements(root, EDITOR_SELECTOR);
+  const toolbars = collectMatchingElements(root, "#form-buttons");
 
-  if (root instanceof HTMLTextAreaElement && root.matches(EDITOR_SELECTOR))
-    editors.push(root);
-  editors.push(...root.querySelectorAll(EDITOR_SELECTOR));
   editors.forEach(initEditor);
 
-  initDiceButton(root);
-  initFlexibleToolbar(root);
-  initExtraColors(root);
-  initDiceResults(root);
+  initDiceButton(toolbars);
+  initFlexibleToolbar(toolbars);
+  initExtraColors(collectMatchingElements(root, "#color-area"));
+  initDiceResults(collectMatchingElements(root, ".post-content"));
 }
 
 function initEditor(textarea) {
@@ -148,15 +146,7 @@ function getLegacyDraftStorageKey(textarea) {
   return `draft_topic_${topicId}_${postId}`;
 }
 
-function initDiceButton(root) {
-  const toolbars = [];
-
-  if (root instanceof Element && root.id === "form-buttons") {
-    toolbars.push(root);
-  }
-
-  toolbars.push(...root.querySelectorAll("#form-buttons"));
-
+function initDiceButton(toolbars) {
   toolbars.forEach((toolbar) => {
     let cell = toolbar.querySelector("#button-dice");
 
@@ -203,14 +193,7 @@ function initDiceButton(root) {
   }
 }
 
-function initFlexibleToolbar(root) {
-  const toolbars = [];
-
-  if (root instanceof Element && root.id === "form-buttons") {
-    toolbars.push(root);
-  }
-  toolbars.push(...root.querySelectorAll("#form-buttons"));
-
+function initFlexibleToolbar(toolbars) {
   toolbars.forEach((toolbar) => {
     if (toolbar.dataset.flexibleToolbarReady) return;
 
@@ -286,12 +269,7 @@ function insertAtCursor(textarea, text) {
   textarea.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
-function initExtraColors(root) {
-  const colorAreas = [];
-  if (root instanceof Element && root.id === "color-area")
-    colorAreas.push(root);
-  colorAreas.push(...root.querySelectorAll("#color-area"));
-
+function initExtraColors(colorAreas) {
   colorAreas.forEach((colorArea) => {
     if (
       colorArea.querySelector('[data-forum-extra-colors], td[style*="thistle"]')
@@ -331,12 +309,17 @@ function initExtraColors(root) {
   });
 }
 
-function initDiceResults(root) {
-  const postContents = [];
-  if (root instanceof Element && root.matches(".post-content"))
-    postContents.push(root);
-  postContents.push(...root.querySelectorAll(".post-content"));
+function initDiceResults(postContents) {
   postContents.forEach(replaceDiceCodes);
+}
+
+function collectMatchingElements(root, selector) {
+  const elements = [];
+
+  if (root instanceof Element && root.matches(selector)) elements.push(root);
+  elements.push(...root.querySelectorAll(selector));
+
+  return elements;
 }
 
 function replaceDiceCodes(postContent) {

@@ -83,10 +83,6 @@
     max-width: 100px;
 }
 
-#mask_dialog .hv-form-block {
-    flex: 1 1 auto;
-}
-
 #mask_dialog .hv-form-block label {
     display: block;
     margin-bottom: px;
@@ -722,4 +718,3 @@
         text-align: left;
     }
 }
-

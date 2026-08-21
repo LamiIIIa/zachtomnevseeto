@@ -1,4 +1,4 @@
-import linkObj from "../linksObgect.js";
+import linkObj from "../links-object.js";
 
 export function initMobileImportantLinks(header) {
   if (!header || header.querySelector(".mobile-important-links")) return;

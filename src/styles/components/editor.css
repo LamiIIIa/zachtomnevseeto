@@ -124,9 +124,6 @@ del:hover {
   background: var(--color-dark);
   border-radius: 13px;
   letter-spacing: 0.05em;
-  position: relative;
-  right: -930px;
-  top: 20px;
   text-transform: uppercase;
 }
 
@@ -532,7 +529,6 @@ option,
   padding: 5px 7px;
   color: var(--color-txt1);
   box-sizing: border-box;
-  border-radius: 0px;
   transition: box-shadow 0.3s ease;
 }
 

@@ -1,10 +1,12 @@
 import {
   applyTopicCardAppearance,
   createCardFromRow,
+  createEmptyListMessage,
   getTopicCardAppearance,
   moveCellToBlock,
   replaceTableWithCardList,
 } from "../components/table-card-layout.js";
+import { FORUM_TABLE_SELECTOR } from "../config/layout.js";
 
 const TOPIC_SEARCH_ACTIONS = new Set([
   "show_recent",
@@ -27,7 +29,7 @@ export function initSearch({ main }) {
   main.classList.add("forum-design-topic-search");
   if (main.dataset.searchTopicLayout === "cards") return;
 
-  main.querySelectorAll(".forum > .container > table").forEach((table) => {
+  main.querySelectorAll(FORUM_TABLE_SELECTOR).forEach((table) => {
     replaceTableWithCardList(table, {
       listClassName: "search-topic-list forum-card-list",
       renderRow: renderSearchTopicCard,
@@ -39,12 +41,10 @@ export function initSearch({ main }) {
 
 function renderSearchTopicCard({ row, cells, headers }) {
   if (cells.length < 4) {
-    const empty = document.createElement("p");
-
-    empty.className = "search-topic-list__empty forum-list-card";
-    empty.textContent = row.textContent.trim();
-
-    return empty;
+    return createEmptyListMessage(
+      row,
+      "search-topic-list__empty forum-list-card"
+    );
   }
 
   const appearance = getTopicCardAppearance(row, cells[0]);

@@ -5,9 +5,10 @@ export function initProfile({ root, main, userId }) {
   main?.classList.add("forum-design-profile");
   if (userId !== null) main?.setAttribute("data-user-id", String(userId));
 
-  placeProfileNavigation(root, main);
+  const profileNavigation = placeProfileNavigation(root, main);
+
   transformViewProfileLayout(main);
-  initProfileNavigationDropdown(root);
+  initProfileNavigationDropdown(profileNavigation);
   lockRestrictedProfile(main);
 }
 
@@ -114,25 +115,24 @@ function transformProfileSignature(viewProfile) {
 }
 
 function placeProfileNavigation(root, main) {
-  if (!root || !main) return;
+  if (!root || !main) return null;
 
   const profilePage = main.querySelector("#viewprofile, #profile");
   const profileNavigation = root.querySelector("#profilenav");
   const topCrumbsSection = root.querySelector("#pun-crumbs1");
 
-  if (!profilePage || !profileNavigation || !topCrumbsSection) return;
+  if (!profilePage || !profileNavigation || !topCrumbsSection) return null;
 
   topCrumbsSection.replaceWith(profileNavigation);
 
   profileNavigation.style.removeProperty("display");
   profileNavigation.removeAttribute("hidden");
   profileNavigation.classList.add("profile-section-menu");
+
+  return profileNavigation;
 }
 
-function initProfileNavigationDropdown(root) {
-  if (!root) return;
-
-  const navigation = root.querySelector("#profilenav");
+function initProfileNavigationDropdown(navigation) {
   const linkList = navigation?.querySelector(":scope > ul");
 
   if (!navigation || !linkList) return;

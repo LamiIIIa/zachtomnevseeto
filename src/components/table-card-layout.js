@@ -51,6 +51,15 @@ export function createCardFromRow(
   return card;
 }
 
+export function createEmptyListMessage(row, className) {
+  const message = document.createElement("p");
+
+  message.className = className;
+  message.textContent = row.textContent.trim();
+
+  return message;
+}
+
 export function moveCellToBlock(
   source,
   { className, label = "", tagName = "div" }
@@ -92,8 +101,12 @@ export function getTopicCardAppearance(row, mainCell = row?.cells?.[0]) {
 }
 
 export function applyTopicCardAppearance(card, mainCell, appearance) {
-  mainCell?.querySelector(".icon")?.remove();
+  removeTableRowIcon(mainCell);
   card.classList.add(...appearance.inheritedStates);
   card.classList.toggle("inew", appearance.hasNewMessages);
   card.dataset.hasNewMessages = String(appearance.hasNewMessages);
+}
+
+export function removeTableRowIcon(mainCell) {
+  mainCell?.querySelector(".icon")?.remove();
 }

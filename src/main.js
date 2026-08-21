@@ -1,7 +1,11 @@
 import './styles/main.css'
 
 import { initCommon } from './components/common.js'
-import { applyStoredTheme, initHeader } from './components/header/index.js'
+import {
+  applyStoredTheme,
+  applyStoredViewportMode,
+  initHeader,
+} from './components/header/index.js'
 import { getPageContext } from './core/page-context.js'
 import { initI18n } from './i18n/index.js'
 import { initAuth } from './pages/auth.js'
@@ -33,7 +37,8 @@ const pageInitializers = {
   register: initAuth,
 }
 
-// Применяем тему до DOMContentLoaded, чтобы уменьшить мигание оформления.
+// Применяем viewport и тему до DOMContentLoaded, чтобы уменьшить мигание оформления.
+applyStoredViewportMode()
 applyStoredTheme()
 
 async function init() {

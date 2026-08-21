@@ -2,7 +2,7 @@ import { forumConfig } from '../config/forum.js'
 
 const primaryOrigin = forumConfig.primaryOrigin
 
-const lonkObj = {
+const linkObject = {
   linkForMobHead: {
     maketLD: {
       link: `${primaryOrigin}/viewtopic.php?id=68#p245`,
@@ -27,4 +27,4 @@ const lonkObj = {
   },
 };
 
-export default lonkObj;
+export default linkObject;

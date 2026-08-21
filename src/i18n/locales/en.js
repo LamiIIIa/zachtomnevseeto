@@ -14,6 +14,10 @@ export default {
     green: 'Power of Youth!',
     kakashi: 'How should I put it...',
   },
+  viewportMode: {
+    enableMobile: 'Mobile version',
+    disableMobile: 'Full version',
+  },
   citatas: {
     first: "I don't understand a thing! All right, I'll pretend I got it...",
     second: "It's very easy to fold your arms and say, 'It's impossible.'",

@@ -1,4 +1,5 @@
 import { t } from '../i18n/index.js'
+import { MOBILE_LAYOUT_QUERY } from '../config/layout.js'
 import { initEditors } from './editor/index.js'
 import { initForumElements } from './forum-elements.js'
 import { initMobileNavigation } from './mobile-navigation.js'
@@ -45,7 +46,7 @@ function initFooterBanners(root) {
   const footer = root.querySelector('#pun-about .container') || root.querySelector('#pun-about')
   if (!footer || !window.matchMedia) return
 
-  const media = window.matchMedia('(max-width: 700px)')
+  const media = window.matchMedia(MOBILE_LAYOUT_QUERY)
 
   document.querySelectorAll('.bannerc').forEach((banners) => {
     if (banners.dataset.forumDesignReady) return

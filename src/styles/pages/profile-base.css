@@ -18,7 +18,6 @@
   font: 500 11px var(--font) text;
   border-radius: 10px;
   background: var(--color-lnthoverbg);
-  align-items: flex-start;
   gap: 20px;
   display: flex;
   align-items: center;

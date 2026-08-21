@@ -1,21 +1,17 @@
 import {
+  applyTopicCardAppearance,
   createCardFromRow,
+  createEmptyListMessage,
+  getTopicCardAppearance,
   moveCellToBlock,
   replaceTableWithCardList,
 } from "../components/table-card-layout.js";
-
-const ACTIVE_TOPIC_STATES = [
-  "isticky",
-  "iclosed",
-  "ipinned",
-  "pinned",
-  "important",
-];
+import { FORUM_TABLE_SELECTOR } from "../config/layout.js";
 
 export function initForumModeration({ main }) {
   if (!main || main.dataset.moderationLayout === "cards") return;
 
-  const table = main.querySelector(".forum > .container > table");
+  const table = main.querySelector(FORUM_TABLE_SELECTOR);
 
   if (!table) return;
 
@@ -31,39 +27,15 @@ function createModerationTopicCard(row, headers, cells) {
 
   // MyBB может вывести вместо тем одну служебную строку с сообщением.
   if (cells.length < 5) {
-    const message = document.createElement("p");
-
-    message.className = "moderation-topic-list__empty";
-    message.textContent = row.textContent.trim();
-
-    return message;
+    return createEmptyListMessage(row, "moderation-topic-list__empty");
   }
 
-  const icon = cells[0]?.querySelector(".icon");
-  const iconClasses = new Set(
-    [icon, ...(icon?.querySelectorAll("*") ?? [])]
-      .filter(Boolean)
-      .flatMap((element) => Array.from(element.classList))
-  );
-  const inheritedStates = ACTIVE_TOPIC_STATES.filter((state) =>
-    iconClasses.has(state)
-  );
-  const hasNewMessages = Boolean(
-    row.classList.contains("inew") ||
-      iconClasses.has("inew") ||
-      iconClasses.has("icon-new") ||
-      icon?.title === "Есть новые сообщения" ||
-      cells[0]?.querySelector(".newtext")
-  );
+  const appearance = getTopicCardAppearance(row, cells[0]);
   const topicCard = createCardFromRow(row, {
     className: "moderation-topic-card",
   });
 
-  // Иконка будет нарисована псевдоэлементом карточки на десктопе.
-  icon?.remove();
-
-  topicCard.classList.add(...inheritedStates);
-  topicCard.classList.toggle("inew", hasNewMessages);
+  applyTopicCardAppearance(topicCard, cells[0], appearance);
 
   const main = moveCellToBlock(cells[0], {
     className: "moderation-topic-card__main tcl",

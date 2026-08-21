@@ -5,8 +5,29 @@ import {
   moveCellToBlock,
   replaceTableWithCardList,
 } from "../components/table-card-layout.js";
+import {
+  FORUM_TABLE_SELECTOR,
+  MOBILE_LAYOUT_QUERY,
+} from "../config/layout.js";
 
-const MOBILE_VIEWFORUM_QUERY = "(max-width: 700px)";
+const WEEKDAY_FORMATTER = new Intl.DateTimeFormat("ru-RU", {
+  weekday: "short",
+});
+const SHORT_DATE_FORMATTER = new Intl.DateTimeFormat("ru-RU", {
+  day: "numeric",
+  month: "short",
+});
+const PREVIEW_EXCLUDED_SELECTOR = [
+  "blockquote",
+  ".quote-box",
+  ".spoiler-box",
+  ".hide-box",
+  "script",
+  "style",
+  "iframe",
+  "video",
+  "audio",
+].join(",");
 
 const forumViewState = {
   topics: new Map(),
@@ -22,7 +43,7 @@ export function initForumView({ main, forumId }) {
 
   forumViewState.topics.clear();
   main
-    .querySelectorAll(".forum > .container > table")
+    .querySelectorAll(FORUM_TABLE_SELECTOR)
     .forEach((table) => {
       replaceTableWithCardList(table, {
         listClassName: "topic-list forum-card-list",
@@ -243,23 +264,12 @@ function formatTopicDate(value, now = new Date()) {
 
   // В пределах текущей недели выводим короткий день: «пн», «вт», «ср».
   if (date >= weekStart) {
-    return (
-      new Intl.DateTimeFormat("ru-RU", {
-        weekday: "short",
-      })
-        .format(date)
-        // В интерфейсе точка после сокращения не нужна.
-        .replace(/\.$/, "")
-    );
+    return WEEKDAY_FORMATTER.format(date)
+      .replace(/\.$/, "");
   }
 
   // Для более старых сообщений выводим число и месяц: «12 авг».
-  return new Intl.DateTimeFormat("ru-RU", {
-    day: "numeric",
-    month: "short",
-  })
-    .format(date)
-    .replace(/\.$/, "");
+  return SHORT_DATE_FORMATTER.format(date).replace(/\.$/, "");
 }
 
 function parseTopicDate(value, now) {
@@ -331,7 +341,7 @@ function parseTopicDate(value, now) {
 }
 
 function initTopicPreviews(main) {
-  const mobileView = window.matchMedia(MOBILE_VIEWFORUM_QUERY);
+  const mobileView = window.matchMedia(MOBILE_LAYOUT_QUERY);
 
   if (!mobileView.matches) return;
 
@@ -448,19 +458,7 @@ function createTopicPreview(messageHtml) {
   template.innerHTML = messageHtml;
 
   template.content
-    .querySelectorAll(
-      [
-        "blockquote",
-        ".quote-box",
-        ".spoiler-box",
-        ".hide-box",
-        "script",
-        "style",
-        "iframe",
-        "video",
-        "audio",
-      ].join(",")
-    )
+    .querySelectorAll(PREVIEW_EXCLUDED_SELECTOR)
     .forEach((element) => element.remove());
 
   template.content.querySelectorAll("img").forEach((image) => {

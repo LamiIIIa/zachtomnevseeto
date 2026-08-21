@@ -1,6 +1,9 @@
 import {
   createCardFromRow,
+  createEmptyListMessage,
+  getTopicCardAppearance,
   moveCellToBlock,
+  removeTableRowIcon,
   replaceTableWithCardList,
 } from "../components/table-card-layout.js";
 
@@ -96,30 +99,13 @@ function readCookie(name) {
 
 function createMessageCard(row, cells, headers) {
   if (cells.length < 4) {
-    const message = document.createElement("p");
-
-    message.className = "message-list__empty";
-    message.textContent = row.textContent.trim();
-
-    return message;
+    return createEmptyListMessage(row, "message-list__empty");
   }
 
-  const oldIcon = cells[0]?.querySelector(".icon");
-  const iconElements = oldIcon
-    ? [oldIcon, ...oldIcon.querySelectorAll("*")]
-    : [];
-  const iconClasses = new Set(
-    iconElements.flatMap((element) => Array.from(element.classList))
-  );
-  const hasNewMessages = Boolean(
-    row.classList.contains("inew") ||
-      iconClasses.has("inew") ||
-      iconClasses.has("icon-new") ||
-      oldIcon?.title === "Есть новые сообщения"
-  );
+  const { hasNewMessages } = getTopicCardAppearance(row, cells[0]);
   const card = createCardFromRow(row, { className: "message-card" });
 
-  oldIcon?.remove();
+  removeTableRowIcon(cells[0]);
   card.classList.toggle("inew", hasNewMessages);
   card.dataset.messageState = hasNewMessages ? "unread" : "read";
 

@@ -1,5 +1,6 @@
 import {
   createCardFromRow,
+  createEmptyListMessage,
   moveCellToBlock,
   replaceTableWithCardList,
 } from "../components/table-card-layout.js";
@@ -22,12 +23,7 @@ export function initUserList({ main }) {
 
 function renderUserCard({ row, cells, headers }) {
   if (cells.length < 6) {
-    const empty = document.createElement("p");
-
-    empty.className = "user-card-list__empty forum-list-card";
-    empty.textContent = row.textContent.trim();
-
-    return empty;
+    return createEmptyListMessage(row, "user-card-list__empty forum-list-card");
   }
 
   const card = createCardFromRow(row, {
