@@ -203,7 +203,7 @@
   grid-row: 1;
   flex-direction: column;
   align-items: stretch;
-  justify-content: space-between;
+  justify-content: center;
   width: auto !important;
   min-width: 0;
   height: 100%;
@@ -316,7 +316,7 @@ html.kakashi #viewprofile #pa-fld1 img {
   grid-row: 1;
   flex-direction: column;
   align-items: stretch;
-  justify-content: space-between;
+  justify-content: center;
   width: auto !important;
   min-width: 0;
   height: 100%;
