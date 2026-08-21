@@ -93,9 +93,6 @@
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
     display: block !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    pointer-events: auto !important;
   }
 
   html body .go-up {

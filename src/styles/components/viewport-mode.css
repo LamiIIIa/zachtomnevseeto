@@ -33,40 +33,6 @@
   border-color: var(--color-hover);
 }
 
-@media screen and (min-width: 701px) {
-  .viewport-mode-toggle::after {
-    content: attr(data-tooltip);
-    box-sizing: border-box;
-    width: max-content;
-    max-width: 180px;
-    padding: 5px 8px;
-    border: 1px solid color-mix(in srgb, var(--color-link) 35%, transparent);
-    border-radius: 4px;
-    color: var(--color-txt1);
-    background: color-mix(in srgb, var(--color-forum) 94%, transparent);
-    box-shadow: 0 3px 10px color-mix(in srgb, var(--shedow1) 35%, transparent);
-    font: 500 11px/1.2 var(--font);
-    text-transform: none;
-    white-space: nowrap;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transform: translate(-50%, -3px);
-    transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
-    position: absolute;
-    bottom: calc(100% + 6px);
-    left: 50%;
-    z-index: 10;
-  }
-
-  .viewport-mode-toggle:hover::after,
-  .viewport-mode-toggle:focus-visible::after {
-    opacity: 1;
-    visibility: visible;
-    transform: translate(-50%, 0);
-  }
-}
-
 @media screen and (max-width: 700px) {
   html #pun-announcement > .mobile-theme-picker {
     align-items: flex-end;
@@ -84,6 +50,9 @@
     padding: 0;
     border-radius: 12px !important;
     color: var(--color-txt1);
+    background: color-mix(in srgb, var(--color-forum) 78%, transparent);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
     position: static;
     left: auto;
   }

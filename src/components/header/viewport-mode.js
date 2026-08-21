@@ -36,9 +36,8 @@ export function initViewportModeToggle(header) {
     button.textContent = t(translationKey)
     button.title = t(titleKey)
     button.setAttribute('aria-label', t(translationKey))
-    button.dataset.tooltip = t('viewportMode.enableMobile')
     button.dataset.i18n = translationKey
-    button.dataset.i18nAttr = `title:${titleKey};aria-label:${translationKey};data-tooltip:viewportMode.enableMobile`
+    button.dataset.i18nAttr = `title:${titleKey};aria-label:${translationKey}`
   }
 
   button.addEventListener('click', () => {
