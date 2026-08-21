@@ -57,6 +57,7 @@ function initMobilePlacement(switcher, header) {
   const closePicker = () => {
     picker.classList.remove('mobile-theme-picker--open')
     button.setAttribute('aria-expanded', 'false')
+    removeThemeTooltip(switcher)
   }
 
   button.addEventListener('click', () => {
@@ -78,16 +79,47 @@ function initMobilePlacement(switcher, header) {
   const media = window.matchMedia(MOBILE_LAYOUT_QUERY)
   const updatePlacement = () => {
     if (media.matches) {
+      toggleThemeTitles(switcher, false)
       picker.append(switcher)
       return
     }
 
     closePicker()
+    toggleThemeTitles(switcher, true)
     placeholder.after(switcher)
   }
 
   updatePlacement()
   media.addEventListener?.('change', updatePlacement)
+}
+
+function toggleThemeTitles(switcher, shouldShow) {
+  switcher.querySelectorAll('li').forEach((item) => {
+    const label = item.querySelector('label')
+
+    if (shouldShow) {
+      if (label?.textContent) item.title = label.textContent.trim()
+      return
+    }
+
+    item.removeAttribute('title')
+    item.removeAttribute('original-title')
+  })
+
+  if (!shouldShow) removeThemeTooltip(switcher)
+}
+
+function removeThemeTooltip(switcher) {
+  const themeTitles = new Set(
+    [...switcher.querySelectorAll('label')]
+      .map((label) => label.textContent.trim())
+      .filter(Boolean),
+  )
+
+  document.querySelectorAll('.tipsy').forEach((tooltip) => {
+    const text = tooltip.querySelector('.tipsy-inner')?.textContent.trim()
+    if (themeTitles.has(text)) tooltip.remove()
+  })
 }
 
 function setTheme(theme) {

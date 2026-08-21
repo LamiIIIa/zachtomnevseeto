@@ -77,6 +77,10 @@
 @media screen and (max-width: 700px) {
   html body .go-up,
   html body .go-down {
+    --scroll-controls-dock-offset: calc(
+      64px + env(safe-area-inset-bottom, 0px)
+    );
+
     width: 32px !important;
     height: 32px !important;
     right: max(4px, env(safe-area-inset-right, 0px)) !important;
@@ -95,11 +99,11 @@
   }
 
   html body .go-up {
-    bottom: calc(104px + env(safe-area-inset-bottom, 0px)) !important;
+    bottom: calc(var(--scroll-controls-dock-offset) + 48px) !important;
   }
 
   html body .go-down {
-    bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important;
+    bottom: calc(var(--scroll-controls-dock-offset) + 12px) !important;
   }
 
   html body .go-up > .inside,
@@ -128,6 +132,15 @@
   html:has(.mobile-menu:not([hidden])) body .go-up,
   html:has(.mobile-menu:not([hidden])) body .go-down {
     display: none !important;
+  }
+}
+
+@media screen and (max-width: 700px) and (max-height: 500px) {
+  html body .go-up,
+  html body .go-down {
+    --scroll-controls-dock-offset: calc(
+      56px + env(safe-area-inset-bottom, 0px)
+    );
   }
 }
 
