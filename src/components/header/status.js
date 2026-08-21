@@ -45,23 +45,44 @@ export function initUserStatus(root) {
 
   // Создаём правую колонку действий.
   const actions = document.createElement("span");
-  const supportLink = document.createElement("a");
+  const supportLabel = t("status.supportForum");
+  const hasSupportAction = Array.from(
+    premiumAction.querySelectorAll("a")
+  ).some((link) => normalizeText(link.textContent) === normalizeText(supportLabel));
 
   actions.classList.add("status-actions");
   premiumAction.classList.add("status-action", "status-action--premium");
+  removeStandalonePunctuation(premiumAction);
 
-  // Новая ссылка локализуется общей системой i18n.
-  supportLink.classList.add("status-action", "status-action--support");
-  supportLink.href = SUPPORT_FORUM_URL;
-  supportLink.dataset.i18n = "status.supportForum";
-  supportLink.textContent = t("status.supportForum");
+  actions.append(premiumAction);
 
-  actions.append(premiumAction, supportLink);
+  // На основном форуме системный блок уже содержит кнопку поддержки фонда.
+  // На страницах без неё создаём дополнительную ссылку, как раньше.
+  if (!hasSupportAction) {
+    const supportLink = document.createElement("a");
+
+    supportLink.classList.add("status-action", "status-action--support");
+    supportLink.href = SUPPORT_FORUM_URL;
+    supportLink.dataset.i18n = "status.supportForum";
+    supportLink.textContent = supportLabel;
+    actions.append(supportLink);
+  }
 
   // Заменяем только содержимое строки, не удаляя системный контейнер MyBB.
   container.replaceChildren(userBlock, actions);
   container.classList.add("status-layout");
   container.dataset.statusLayout = "ready";
+}
+
+function normalizeText(value) {
+  return value?.replace(/\s+/g, " ").trim().toLocaleLowerCase() || "";
+}
+
+function removeStandalonePunctuation(element) {
+  Array.from(element.childNodes).forEach((node) => {
+    if (node.nodeType !== Node.TEXT_NODE) return;
+    if (/^[\s.,;:!?]+$/.test(node.textContent)) node.remove();
+  });
 }
 
 // Создаёт независимый аватар без старого класса .user-avatar и его конфликтов.
