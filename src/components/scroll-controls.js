@@ -23,6 +23,9 @@ export function initScrollControls() {
   bottomControl.dataset.forumDesignReady = 'true'
 
   const media = window.matchMedia?.(MOBILE_LAYOUT_QUERY)
+  let scrollRoot = getPageScrollRoot()
+  let scrollTarget = getScrollEventTarget(scrollRoot)
+
   const updatePlacement = () => {
     const mobileDock = document.querySelector('.mobile-dock')
     const target = media?.matches && mobileDock ? mobileDock : document.body
@@ -31,19 +34,20 @@ export function initScrollControls() {
   }
 
   topControl.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: getScrollBehavior() })
+    scrollPageTo(scrollRoot, 0)
   })
 
   bottomControl.addEventListener('click', () => {
-    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: getScrollBehavior() })
+    scrollPageTo(scrollRoot, scrollRoot.scrollHeight)
   })
 
   let updateRequested = false
   const updateVisibility = () => {
+    const scrollTop = getScrollTop(scrollRoot)
     const distanceToBottom =
-      document.documentElement.scrollHeight - (window.scrollY + window.innerHeight)
+      scrollRoot.scrollHeight - (scrollTop + scrollRoot.clientHeight)
 
-    topControl.classList.toggle('scroll-control--visible', window.scrollY > EDGE_OFFSET)
+    topControl.classList.toggle('scroll-control--visible', scrollTop > EDGE_OFFSET)
     bottomControl.classList.toggle(
       'scroll-control--visible',
       distanceToBottom > EDGE_OFFSET,
@@ -57,11 +61,62 @@ export function initScrollControls() {
     window.requestAnimationFrame(updateVisibility)
   }
 
-  window.addEventListener('scroll', requestUpdate, { passive: true })
+  const updateScrollRoot = () => {
+    const nextRoot = getPageScrollRoot()
+    const nextTarget = getScrollEventTarget(nextRoot)
+
+    if (nextTarget !== scrollTarget) {
+      scrollTarget.removeEventListener('scroll', requestUpdate)
+      nextTarget.addEventListener('scroll', requestUpdate, { passive: true })
+      scrollTarget = nextTarget
+    }
+
+    scrollRoot = nextRoot
+  }
+
+  scrollTarget.addEventListener('scroll', requestUpdate, { passive: true })
   window.addEventListener('resize', requestUpdate)
-  media?.addEventListener?.('change', updatePlacement)
+  media?.addEventListener?.('change', () => {
+    updatePlacement()
+    updateScrollRoot()
+    requestUpdate()
+  })
   updatePlacement()
+  updateScrollRoot()
   updateVisibility()
+}
+
+function getPageScrollRoot() {
+  const body = document.body
+
+  if (body) {
+    const overflowY = window.getComputedStyle(body).overflowY
+    const bodyOwnsScroll =
+      /^(auto|scroll)$/.test(overflowY) && body.scrollHeight > body.clientHeight + 1
+
+    if (bodyOwnsScroll) return body
+  }
+
+  return document.scrollingElement || document.documentElement
+}
+
+function getScrollEventTarget(scrollRoot) {
+  return scrollRoot === document.documentElement ? window : scrollRoot
+}
+
+function getScrollTop(scrollRoot) {
+  return scrollRoot === document.documentElement ? window.scrollY : scrollRoot.scrollTop
+}
+
+function scrollPageTo(scrollRoot, top) {
+  const options = { top, behavior: getScrollBehavior() }
+
+  if (scrollRoot === document.documentElement) {
+    window.scrollTo(options)
+    return
+  }
+
+  scrollRoot.scrollTo(options)
 }
 
 function getOrCreateControl({ id, className, labelKey }) {
