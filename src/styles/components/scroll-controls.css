@@ -116,6 +116,20 @@
     bottom: calc(100% + 8px) !important;
   }
 
+  html body .mobile-dock > .go-up:not(.scroll-control--visible),
+  html body .mobile-dock > .go-down:not(.scroll-control--visible) {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  html body .mobile-dock > .go-up.scroll-control--visible,
+  html body .mobile-dock > .go-down.scroll-control--visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+
   html body .go-up > .inside,
   html body .go-down > .inside {
     width: 100% !important;

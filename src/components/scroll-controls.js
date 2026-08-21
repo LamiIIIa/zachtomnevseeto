@@ -2,7 +2,6 @@ import { t } from '../i18n/index.js'
 import { MOBILE_LAYOUT_QUERY } from '../config/layout.js'
 
 const EDGE_OFFSET = 250
-const BOTTOM_EDGE_OFFSET = 999
 
 export function initScrollControls() {
   if (!document.body) return
@@ -41,10 +40,13 @@ export function initScrollControls() {
 
   let updateRequested = false
   const updateVisibility = () => {
+    const distanceToBottom =
+      document.documentElement.scrollHeight - (window.scrollY + window.innerHeight)
+
     topControl.classList.toggle('scroll-control--visible', window.scrollY > EDGE_OFFSET)
     bottomControl.classList.toggle(
       'scroll-control--visible',
-      window.scrollY < document.documentElement.scrollHeight - BOTTOM_EDGE_OFFSET,
+      distanceToBottom > EDGE_OFFSET,
     )
     updateRequested = false
   }
