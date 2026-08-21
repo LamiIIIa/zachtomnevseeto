@@ -4,11 +4,11 @@ import { MOBILE_LAYOUT_QUERY } from '../../config/layout.js'
 const STORAGE_KEY = 'selectedTheme'
 
 const THEMES = [
-  { name: 'shinobi', titleKey: 'themes.shinobi' },
-  { name: 'oto', titleKey: 'themes.oto' },
-  { name: 'akatsuki', titleKey: 'themes.akatsuki' },
-  { name: 'green', titleKey: 'themes.green' },
-  { name: 'kakashi', titleKey: 'themes.kakashi' },
+  { name: 'shinobi', titleKey: 'themes.shinobi', backgroundColor: '#fbf2e5' },
+  { name: 'oto', titleKey: 'themes.oto', backgroundColor: '#e9e9e9' },
+  { name: 'akatsuki', titleKey: 'themes.akatsuki', backgroundColor: '#f5f1f1' },
+  { name: 'green', titleKey: 'themes.green', backgroundColor: '#fcf4ed' },
+  { name: 'kakashi', titleKey: 'themes.kakashi', backgroundColor: '#363636' },
 ]
 
 export function applyStoredTheme() {
@@ -123,11 +123,17 @@ function removeThemeTooltip(switcher) {
 }
 
 function setTheme(theme) {
-  document.documentElement.classList.remove(...THEMES.map(({ name }) => name))
-  document.documentElement.classList.add(theme)
-  window.localStorage.setItem(STORAGE_KEY, theme)
+  const selectedTheme = THEMES.find(({ name }) => name === theme) || THEMES[0]
 
-  const input = document.querySelector(`#theme_switcher input[value="${theme}"]`)
+  document.documentElement.classList.remove(...THEMES.map(({ name }) => name))
+  document.documentElement.classList.add(selectedTheme.name)
+  document.documentElement.style.backgroundColor =
+    `var(--color-forum, ${selectedTheme.backgroundColor})`
+  window.localStorage.setItem(STORAGE_KEY, selectedTheme.name)
+
+  const input = document.querySelector(
+    `#theme_switcher input[value="${selectedTheme.name}"]`,
+  )
   if (input) input.checked = true
 }
 

@@ -17,6 +17,40 @@
   масок, пока они используются;
 - два загрузчика тестовых `forum.css` и `forum.js`.
 
+Ранний скрипт должен стоять **до загрузчика `forum.js`**. Он сразу окрашивает
+корень страницы в цвет сохранённой темы и убирает белую вспышку во время
+перезагрузки:
+
+```html
+<script>
+(function () {
+  var themes = ['shinobi', 'oto', 'akatsuki', 'green', 'kakashi'];
+  var backgrounds = {
+    shinobi: '#fbf2e5',
+    oto: '#e9e9e9',
+    akatsuki: '#f5f1f1',
+    green: '#fcf4ed',
+    kakashi: '#363636'
+  };
+  var storedTheme;
+
+  try {
+    storedTheme = localStorage.getItem('selectedTheme');
+  } catch (error) {
+    storedTheme = null;
+  }
+
+  var theme = themes.indexOf(storedTheme) !== -1 ? storedTheme : 'shinobi';
+  var root = document.documentElement;
+
+  root.classList.remove.apply(root.classList, themes);
+  root.classList.add(theme);
+  root.style.backgroundColor =
+    'var(--color-forum, ' + backgrounds[theme] + ')';
+})();
+</script>
+```
+
 После публикации новой сборки можно удалить разметку `.go-up`/`.go-down` и
 связанный с ней jQuery-скрипт. Кнопки теперь создаёт
 `src/components/scroll-controls.js`.
