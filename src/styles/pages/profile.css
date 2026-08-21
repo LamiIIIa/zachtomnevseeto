@@ -192,14 +192,15 @@
 
 #user-posts,
 #user-topics {
-  display: inline-block;
-  max-width: 200px;
   box-sizing: border-box;
   text-align: center;
+  border: 1px solid var(--color-link);
   background: var(--color-forum);
-  color: var(--color-txt3);
-  padding: 5px;
+  max-width: 200px;
+  color: var(--color-link);
   border-radius: 10px;
+  padding: 5px;
+  display: inline-block;
 }
 
 #email > span > a.sendmail:hover,
@@ -213,6 +214,7 @@
 #user-posts:hover,
 #user-topics:hover {
   background: var(--color-hover);
+  color: var(--color-forum);
 }
 
 #profile1 > fieldset > legend > span,
