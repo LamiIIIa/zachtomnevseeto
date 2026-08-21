@@ -380,8 +380,7 @@
   }
 
   /* Стандартная заглушка форума не считается настоящим аватаром. */
-  #pun-messages
-    .message-card:not(:has(.user-avatar:not(.no-avatar))) {
+  #pun-messages .message-card:not(:has(.user-avatar:not(.no-avatar))) {
     grid-template-columns: minmax(0, 1fr) minmax(92px, 38%);
     grid-template-areas:
       "subject date"
@@ -483,5 +482,55 @@
 
   #pun-messages .messages-container .post[id^="p"] .post-body {
     width: auto;
+  }
+}
+
+@media screen and (max-width: 540px) {
+  /* Заголовок сообщения */
+  #pun-messages .messages-container > .container > fieldset > legend {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    margin: 0 0 8px;
+    padding: 0;
+  }
+
+  #pun-messages .messages-container > .container > fieldset > legend > strong {
+    position: static;
+    top: auto;
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Убираем цветную полосу */
+  #pun-messages .messages-container .post > h3 {
+    position: static;
+    margin: 0;
+    padding: 0;
+    background: transparent !important;
+    border: 0 !important;
+  }
+
+  /* Дата, затем ползунок */
+  #pun-messages .messages-container .post > h3 > span {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    color: var(--color-txt1);
+    background: transparent !important;
+    border: 0 !important;
+    text-align: left;
+  }
+
+  #pun-messages .messages-container .post > h3 .FNTslider {
+    order: 2;
+    width: min(100%, 260px) !important;
+    margin: 0;
   }
 }
