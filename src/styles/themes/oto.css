@@ -1,8 +1,8 @@
 html.oto {
   --bg: url("https://forumstatic.ru/files/001c/6f/41/70517.webp")
     var(--bg-color);
-  --title-img: url("https://forumstatic.ru/files/001c/6f/41/65220.png");
-  --title-img-mobile: url(https://forumstatic.ru/files/001a/12/f3/50490.webp);
+  --title-img: url("https://forumstatic.ru/files/001a/12/f3/35506.webp");
+  --title-img-mobile: url("https://forumstatic.ru/files/001a/12/f3/50490.webp");
   --online: url() #b2a5c0;
   --ava-bg: url("https://forumstatic.ru/files/001a/12/f3/35081.webp");
   --qv-1: url("https://forumstatic.ru/files/001c/6f/41/12237.svg");

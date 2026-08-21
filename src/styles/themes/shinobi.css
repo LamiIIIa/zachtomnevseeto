@@ -3,8 +3,8 @@ html.shinobi,
 html:has(#pun-admain) {
   --bg: url("https://forumstatic.ru/files/001c/6f/41/92103.webp")
     var(--bg-color);
-  --title-img: url("https://forumstatic.ru/files/001a/12/f3/86487.webp");
-  --title-img-mobile: url(https://forumstatic.ru/files/001a/12/f3/11000.webp);
+  --title-img: url("https://forumstatic.ru/files/001a/12/f3/60112.webp");
+  --title-img-mobile: url("https://forumstatic.ru/files/001a/12/f3/11000.webp");
   --online: url() #ff5602;
   --icon: url("https://forumstatic.ru/files/001a/12/f3/34448.webp");
   --icon-inew: url("https://forumstatic.ru/files/001a/12/f3/66113.webp");

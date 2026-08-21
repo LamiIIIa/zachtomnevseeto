@@ -1,8 +1,8 @@
 html.green {
   --bg: url("https://forumstatic.ru/files/001c/6f/41/33706.webp")
     var(--bg-color);
-  --title-img: url("https://forumstatic.ru/files/001c/6f/41/58540.png");
-  --title-img-mobile: url(https://forumstatic.ru/files/001a/12/f3/90829.webp);
+  --title-img: url("https://forumstatic.ru/files/001a/12/f3/13046.webp");
+  --title-img-mobile: url("https://forumstatic.ru/files/001a/12/f3/90829.webp");
   --online: url() #f88802;
   --ava-bg: url("https://forumstatic.ru/files/001a/12/f3/25293.webp");
   --qv-1: url("https://forumstatic.ru/files/001c/6f/41/18384.svg");
@@ -10,7 +10,7 @@ html.green {
   --qv-3: url("https://forumstatic.ru/files/001c/6f/41/58433.png");
   --icon: url("https://forumstatic.ru/files/001a/12/f3/76344.webp");
   --icon-inew: url("https://forumstatic.ru/files/001a/12/f3/67290.webp");
-  --content-icon: url('https://forumstatic.ru/files/001a/12/f3/80272.webp');
+  --content-icon: url("https://forumstatic.ru/files/001a/12/f3/80272.webp");
 
   --bg-color: #153726;
   --pun: #;
