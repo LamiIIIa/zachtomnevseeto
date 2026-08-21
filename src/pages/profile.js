@@ -1,5 +1,11 @@
 import { forumConfig } from "../config/forum.js";
 import { t } from "../i18n/index.js";
+import {
+  createCardFromRow,
+  createEmptyListMessage,
+  moveCellToBlock,
+  replaceTableWithCardList,
+} from "../components/table-card-layout.js";
 
 export function initProfile({ root, main, userId }) {
   main?.classList.add("forum-design-profile");
@@ -8,8 +14,104 @@ export function initProfile({ root, main, userId }) {
   const profileNavigation = placeProfileNavigation(root, main);
 
   transformViewProfileLayout(main);
+  transformProfileFileTable(main);
   initProfileNavigationDropdown(profileNavigation);
   lockRestrictedProfile(main);
+}
+
+function transformProfileFileTable(main) {
+  const table = main?.querySelector("#profile #filetable");
+
+  if (!table || table.dataset.cardLayoutReady === "true") return;
+
+  const selectAll = table.querySelector("thead #checker");
+
+  table.dataset.cardLayoutReady = "true";
+
+  const list = replaceTableWithCardList(table, {
+    listClassName: "profile-file-card-list forum-card-list",
+    listLabel: "Загруженные файлы",
+    renderRow: renderProfileFileCard,
+  });
+
+  if (!list || !selectAll) return;
+
+  const toolbar = document.createElement("div");
+  const label = document.createElement("label");
+  const labelText = document.createElement("span");
+
+  toolbar.className = "profile-file-card-toolbar";
+  label.className = "profile-file-card-toolbar__select-all";
+  labelText.textContent = selectAll.title || "Выделить все";
+  selectAll.removeAttribute("title");
+  selectAll.addEventListener("change", () => {
+    list
+      .querySelectorAll('.profile-file-card__selection input[type="checkbox"]')
+      .forEach((checkbox) => {
+        checkbox.checked = selectAll.checked;
+      });
+  });
+  label.append(selectAll, labelText);
+  toolbar.append(label);
+  list.before(toolbar);
+}
+
+function renderProfileFileCard({ row, cells, headers }) {
+  if (cells.length < 7) {
+    return createEmptyListMessage(
+      row,
+      "profile-file-card-list__empty forum-list-card"
+    );
+  }
+
+  const card = createCardFromRow(row, {
+    className: "profile-file-card forum-list-card",
+  });
+  const name = moveCellToBlock(cells[0], {
+    className: "profile-file-card__name tcl",
+    label: headers[0],
+  });
+  const uploaded = moveCellToBlock(cells[1], {
+    className: "profile-file-card__uploaded tc2 ft-uploaded",
+    label: headers[1],
+  });
+  const modified = moveCellToBlock(cells[2], {
+    className: "profile-file-card__modified tc2",
+    label: headers[2],
+  });
+  const version = moveCellToBlock(cells[3], {
+    className: "profile-file-card__version tc3 ft-version",
+    label: headers[3],
+  });
+  const size = moveCellToBlock(cells[4], {
+    className: "profile-file-card__size tc3",
+    label: headers[4],
+  });
+  const comment = moveCellToBlock(cells[5], {
+    className: "profile-file-card__comment tcr",
+    label: headers[5],
+  });
+  const selection = moveCellToBlock(cells[6], {
+    className: "profile-file-card__selection tc3 checker",
+  });
+  const dates = document.createElement("div");
+  const details = document.createElement("div");
+  const checkbox = selection.querySelector('input[type="checkbox"]');
+
+  dates.className = "profile-file-card__dates";
+  details.className = "profile-file-card__details";
+  dates.append(uploaded, modified);
+  details.append(version, size);
+
+  if (checkbox) {
+    checkbox.setAttribute(
+      "aria-label",
+      `Выбрать файл ${name.textContent.trim()}`
+    );
+  }
+
+  card.append(name, dates, details, comment, selection);
+  return card;
 }
 
 function transformViewProfileLayout(main) {

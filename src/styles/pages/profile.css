@@ -246,6 +246,97 @@
   display: none;
 }
 
+/* Загрузки профиля: строки системной таблицы превращены в карточки. */
+#pun-profile .profile-file-card-toolbar {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin: 12px 0 0;
+}
+
+#pun-profile .profile-file-card-toolbar__select-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-link);
+  cursor: pointer;
+}
+
+#pun-profile .profile-file-card {
+  grid-template-columns:
+    minmax(150px, 1.2fr)
+    minmax(210px, 1fr)
+    minmax(120px, 0.7fr)
+    minmax(170px, 1fr)
+    24px;
+}
+
+#pun-profile .profile-file-card__dates,
+#pun-profile .profile-file-card__details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
+}
+
+#pun-profile
+  .profile-file-card
+  :is(
+    .profile-file-card__name,
+    .profile-file-card__uploaded,
+    .profile-file-card__modified,
+    .profile-file-card__version,
+    .profile-file-card__size,
+    .profile-file-card__comment,
+    .profile-file-card__selection
+  ) {
+  min-width: 0;
+}
+
+#pun-profile
+  .profile-file-card
+  :is(
+    .profile-file-card__uploaded,
+    .profile-file-card__modified,
+    .profile-file-card__version,
+    .profile-file-card__size,
+    .profile-file-card__comment
+  )::before {
+  content: attr(data-label);
+  display: block;
+  margin-bottom: 3px;
+  color: var(--color-link);
+  font-size: 9px;
+}
+
+#pun-profile .profile-file-card > div > span:first-child,
+#pun-profile .profile-file-card > div > div > span:first-child {
+  display: none;
+}
+
+#pun-profile .profile-file-card__name a {
+  color: var(--color-link);
+  overflow-wrap: anywhere;
+}
+
+#pun-profile .profile-file-card__comment input {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+#pun-profile .profile-file-card__selection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#pun-profile .profile-file-card-list__empty {
+  display: block;
+  text-align: center;
+}
+
 #setmods > dl > dl > dt {
   font: 400 12px var(--font-1) !important;
 }

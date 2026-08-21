@@ -159,6 +159,42 @@
     background: var(--color-link);
   }
 
+  #pun-profile .profile-file-card-toolbar {
+    margin-top: 8px;
+  }
+
+  #pun-profile .profile-file-card {
+    grid-template-columns: minmax(0, 1fr) 28px;
+    grid-template-areas:
+      "name selection"
+      "details details"
+      "dates dates"
+      "comment comment";
+    align-items: start;
+    gap: 10px;
+  }
+
+  #pun-profile .profile-file-card__name {
+    grid-area: name;
+    align-self: center;
+  }
+
+  #pun-profile .profile-file-card__selection {
+    grid-area: selection;
+  }
+
+  #pun-profile .profile-file-card__details {
+    grid-area: details;
+  }
+
+  #pun-profile .profile-file-card__dates {
+    grid-area: dates;
+  }
+
+  #pun-profile .profile-file-card__comment {
+    grid-area: comment;
+  }
+
   #profile-left #profile-name {
     background: none !important;
     border: none !important;
@@ -171,6 +207,11 @@
 }
 
 @media screen and (max-width: 380px) {
+  #pun-profile .profile-file-card__dates,
+  #pun-profile .profile-file-card__details {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   #profile-right {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -191,5 +232,30 @@
 
   #profile-right #pa-email {
     grid-row: 3;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  /* Остальные мобильные правила профиля. */
+
+  #pun-profile #profile fieldset {
+    box-sizing: border-box;
+    width: 100%;
+    margin-inline: 0 !important;
+    padding-block: 20px;
+    padding-inline: 12px;
+  }
+
+  /* Вложенным fieldset дополнительная рамка не нужна. */
+  #pun-profile #profile fieldset fieldset {
+    width: 100%;
+    margin-inline: 0 !important;
+    padding: 0;
+  }
+
+  #pun-profile #profile .fs-box {
+    box-sizing: border-box;
+    width: 100%;
+    margin-inline: 0;
   }
 }
