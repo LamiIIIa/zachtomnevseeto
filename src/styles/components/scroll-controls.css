@@ -1,62 +1,72 @@
-/* Кнопки прокрутки создаются common.js и не требуют разметки в HTML-верх. */
+/* Зоны прокрутки создаются common.js и не требуют разметки в HTML-верх. */
 .go-up,
 .go-down {
   box-sizing: border-box;
   position: fixed;
-  right: max(10px, calc((100vw - var(--main-w)) / 2 - 110px));
-  z-index: 9999;
-  width: 80px;
-  height: 80px;
+  right: 0;
+  z-index: 1;
+  width: 100px;
+  height: 50%;
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--color-sub);
   cursor: pointer;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  display: flex;
-  transition: opacity 0.3s, visibility 0.3s;
-  align-items: center;
-  justify-content: center;
+  transition: opacity 0.1s ease, visibility 0.1s ease;
 }
 
 .go-up {
-  bottom: 90px;
+  top: 0;
 }
 
 .go-down {
-  bottom: 10px;
+  bottom: 0;
 }
 
 .go-up.scroll-control--visible,
 .go-down.scroll-control--visible {
-  opacity: 0.3;
+  opacity: 1;
   visibility: visible;
   pointer-events: auto;
 }
 
-.go-up:hover,
-.go-down:hover,
-.go-up:focus-visible,
-.go-down:focus-visible {
+.go-up .inside,
+.go-down .inside {
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  opacity: 0.6;
+  transition: opacity 0.1s ease;
+}
+
+.go-up .inside {
+  align-items: flex-start;
+  background: linear-gradient(to bottom, rgb(255 255 255 / 12%) 0%, transparent 100%);
+}
+
+.go-down .inside {
+  align-items: flex-end;
+  background: linear-gradient(to top, rgb(255 255 255 / 12%) 0%, transparent 100%);
+}
+
+.go-up .inside:hover,
+.go-down .inside:hover,
+.go-up:focus-visible .inside,
+.go-down:focus-visible .inside {
   opacity: 1;
 }
 
-.upper::before,
-.dvnr::before {
-  display: block;
-  font: 400 60px/1 'Font Awesome 6 Pro';
-  color: currentColor;
-  text-shadow: -2px 2px 5px black;
+.go-up img,
+.go-down img {
+  box-sizing: content-box;
+  max-width: 100%;
+  padding: 20px 0;
 }
 
-.upper::before {
-  content: '\f151';
-}
-
-.dvnr::before {
-  content: '\f150';
+.go-down img {
+  transform: rotate(180deg);
 }
 
 @media screen and (max-width: 700px) {
@@ -68,7 +78,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .go-up,
-  .go-down {
+  .go-down,
+  .go-up .inside,
+  .go-down .inside {
     transition: none;
   }
 }

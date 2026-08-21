@@ -205,9 +205,16 @@
   margin-bottom: 10px;
 }
 
-#togglePreview {
-  float: left;
-  margin-top: 11px;
+#pun-messages
+  #profile
+  > .container
+  > #post-new
+  > #post
+  > #post-form
+  > #togglePreview {
+  position: static !important;
+  float: left !important;
+  margin: 11px 0 0 !important;
 }
 
 @media screen and (max-width: 700px) {

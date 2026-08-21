@@ -1,6 +1,8 @@
 import { t } from '../i18n/index.js'
 
 const EDGE_OFFSET = 250
+const BOTTOM_EDGE_OFFSET = 999
+const ARROW_ICON_SRC = '/files/001a/fc/45/61081.svg'
 
 export function initScrollControls() {
   if (!document.body) return
@@ -8,13 +10,11 @@ export function initScrollControls() {
   const topControl = getOrCreateControl({
     id: 'ToTop',
     className: 'go-up',
-    iconClassName: 'upper',
     labelKey: 'scroll.toTop',
   })
   const bottomControl = getOrCreateControl({
     id: 'OnBottom',
     className: 'go-down',
-    iconClassName: 'dvnr',
     labelKey: 'scroll.toBottom',
   })
 
@@ -33,11 +33,10 @@ export function initScrollControls() {
 
   let updateRequested = false
   const updateVisibility = () => {
-    const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
     topControl.classList.toggle('scroll-control--visible', window.scrollY > EDGE_OFFSET)
     bottomControl.classList.toggle(
       'scroll-control--visible',
-      maxScroll - window.scrollY > EDGE_OFFSET,
+      window.scrollY < document.documentElement.scrollHeight - BOTTOM_EDGE_OFFSET,
     )
     updateRequested = false
   }
@@ -53,34 +52,36 @@ export function initScrollControls() {
   updateVisibility()
 }
 
-function getOrCreateControl({ id, className, iconClassName, labelKey }) {
+function getOrCreateControl({ id, className, labelKey }) {
   let control = document.getElementById(id)
 
   if (!control) {
-    control = document.createElement('button')
+    control = document.createElement('div')
     control.id = id
     control.className = className
     document.body.append(control)
   }
 
-  if (control instanceof HTMLButtonElement) {
-    control.type = 'button'
-  } else {
-    control.setAttribute('role', 'button')
-    control.tabIndex = 0
-    control.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault()
-        control.click()
-      }
-    })
-  }
+  control.classList.add(className)
+  control.setAttribute('role', 'button')
+  control.tabIndex = 0
+  control.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      control.click()
+    }
+  })
 
-  if (!control.querySelector(`.${iconClassName}`)) {
-    const icon = document.createElement('span')
-    icon.className = iconClassName
+  if (!control.querySelector(':scope > .inside')) {
+    const inside = document.createElement('div')
+    const icon = document.createElement('img')
+
+    inside.className = 'inside'
+    icon.src = ARROW_ICON_SRC
+    icon.alt = ''
     icon.setAttribute('aria-hidden', 'true')
-    control.append(icon)
+    inside.append(icon)
+    control.replaceChildren(inside)
   }
 
   control.setAttribute('aria-label', t(labelKey))
