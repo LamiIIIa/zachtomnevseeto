@@ -33,7 +33,9 @@ export function initViewportModeToggle(header) {
 
     button.textContent = t(translationKey)
     button.title = t(translationKey)
+    button.setAttribute('aria-label', t(translationKey))
     button.dataset.i18n = translationKey
+    button.dataset.i18nAttr = `title:${translationKey};aria-label:${translationKey}`
   }
 
   button.addEventListener('click', () => {

@@ -61,9 +61,9 @@
 .scroll-control__icon {
   box-sizing: border-box;
   padding: 14px 0;
-  color: var(--color-txt1);
+  color: #fff;
   font: 400 34px/1 var(--mat);
-  text-shadow: 0 1px 4px var(--shedow1);
+  text-shadow: 0 1px 4px rgb(0 0 0 / 75%);
 }
 
 .go-up .scroll-control__icon::before {
@@ -89,6 +89,9 @@
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
     display: block !important;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
   }
 
   .go-up {
@@ -105,15 +108,21 @@
     height: 100%;
     background: none;
     align-items: center;
-    opacity: 0.8;
+    opacity: 1;
   }
 
   .scroll-control__icon {
     width: auto;
     height: auto;
     padding: 0;
+    color: var(--color-link);
     font-size: 22px;
     text-shadow: 0 1px 3px var(--shedow1);
+  }
+
+  html.kakashi .scroll-control__icon {
+    color: #fff;
+    text-shadow: 0 1px 4px rgb(0 0 0 / 75%);
   }
 }
 

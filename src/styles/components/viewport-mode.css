@@ -1,19 +1,29 @@
 .viewport-mode-toggle {
   appearance: none;
   box-sizing: border-box;
+  width: 36px;
+  min-width: 36px;
   min-height: 36px;
   margin: 80px 4px 0;
-  padding: 7px 10px;
+  padding: 0;
   border: 1px solid color-mix(in srgb, var(--color-link) 35%, transparent);
   border-radius: 5px;
   color: var(--color-link);
   background: color-mix(in srgb, var(--color-forum) 78%, transparent);
-  font: 600 10px/1.2 var(--font);
+  font-size: 0;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   cursor: pointer;
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+  display: inline-flex;
+}
+
+.viewport-mode-toggle::before {
+  content: '\e824';
+  font: 400 22px/1 var(--mat);
 }
 
 .viewport-mode-toggle:hover,
@@ -30,11 +40,17 @@
   }
 
   #pun-announcement .viewport-mode-toggle {
+    width: 42px;
+    min-width: 42px;
     min-height: 42px;
     margin: 0;
-    padding: 9px 11px;
+    padding: 0;
     border-radius: 12px !important;
     color: var(--color-txt1);
-    font-size: 10px;
+  }
+
+  #pun-announcement .viewport-mode-toggle::before {
+    content: '\e30c';
+    font-size: 24px;
   }
 }
