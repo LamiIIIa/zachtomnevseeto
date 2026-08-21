@@ -256,6 +256,13 @@
   content: "visibility_off";
 }
 
+#pun-messages #post-new #post-preview,
+#pun-messages #post-new #post-preview :is(.fs-box, .post-box, .post-content) {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+
 #pun-messages .messages-editor-actions {
   display: contents;
   margin: 0 !important;

@@ -75,8 +75,43 @@ function initMessagesPreviewToggle(main) {
 
   if (!button) return;
 
-  toggle.dataset.previewState =
-    button.value === enableLabel ? "off" : "on";
+  const syncPreviewState = () =>
+    syncMessagesPreviewState(postForm, toggle, button, enableLabel);
+
+  toggle.dataset.previewState = button.value === enableLabel ? "off" : "on";
+
+  if (
+    postForm.id === "post-new" &&
+    toggle.dataset.messagesPreviewSyncReady !== "true"
+  ) {
+    toggle.dataset.messagesPreviewSyncReady = "true";
+
+    button.addEventListener("click", () => {
+      window.setTimeout(syncPreviewState, 0);
+    });
+  }
+
+  if (
+    postForm.id === "post-new" &&
+    postForm.dataset.messagesPreviewObserverReady !== "true"
+  ) {
+    postForm.dataset.messagesPreviewObserverReady = "true";
+
+    const observer = new MutationObserver((mutations) => {
+      const previewAdded = mutations.some(({ addedNodes }) =>
+        Array.from(addedNodes).some(
+          (node) =>
+            node instanceof Element &&
+            (node.matches("#post-preview") ||
+              node.querySelector("#post-preview"))
+        )
+      );
+
+      if (previewAdded) syncPreviewState();
+    });
+
+    observer.observe(postForm, { childList: true, subtree: true });
+  }
 
   let footer = postFormBody.querySelector(":scope > .messages-editor-footer");
 
@@ -88,12 +123,15 @@ function initMessagesPreviewToggle(main) {
 
   actions.classList.add("messages-editor-actions");
   footer.append(toggle, actions);
+  syncPreviewState();
 }
 
 function syncMessagesPreviewState(postForm, toggle, button, enableLabel) {
   const isEnabled = button.value !== enableLabel;
 
   toggle.dataset.previewState = isEnabled ? "on" : "off";
+  button.title = button.value;
+  button.setAttribute("aria-label", button.value);
   postForm.querySelectorAll("#post-preview").forEach((preview) => {
     preview.hidden = !isEnabled;
     preview.style.display = isEnabled ? "" : "none";
