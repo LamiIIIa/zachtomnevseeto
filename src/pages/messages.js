@@ -4,8 +4,12 @@ import {
   replaceTableWithCardList,
 } from "../components/table-card-layout.js";
 
+import { initQuoteSelection } from "../components/post-components/quote-selection.js";
+
 export function initMessages({ root, main }) {
   if (!main) return;
+
+  initQuoteSelection(main);
 
   main.classList.add("forum-design-messages");
   initMessagesNavigation(root, main);
