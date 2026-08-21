@@ -39,42 +39,55 @@ function initMessagesPreviewToggle(main) {
   const actions = postFormBody
     ?.querySelector('input[name="preview"]')
     ?.closest("p");
+  let toggle = postForm?.querySelector("#togglePreview");
 
-  if (
-    !postForm ||
-    !postFormBody ||
-    !actions ||
-    postForm.querySelector("#togglePreview")
-  ) {
-    return;
-  }
+  if (!postForm || !postFormBody || !actions) return;
 
   const enableLabel = "Включить быстрый предпросмотр";
   const disableLabel = "Отключить быстрый предпросмотр";
-  const toggle = document.createElement("small");
-  const button = document.createElement("input");
+  let button = toggle?.querySelector(".button");
 
-  toggle.id = "togglePreview";
-  toggle.dataset.previewState = "on";
-  button.type = "button";
-  button.className = "button";
-  button.value = disableLabel;
-  button.title = disableLabel;
-  button.setAttribute("aria-label", disableLabel);
+  if (!toggle) {
+    toggle = document.createElement("small");
+    button = document.createElement("input");
 
-  button.addEventListener("click", () => {
-    if (typeof window.togglePreview !== "function") return;
+    toggle.id = "togglePreview";
+    toggle.dataset.previewState = "on";
+    button.type = "button";
+    button.className = "button";
+    button.value = disableLabel;
+    button.title = disableLabel;
+    button.setAttribute("aria-label", disableLabel);
 
-    window.togglePreview(button);
-    syncMessagesPreviewState(postForm, toggle, button, enableLabel);
-  });
+    button.addEventListener("click", () => {
+      if (typeof window.togglePreview !== "function") return;
 
-  toggle.append(button);
-  actions.before(toggle);
+      window.togglePreview(button);
+      syncMessagesPreviewState(postForm, toggle, button, enableLabel);
+    });
 
-  if (readCookie("_PreviewToggle") === "OFF") {
-    button.click();
+    toggle.append(button);
+
+    if (readCookie("_PreviewToggle") === "OFF") {
+      button.click();
+    }
   }
+
+  if (!button) return;
+
+  toggle.dataset.previewState =
+    button.value === enableLabel ? "off" : "on";
+
+  let footer = postFormBody.querySelector(":scope > .messages-editor-footer");
+
+  if (!footer) {
+    footer = document.createElement("div");
+    footer.className = "messages-editor-footer";
+    actions.before(footer);
+  }
+
+  actions.classList.add("messages-editor-actions");
+  footer.append(toggle, actions);
 }
 
 function syncMessagesPreviewState(postForm, toggle, button, enableLabel) {

@@ -341,7 +341,7 @@ class MobileNavigation {
 
     const link = this.createElement("a", {
       className: "mobile-menu__link",
-      text: this.normalizeText(sourceLink.textContent),
+      text: this.getSourceLinkLabel(sourceLink),
     });
 
     link.href = sourceLink.href;
@@ -352,6 +352,14 @@ class MobileNavigation {
     item.append(link);
 
     return item;
+  }
+
+  getSourceLinkLabel(sourceLink) {
+    const standardLabel = sourceLink.querySelector(":scope > span");
+
+    return this.normalizeText(
+      standardLabel?.textContent || sourceLink.textContent
+    );
   }
 
   createUserPageButton() {

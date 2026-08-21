@@ -205,19 +205,95 @@
   margin-bottom: 10px;
 }
 
-#pun-messages
-  #profile
-  > .container
-  > #post-new
-  > #post
-  > #post-form
-  > #togglePreview {
+#pun-messages #post-form > .messages-editor-footer {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  margin: 16px 0 0;
+}
+
+#pun-messages .messages-editor-footer > #togglePreview {
   position: static !important;
-  float: left !important;
-  margin: 11px 0 0 !important;
+  inset: auto !important;
+  grid-column: 1;
+  justify-self: start;
+  float: none !important;
+  width: auto;
+  margin: 0 !important;
+}
+
+#pun-messages .messages-editor-footer > #togglePreview > .button {
+  width: auto !important;
+  max-width: 100%;
+  margin: 0 !important;
+  white-space: nowrap;
+}
+
+#pun-messages .messages-editor-actions {
+  display: contents;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#pun-messages .messages-editor-actions > span {
+  float: none !important;
+  margin: 0;
+}
+
+#pun-messages .messages-editor-actions > span:first-child {
+  grid-column: 2;
+  display: flex;
+  justify-self: center;
+  gap: 8px;
+}
+
+#pun-messages .messages-editor-actions > .checkfield {
+  grid-column: 3;
+  justify-self: end;
 }
 
 @media screen and (max-width: 700px) {
+  #pun-messages #post-form > .messages-editor-footer {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  #pun-messages .messages-editor-footer > #togglePreview {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  #pun-messages .messages-editor-footer > #togglePreview > .button {
+    width: 34px !important;
+    min-width: 34px;
+    height: 34px;
+  }
+
+  #pun-messages .messages-editor-actions > span:first-child {
+    grid-column: 2;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-self: stretch;
+  }
+
+  #pun-messages .messages-editor-actions > span:first-child > .button {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+
+  #pun-messages .messages-editor-actions > .checkfield {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: end;
+  }
+
   #pun-messages #profile > .container {
     display: block;
   }
