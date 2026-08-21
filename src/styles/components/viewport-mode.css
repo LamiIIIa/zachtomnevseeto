@@ -1,25 +1,25 @@
 .viewport-mode-toggle {
   appearance: none;
   box-sizing: border-box;
-  width: 16px;
+  width: 20px;
   min-width: 16px;
-  height: 16px;
+  height: 20px;
   min-height: 0;
   margin: 0 5px 0 0;
   padding: 0;
-  border: 1px solid color-mix(in srgb, var(--color-link) 35%, transparent);
+  border: 1px solid var(--color-link);
   border-radius: 3px;
   color: var(--color-link);
-  background: color-mix(in srgb, var(--color-forum) 78%, transparent);
+  background: transparent;
   font-size: 0;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   cursor: pointer;
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
   align-items: center;
   justify-content: center;
   display: inline-flex;
+  position: absolute;
+  left: -50px;
 }
 
 .viewport-mode-toggle::before {
@@ -31,6 +31,40 @@
 .viewport-mode-toggle:focus-visible {
   color: var(--color-hover);
   border-color: var(--color-hover);
+}
+
+@media screen and (min-width: 701px) {
+  .viewport-mode-toggle::after {
+    content: attr(data-tooltip);
+    box-sizing: border-box;
+    width: max-content;
+    max-width: 180px;
+    padding: 5px 8px;
+    border: 1px solid color-mix(in srgb, var(--color-link) 35%, transparent);
+    border-radius: 4px;
+    color: var(--color-txt1);
+    background: color-mix(in srgb, var(--color-forum) 94%, transparent);
+    box-shadow: 0 3px 10px color-mix(in srgb, var(--shedow1) 35%, transparent);
+    font: 500 11px/1.2 var(--font);
+    text-transform: none;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translate(-50%, -3px);
+    transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    z-index: 10;
+  }
+
+  .viewport-mode-toggle:hover::after,
+  .viewport-mode-toggle:focus-visible::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+  }
 }
 
 @media screen and (max-width: 700px) {
@@ -50,6 +84,8 @@
     padding: 0;
     border-radius: 12px !important;
     color: var(--color-txt1);
+    position: static;
+    left: auto;
   }
 
   #pun-announcement .viewport-mode-toggle::before {

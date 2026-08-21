@@ -106,6 +106,19 @@
     bottom: calc(var(--scroll-controls-dock-offset) + 12px) !important;
   }
 
+  html body .mobile-dock > .go-up,
+  html body .mobile-dock > .go-down {
+    position: absolute !important;
+  }
+
+  html body .mobile-dock > .go-up {
+    bottom: calc(100% + 44px) !important;
+  }
+
+  html body .mobile-dock > .go-down {
+    bottom: calc(100% + 8px) !important;
+  }
+
   html body .go-up > .inside,
   html body .go-down > .inside {
     width: 100% !important;

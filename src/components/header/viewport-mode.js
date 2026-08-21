@@ -22,6 +22,7 @@ export function initViewportModeToggle(header) {
 
   const button = document.createElement('button')
   let desktopModeEnabled = getStoredMode() === DESKTOP_MODE
+  const media = window.matchMedia(MOBILE_LAYOUT_QUERY)
 
   button.type = 'button'
   button.className = 'viewport-mode-toggle'
@@ -30,12 +31,14 @@ export function initViewportModeToggle(header) {
     const translationKey = desktopModeEnabled
       ? 'viewportMode.enableMobile'
       : 'viewportMode.disableMobile'
+    const titleKey = media.matches ? translationKey : 'viewportMode.enableMobile'
 
     button.textContent = t(translationKey)
-    button.title = t(translationKey)
+    button.title = t(titleKey)
     button.setAttribute('aria-label', t(translationKey))
+    button.dataset.tooltip = t('viewportMode.enableMobile')
     button.dataset.i18n = translationKey
-    button.dataset.i18nAttr = `title:${translationKey};aria-label:${translationKey}`
+    button.dataset.i18nAttr = `title:${titleKey};aria-label:${translationKey};data-tooltip:viewportMode.enableMobile`
   }
 
   button.addEventListener('click', () => {
@@ -50,15 +53,16 @@ export function initViewportModeToggle(header) {
     window.location.reload()
   })
 
-  const media = window.matchMedia(MOBILE_LAYOUT_QUERY)
   const updatePlacement = () => {
     if (media.matches) {
       mobileTarget.append(button)
+      updateButton()
       return
     }
 
     const contactTitle = desktopTarget.querySelector(':scope > p:first-child')
     contactTitle?.prepend(button)
+    updateButton()
   }
 
   updateButton()

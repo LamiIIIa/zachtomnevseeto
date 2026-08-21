@@ -1,4 +1,5 @@
 import { t } from '../i18n/index.js'
+import { MOBILE_LAYOUT_QUERY } from '../config/layout.js'
 
 const EDGE_OFFSET = 250
 const BOTTOM_EDGE_OFFSET = 999
@@ -21,6 +22,14 @@ export function initScrollControls() {
 
   topControl.dataset.forumDesignReady = 'true'
   bottomControl.dataset.forumDesignReady = 'true'
+
+  const media = window.matchMedia?.(MOBILE_LAYOUT_QUERY)
+  const updatePlacement = () => {
+    const mobileDock = document.querySelector('.mobile-dock')
+    const target = media?.matches && mobileDock ? mobileDock : document.body
+
+    target.append(topControl, bottomControl)
+  }
 
   topControl.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: getScrollBehavior() })
@@ -48,6 +57,8 @@ export function initScrollControls() {
 
   window.addEventListener('scroll', requestUpdate, { passive: true })
   window.addEventListener('resize', requestUpdate)
+  media?.addEventListener?.('change', updatePlacement)
+  updatePlacement()
   updateVisibility()
 }
 
