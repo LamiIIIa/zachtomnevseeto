@@ -143,8 +143,8 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  justify-content: space-between;
-  gap: 5px;
+  justify-content: normal;
+  gap: 20px;
   width: auto !important;
   min-width: 0;
   height: 100%;
