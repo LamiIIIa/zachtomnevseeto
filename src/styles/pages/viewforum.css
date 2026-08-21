@@ -64,6 +64,14 @@
   display: none;
 }
 
+span.num_msg {
+  margin: 0;
+  border-radius: 50% !important;
+  color: var(--color-forum) !important;
+  background: var(--color-link) !important;
+  pointer-events: none;
+}
+
 @media screen and (max-width: 700px) {
   #pun-viewforum #pun-main.multipage {
     margin-top: 0;
