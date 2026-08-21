@@ -205,6 +205,11 @@
   margin-bottom: 10px;
 }
 
+#pun-messages #post-new > #post-form > #togglePreview {
+  float: left;
+  margin-top: 11px;
+}
+
 @media screen and (max-width: 700px) {
   #pun-messages #profile > .container {
     display: block;

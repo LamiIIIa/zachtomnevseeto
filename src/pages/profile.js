@@ -48,6 +48,7 @@ function transformViewProfileLayout(main) {
 
   transformProfileItems(leftBlock);
   transformProfileItems(rightBlock);
+  normalizeProfilePostLinks(rightBlock);
 
   layout.append(leftBlock, rightBlock);
   table.replaceWith(layout);
@@ -59,6 +60,20 @@ function transformViewProfileLayout(main) {
   contentList.replaceWith(contentBlock);
 
   viewProfile.dataset.blockLayoutReady = "true";
+}
+
+function normalizeProfilePostLinks(profileRight) {
+  const postLinks = profileRight?.querySelector("#pa-posts strong");
+
+  if (!postLinks) return;
+
+  Array.from(postLinks.childNodes).forEach((node) => {
+    if (node.nodeType !== Node.TEXT_NODE) return;
+
+    node.textContent = node.textContent
+      .replace(/\s*-\s*$/, "")
+      .replace(/\s*\|\s*/g, "");
+  });
 }
 
 function createProfileBlock(source, ...classNames) {
