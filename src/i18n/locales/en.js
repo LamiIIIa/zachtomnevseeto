@@ -56,6 +56,7 @@ export default {
     lastPost: 'Go to the latest post',
     submit: 'Submit',
     preview: 'Preview',
+    searchTopic: 'Search this topic',
     online: 'Online',
     defaultAvatar: 'Default avatar',
   },

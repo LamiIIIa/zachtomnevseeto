@@ -1,0 +1,93 @@
+/* Фонд форума: таблицы активных и последних донаторов. */
+
+:is(#top-donators, #latest-donators) > .container {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+:is(#top-donators, #latest-donators) .donator-card {
+  grid-template-columns:
+    minmax(160px, 1fr)
+    minmax(180px, 1fr)
+    minmax(130px, 0.65fr)
+    minmax(150px, 0.65fr);
+}
+
+:is(#top-donators, #latest-donators)
+  .donator-card
+  > :is(
+    .donator-card__identity,
+    .donator-card__status,
+    .donator-card__registered,
+    .donator-card__amount
+  ) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+:is(#top-donators, #latest-donators) .donator-card__identity a,
+:is(#top-donators, #latest-donators) .donator-card__amount {
+  color: var(--color-link);
+}
+
+:is(#top-donators, #latest-donators)
+  :is(.donator-card__registered, .donator-card__amount) {
+  text-align: center;
+}
+
+:is(#top-donators, #latest-donators) .donator-card-list__empty {
+  display: block;
+  margin: 0;
+  text-align: center;
+}
+
+@media screen and (max-width: 700px) {
+  :is(#top-donators, #latest-donators) .donator-card {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "identity amount"
+      "status status"
+      "registered registered";
+    align-items: start;
+    gap: 8px 12px;
+  }
+
+  :is(#top-donators, #latest-donators) .donator-card__identity {
+    grid-area: identity;
+    align-self: center;
+    font-weight: 700;
+  }
+
+  :is(#top-donators, #latest-donators) .donator-card__status {
+    grid-area: status;
+  }
+
+  :is(#top-donators, #latest-donators) .donator-card__registered {
+    grid-area: registered;
+  }
+
+  :is(#top-donators, #latest-donators) .donator-card__amount {
+    grid-area: amount;
+    align-self: center;
+    white-space: nowrap;
+  }
+
+  :is(#top-donators, #latest-donators)
+    :is(
+      .donator-card__status,
+      .donator-card__registered
+    )::before {
+    content: attr(data-label) ": ";
+    color: var(--color-txt1);
+  }
+
+  :is(#top-donators, #latest-donators)
+    :is(.donator-card__status, .donator-card__registered) {
+    box-sizing: border-box;
+    padding: 6px 8px;
+    background: color-mix(in srgb, var(--color-link) 10%, transparent);
+    border-radius: 8px;
+    text-align: left;
+  }
+}

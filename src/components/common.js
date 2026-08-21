@@ -1,5 +1,6 @@
 import { t } from '../i18n/index.js'
 import { MOBILE_LAYOUT_QUERY } from '../config/layout.js'
+import { initDonatorLists } from './donator-lists.js'
 import { initEditors } from './editor/index.js'
 import { initForumElements } from './forum-elements.js'
 import { initMobileNavigation } from './mobile-navigation.js'
@@ -18,6 +19,7 @@ export function initCommon({ root }) {
 
   // Перенесённые из HTML-верх/низ функции работают на всех подходящих страницах.
   initForumElements(root)
+  initDonatorLists(root)
   initEditors(root)
   initRadars(root)
   initScrollControls()
