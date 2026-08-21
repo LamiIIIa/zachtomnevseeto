@@ -34,7 +34,7 @@ export function initMessages({ root, main }) {
 }
 
 function initMessagesPreviewToggle(main) {
-  const postForm = main.querySelector("form#post");
+  const postForm = main.querySelector("#post, #post-new");
   const postFormBody = postForm?.querySelector("#post-form");
   const actions = postFormBody
     ?.querySelector('input[name="preview"]')
