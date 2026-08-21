@@ -65,7 +65,6 @@
 }
 
 span.num_msg {
-  margin: 0;
   border-radius: 50% !important;
   color: var(--color-forum) !important;
   background: var(--color-link) !important;
