@@ -2,7 +2,6 @@ import { t } from '../i18n/index.js'
 
 const EDGE_OFFSET = 250
 const BOTTOM_EDGE_OFFSET = 999
-const ARROW_ICON_SRC = '/files/001a/fc/45/61081.svg'
 
 export function initScrollControls() {
   if (!document.body) return
@@ -72,16 +71,20 @@ function getOrCreateControl({ id, className, labelKey }) {
     }
   })
 
-  if (!control.querySelector(':scope > .inside')) {
-    const inside = document.createElement('div')
-    const icon = document.createElement('img')
+  let inside = control.querySelector(':scope > .inside')
 
+  if (!inside) {
+    inside = document.createElement('div')
     inside.className = 'inside'
-    icon.src = ARROW_ICON_SRC
-    icon.alt = ''
-    icon.setAttribute('aria-hidden', 'true')
-    inside.append(icon)
     control.replaceChildren(inside)
+  }
+
+  if (!inside.querySelector(':scope > .scroll-control__icon')) {
+    const icon = document.createElement('span')
+
+    icon.className = 'scroll-control__icon'
+    icon.setAttribute('aria-hidden', 'true')
+    inside.replaceChildren(icon)
   }
 
   control.setAttribute('aria-label', t(labelKey))
