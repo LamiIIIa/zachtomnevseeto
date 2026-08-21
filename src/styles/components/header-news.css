@@ -23,3 +23,13 @@
 .nvsscroll .news-item__status {
   padding: 12px;
 }
+
+.nvsscroll .news-item__text a {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.nvsscroll .news-item__text strong {
+  font-weight: 700;
+}

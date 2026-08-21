@@ -41,9 +41,9 @@ async function loadNews({ container, topicId, limit, maxCharacters }) {
     .sort((first, second) => Number(second.posted) - Number(first.posted))
     .slice(0, limit)
     .forEach((post) => {
-      const text = truncateText(extractNewsText(post.message), maxCharacters)
-      if (!text) return
-      fragment.append(createNewsItem(post, text))
+      const content = extractNewsContent(post.message, maxCharacters)
+      if (!content.textContent?.trim()) return
+      fragment.append(createNewsItem(post, content))
     })
 
   container.replaceChildren(fragment)
@@ -105,40 +105,164 @@ function requestTopicPosts(container, topicId, limit) {
   })
 }
 
-function extractNewsText(message = '') {
+function extractNewsContent(message = '', maxCharacters) {
   const template = document.createElement('template')
   template.innerHTML = String(message)
+    .replace(/\[quote[\s\S]*?\[\/quote\]/gi, '')
+    .replace(/\[spoiler[\s\S]*?\[\/spoiler\]/gi, '')
+    .replace(/\[hide[\s\S]*?\[\/hide\]/gi, '')
+    .replace(/\[hr\]/gi, '\n')
 
   template.content
     .querySelectorAll('.quote-box, .spoiler-box, .hide-box, blockquote, script, style')
     .forEach((element) => element.remove())
 
-  template.content.querySelectorAll('br, hr').forEach((element) => element.replaceWith('\n'))
-  template.content.querySelectorAll('p, div, li').forEach((element) => element.append('\n'))
+  const content = document.createDocumentFragment()
 
-  return (template.content.textContent || '')
-    .replace(/\[quote[\s\S]*?\[\/quote\]/gi, '')
-    .replace(/\[spoiler[\s\S]*?\[\/spoiler\]/gi, '')
-    .replace(/\[hide[\s\S]*?\[\/hide\]/gi, '')
-    .replace(/\[hr\]/gi, '\n')
-    .replace(/\n[\t ]+/g, '\n')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim()
+  appendSafeNewsNodes(template.content, content)
+  normalizeNewsWhitespace(content)
+
+  return truncateNewsContent(content, maxCharacters)
 }
 
-function truncateText(text, maxCharacters) {
-  if (text.length <= maxCharacters) return text
+function appendSafeNewsNodes(source, target) {
+  Array.from(source.childNodes).forEach((node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      target.append(document.createTextNode(node.data))
+      return
+    }
+
+    if (!(node instanceof Element)) return
+
+    const tagName = node.tagName.toLowerCase()
+
+    if (tagName === 'a') {
+      const link = createSafeNewsLink(node)
+
+      if (link) {
+        appendSafeNewsNodes(node, link)
+        if (link.textContent) target.append(link)
+      } else {
+        appendSafeNewsNodes(node, target)
+      }
+      return
+    }
+
+    if (tagName === 'strong' || tagName === 'b') {
+      const strong = document.createElement('strong')
+
+      appendSafeNewsNodes(node, strong)
+      if (strong.textContent) target.append(strong)
+      return
+    }
+
+    if (tagName === 'br' || tagName === 'hr') {
+      target.append(document.createTextNode('\n'))
+      return
+    }
+
+    appendSafeNewsNodes(node, target)
+
+    if (tagName === 'p' || tagName === 'div') {
+      target.append(document.createTextNode('\n\n'))
+    } else if (tagName === 'li') {
+      target.append(document.createTextNode('\n'))
+    }
+  })
+}
+
+function createSafeNewsLink(source) {
+  const href = source.getAttribute('href')?.trim()
+  if (!href) return null
+
+  let url
+
+  try {
+    url = new URL(href, window.location.origin)
+  } catch {
+    return null
+  }
+
+  if (!['http:', 'https:', 'mailto:'].includes(url.protocol)) return null
+
+  const link = document.createElement('a')
+
+  link.href = url.href
+  link.rel = 'nofollow noopener noreferrer'
+
+  if (source.getAttribute('target') === '_blank') link.target = '_blank'
+  if (source.title) link.title = source.title
+
+  return link
+}
+
+function normalizeNewsWhitespace(content) {
+  const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT)
+  const textNodes = []
+
+  while (walker.nextNode()) textNodes.push(walker.currentNode)
+
+  textNodes.forEach((node) => {
+    node.data = node.data
+      .replace(/\u00a0/g, ' ')
+      .replace(/\r/g, '')
+      .replace(/[\t ]+/g, ' ')
+      .replace(/ *\n */g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+  })
+
+  const first = textNodes.find((node) => node.data)
+  const last = [...textNodes].reverse().find((node) => node.data)
+
+  if (first) first.data = first.data.replace(/^\s+/, '')
+  if (last) last.data = last.data.replace(/\s+$/, '')
+}
+
+function truncateNewsContent(content, maxCharacters) {
+  const text = content.textContent || ''
+  if (text.length <= maxCharacters) return content
 
   const shortenedText = text.slice(0, maxCharacters)
-  const lastSpace = shortenedText.lastIndexOf(' ')
+  const lastSpace = Math.max(
+    shortenedText.lastIndexOf(' '),
+    shortenedText.lastIndexOf('\n'),
+  )
+  const limit = lastSpace > 0 ? lastSpace : maxCharacters
+  const truncated = document.createDocumentFragment()
+  const state = { remaining: limit, done: false }
 
-  return `${shortenedText.slice(0, lastSpace > 0 ? lastSpace : maxCharacters).trim()}…`
+  cloneNewsNodesWithinLimit(content, truncated, state)
+  truncated.append(document.createTextNode('…'))
+
+  return truncated
 }
 
-function createNewsItem(post, text) {
+function cloneNewsNodesWithinLimit(source, target, state) {
+  for (const node of source.childNodes) {
+    if (state.done) break
+
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.data.slice(0, state.remaining)
+
+      if (text) target.append(document.createTextNode(text))
+      state.remaining -= text.length
+      if (state.remaining === 0) state.done = true
+      continue
+    }
+
+    if (!(node instanceof Element)) continue
+
+    const clone = node.cloneNode(false)
+
+    cloneNewsNodesWithinLimit(node, clone, state)
+    if (clone.childNodes.length) target.append(clone)
+  }
+}
+
+function createNewsItem(post, newsContent) {
   const item = document.createElement('article')
   const time = document.createElement('time')
-  const content = document.createElement('p')
+  const content = document.createElement('div')
   const date = new Date(Number(post.posted) * 1000)
 
   item.className = 'news-item'
@@ -146,7 +270,7 @@ function createNewsItem(post, text) {
   time.dateTime = Number.isNaN(date.getTime()) ? '' : date.toISOString()
   time.textContent = Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString()
   content.className = 'news-item__text'
-  content.textContent = text
+  content.append(newsContent)
 
   item.append(time, content)
   return item
