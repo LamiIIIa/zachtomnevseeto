@@ -41,6 +41,8 @@
 
   border: 1px solid var(--color-link);
   border-radius: 10px;
+
+  overflow-y: auto;
 }
 
 #pun-profile #profilenav.profile-section-menu li {
