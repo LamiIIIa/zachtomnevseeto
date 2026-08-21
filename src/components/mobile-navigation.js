@@ -44,6 +44,7 @@ class MobileNavigation {
 
     this.bindEvents();
     this.root.append(this.elements.menu, this.elements.dock);
+    this.initMessagesBadge();
     this.root.classList.add("mobile-navigation-ready");
 
     return this;
@@ -98,6 +99,67 @@ class MobileNavigation {
       this.labels.home,
       "mobile-dock__item--home"
     );
+
+    initMessagesBadge() {
+  const source = this.root.querySelector("#navpm");
+  const target = this.elements.dock?.querySelector(
+    ".mobile-dock__item--message"
+  );
+
+  if (!source || !target) return;
+
+  const updateBadge = () => {
+    const separateBadge = source.querySelector(".num_msg");
+
+    const sourceLabel = source.querySelector(
+      "a span[data-last-unread]"
+    );
+
+    const separateCount =
+      separateBadge?.textContent.match(/\d+/)?.[0];
+
+    const inlineCount =
+      sourceLabel?.textContent.match(/\((\d+)\)\s*$/)?.[1];
+
+    const count = separateCount || inlineCount || "";
+
+    let badge = target.querySelector(
+      ".mobile-dock__badge"
+    );
+
+    if (!count || Number(count) <= 0) {
+      badge?.remove();
+      target.removeAttribute("aria-label");
+      return;
+    }
+
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.className = "mobile-dock__badge";
+      badge.setAttribute("aria-hidden", "true");
+      target.append(badge);
+    }
+
+    badge.textContent = count;
+
+    target.setAttribute(
+      "aria-label",
+      `${this.labels.messages}, непрочитанных: ${count}`
+    );
+  };
+
+  updateBadge();
+
+  const observer = new MutationObserver(updateBadge);
+
+  observer.observe(source, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+    attributes: true,
+    attributeFilter: ["data-last-unread"],
+  });
+}
 
     const second = isAuthenticated
       ? this.createDockLink(
@@ -211,15 +273,7 @@ class MobileNavigation {
     };
   }
 
-  createMenuPage({
-    id,
-    name,
-    modifierClass,
-    title,
-    backLabel,
-    links,
-    hidden,
-  }) {
+  createMenuPage({ id, name, modifierClass, title, backLabel, links, hidden }) {
     const titleId = `${id}-title`;
 
     const page = this.createElement("section", {
