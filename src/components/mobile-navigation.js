@@ -100,67 +100,6 @@ class MobileNavigation {
       "mobile-dock__item--home"
     );
 
-    initMessagesBadge() {
-  const source = this.root.querySelector("#navpm");
-  const target = this.elements.dock?.querySelector(
-    ".mobile-dock__item--message"
-  );
-
-  if (!source || !target) return;
-
-  const updateBadge = () => {
-    const separateBadge = source.querySelector(".num_msg");
-
-    const sourceLabel = source.querySelector(
-      "a span[data-last-unread]"
-    );
-
-    const separateCount =
-      separateBadge?.textContent.match(/\d+/)?.[0];
-
-    const inlineCount =
-      sourceLabel?.textContent.match(/\((\d+)\)\s*$/)?.[1];
-
-    const count = separateCount || inlineCount || "";
-
-    let badge = target.querySelector(
-      ".mobile-dock__badge"
-    );
-
-    if (!count || Number(count) <= 0) {
-      badge?.remove();
-      target.removeAttribute("aria-label");
-      return;
-    }
-
-    if (!badge) {
-      badge = document.createElement("span");
-      badge.className = "mobile-dock__badge";
-      badge.setAttribute("aria-hidden", "true");
-      target.append(badge);
-    }
-
-    badge.textContent = count;
-
-    target.setAttribute(
-      "aria-label",
-      `${this.labels.messages}, непрочитанных: ${count}`
-    );
-  };
-
-  updateBadge();
-
-  const observer = new MutationObserver(updateBadge);
-
-  observer.observe(source, {
-    childList: true,
-    subtree: true,
-    characterData: true,
-    attributes: true,
-    attributeFilter: ["data-last-unread"],
-  });
-}
-
     const second = isAuthenticated
       ? this.createDockLink(
           this.navLinks.messages,
@@ -215,6 +154,57 @@ class MobileNavigation {
     link.href = sourceLink.href;
 
     return link;
+  }
+
+  initMessagesBadge() {
+    const source = this.root.querySelector("#navpm");
+    const target = this.elements.dock?.querySelector(
+      ".mobile-dock__item--message"
+    );
+
+    if (!source || !target) return;
+
+    const updateBadge = () => {
+      const separateBadge = source.querySelector(".num_msg");
+      const sourceLabel = source.querySelector(
+        "a span[data-last-unread]"
+      );
+      const separateCount = separateBadge?.textContent.match(/\d+/)?.[0];
+      const inlineCount = sourceLabel?.textContent.match(/\((\d+)\)\s*$/)?.[1];
+      const count = separateCount || inlineCount || "";
+      let badge = target.querySelector(".mobile-dock__badge");
+
+      if (!count || Number(count) <= 0) {
+        badge?.remove();
+        target.removeAttribute("aria-label");
+        return;
+      }
+
+      if (!badge) {
+        badge = document.createElement("span");
+        badge.className = "mobile-dock__badge";
+        badge.setAttribute("aria-hidden", "true");
+        target.append(badge);
+      }
+
+      badge.textContent = count;
+      target.setAttribute(
+        "aria-label",
+        `${this.labels.messages}, непрочитанных: ${count}`
+      );
+    };
+
+    updateBadge();
+
+    const observer = new MutationObserver(updateBadge);
+
+    observer.observe(source, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ["data-last-unread"],
+    });
   }
 
   createMenu() {
