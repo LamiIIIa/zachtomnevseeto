@@ -175,8 +175,6 @@
   cursor: pointer;
 }
 
-#user-posts,
-#user-topics,
 #email > span > a.sendmail,
 #email > span > a.sendpm,
 #profile1 > fieldset > div > p.datafield > span.input > a,
@@ -192,13 +190,28 @@
   border-radius: 10px;
 }
 
-#user-posts:hover,
-#user-topics:hover,
+#user-posts,
+#user-topics {
+  display: inline-block;
+  max-width: 200px;
+  box-sizing: border-box;
+  text-align: center;
+  background: var(--color-forum);
+  color: var(--color-txt3);
+  padding: 5px;
+  border-radius: 10px;
+}
+
 #email > span > a.sendmail:hover,
 #email > span > a.sendpm:hover,
 #profile1 > fieldset > div > p.datafield > span.input > a:hover,
 #profile4 > fieldset > div > p.inputfield > a:hover,
 #profile4 > fieldset > div > p.datafield > a:hover {
+  background: var(--color-hover);
+}
+
+#user-posts:hover,
+#user-topics:hover {
   background: var(--color-hover);
 }
 
