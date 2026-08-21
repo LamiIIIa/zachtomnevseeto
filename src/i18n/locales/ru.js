@@ -56,7 +56,6 @@ export default {
     lastPost: "Перейти к последнему сообщению",
     submit: "Отправить",
     preview: "Предварительный просмотр",
-    searchTopic: "Поиск по теме",
     online: "Онлайн",
     defaultAvatar: "Аватар по умолчанию",
   },

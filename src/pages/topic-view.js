@@ -1,7 +1,6 @@
 import { initMutualPromotion } from "../components/mutual-promotion.js";
 import { initScrollablePostTables } from "../components/post-components/tables-in-posts.js";
 import { initQuoteSelection } from "../components/post-components/quote-selection.js";
-import { t } from "../i18n/index.js";
 
 export function initTopicView({ main, topicId }) {
   main?.classList.add("forum-design-topic");
@@ -26,7 +25,9 @@ function initTopicTools(main) {
 
   if (!moderation || !search) return;
 
-  normalizeTopicSearchButton(search);
+  const searchButton = search.querySelector("#isk");
+
+  if (searchButton) searchButton.value = "\ue8b6";
 
   const toolbar = document.createElement("div");
 
@@ -35,26 +36,6 @@ function initTopicTools(main) {
   moderation.before(toolbar);
   toolbar.append(moderation, search);
   main.dataset.topicToolsReady = "true";
-}
-
-function normalizeTopicSearchButton(search) {
-  const button = search.querySelector("#isk");
-
-  if (!button) return;
-
-  const label = t("forumElements.searchTopic");
-  const icon = "\ue8b6";
-
-  if (button instanceof HTMLInputElement) {
-    button.value = icon;
-  } else {
-    button.textContent = icon;
-  }
-
-  button.title = label;
-  button.setAttribute("aria-label", label);
-  button.dataset.i18nAttr =
-    "title:forumElements.searchTopic;aria-label:forumElements.searchTopic";
 }
 
 function initEditorPreviewControls(main) {
