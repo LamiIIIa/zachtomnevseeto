@@ -75,54 +75,59 @@
 }
 
 @media screen and (max-width: 700px) {
-  .go-up,
-  .go-down {
-    width: 36px;
-    height: 36px;
-    right: max(8px, env(safe-area-inset-right, 0px));
-    top: auto;
-    z-index: 4999;
-    border: 1px solid color-mix(in srgb, var(--color-link) 55%, transparent);
+  html body .go-up,
+  html body .go-down {
+    width: 32px !important;
+    height: 32px !important;
+    right: max(4px, env(safe-area-inset-right, 0px)) !important;
+    top: auto !important;
+    z-index: 5001 !important;
+    border: 1px solid var(--color-link) !important;
     border-radius: 5px;
-    background: color-mix(in srgb, var(--color-forum) 82%, transparent);
+    background: color-mix(in srgb, var(--color-forum) 88%, transparent) !important;
     box-shadow: 0 2px 8px color-mix(in srgb, var(--shedow1) 25%, transparent);
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
     display: block !important;
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
   }
 
-  .go-up {
-    bottom: calc(110px + env(safe-area-inset-bottom, 0px));
+  html body .go-up {
+    bottom: calc(104px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
-  .go-down {
-    bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+  html body .go-down {
+    bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
-  .go-up .inside,
-  .go-down .inside {
-    width: 100%;
-    height: 100%;
-    background: none;
-    align-items: center;
-    opacity: 1;
+  html body .go-up > .inside,
+  html body .go-down > .inside {
+    width: 100% !important;
+    height: 100% !important;
+    background: none !important;
+    align-items: center !important;
+    opacity: 1 !important;
   }
 
-  .scroll-control__icon {
+  html body .scroll-control__icon {
     width: auto;
     height: auto;
     padding: 0;
-    color: var(--color-link);
-    font-size: 22px;
+    color: var(--color-link) !important;
+    font-size: 24px;
     text-shadow: 0 1px 3px var(--shedow1);
   }
 
-  html.kakashi .scroll-control__icon {
-    color: #fff;
+  html.kakashi body .scroll-control__icon {
+    color: #fff !important;
     text-shadow: 0 1px 4px rgb(0 0 0 / 75%);
+  }
+
+  html:has(.mobile-menu:not([hidden])) body .go-up,
+  html:has(.mobile-menu:not([hidden])) body .go-down {
+    display: none !important;
   }
 }
 

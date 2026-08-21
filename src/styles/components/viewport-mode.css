@@ -1,13 +1,14 @@
 .viewport-mode-toggle {
   appearance: none;
   box-sizing: border-box;
-  width: 36px;
-  min-width: 36px;
-  min-height: 36px;
-  margin: 80px 4px 0;
+  width: 16px;
+  min-width: 16px;
+  height: 16px;
+  min-height: 0;
+  margin: 0 0 0 5px;
   padding: 0;
   border: 1px solid color-mix(in srgb, var(--color-link) 35%, transparent);
-  border-radius: 5px;
+  border-radius: 3px;
   color: var(--color-link);
   background: color-mix(in srgb, var(--color-forum) 78%, transparent);
   font-size: 0;
@@ -23,7 +24,7 @@
 
 .viewport-mode-toggle::before {
   content: '\e824';
-  font: 400 22px/1 var(--mat);
+  font: 400 16px/1 var(--mat);
 }
 
 .viewport-mode-toggle:hover,
@@ -34,15 +35,17 @@
 
 @media screen and (max-width: 700px) {
   html #pun-announcement > .mobile-theme-picker {
-    align-items: flex-start;
+    align-items: flex-end;
     gap: 6px;
+    flex-direction: column;
     display: flex;
   }
 
   #pun-announcement .viewport-mode-toggle {
-    width: 42px;
-    min-width: 42px;
-    min-height: 42px;
+    width: 20px;
+    min-width: 20px;
+    height: 20px;
+    min-height: 20px;
     margin: 0;
     padding: 0;
     border-radius: 12px !important;
@@ -51,6 +54,6 @@
 
   #pun-announcement .viewport-mode-toggle::before {
     content: '\e30c';
-    font-size: 24px;
+    font-size: 10px;
   }
 }

@@ -58,7 +58,7 @@ export function initViewportModeToggle(header) {
     }
 
     const contactTitle = desktopTarget.querySelector(':scope > p:first-child')
-    contactTitle?.after(button)
+    contactTitle?.append(button)
   }
 
   updateButton()
