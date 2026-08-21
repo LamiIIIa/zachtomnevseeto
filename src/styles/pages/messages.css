@@ -489,15 +489,18 @@
   /* Заголовок сообщения */
   #pun-messages .messages-container > .container > fieldset > legend {
     box-sizing: border-box;
-    display: block;
     width: 100%;
     margin: 0 0 8px;
-    padding: 0;
+    padding: 5px;
+    display: block;
+    font: 400 14px var(--font);
+    text-transform: uppercase;
+    text-align: center;
   }
 
   #pun-messages .messages-container > .container > fieldset > legend > strong {
-    position: static;
-    top: auto;
+    position: relative;
+    top: 5px;
     display: block;
     margin: 0;
     padding: 0;
@@ -505,27 +508,31 @@
 
   /* Убираем цветную полосу */
   #pun-messages .messages-container .post > h3 {
-    position: static;
     margin: 0;
-    padding: 0;
-    background: transparent !important;
+    padding: 5px 0;
+    position: static;
+    background: 0 0 !important;
     border: 0 !important;
+    display: flex !important;
   }
 
   /* Дата, затем ползунок */
   #pun-messages .messages-container .post > h3 > span {
-    box-sizing: border-box;
-    display: flex;
+    box-sizing: border-box !important;
+
+    color: var(--color-txt1);
+    text-align: left;
+
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
-    width: 100%;
+
     margin: 0;
-    padding: 0;
-    color: var(--color-txt1);
-    background: transparent !important;
+    padding: 0px !important;
+    display: flex;
+
+    background: 0 0 !important;
     border: 0 !important;
-    text-align: left;
   }
 
   #pun-messages .messages-container .post > h3 .FNTslider {
