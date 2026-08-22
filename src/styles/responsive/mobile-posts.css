@@ -196,7 +196,8 @@
     top: calc(var(--mobile-author-header-height) + 10px);
     right: auto;
     left: calc(
-      var(--mobile-author-inline-padding) + var(--mobile-author-avatar-size) - 5px
+      var(--mobile-author-inline-padding) + var(--mobile-author-avatar-size) -
+        5px
     );
     flex: none;
     width: 8px !important;
@@ -225,6 +226,7 @@
     padding: 0;
     display: block;
     line-height: 20px;
+    color: var(--color-link);
   }
 
   #pun-viewtopic .pa-fld1 {
@@ -370,7 +372,7 @@
   #pun-viewtopic .pa-ua {
     position: static !important;
     box-sizing: border-box;
-    grid-column: 1;
+    grid-column: 2;
     grid-row: 4;
     align-self: center;
     justify-self: center;
