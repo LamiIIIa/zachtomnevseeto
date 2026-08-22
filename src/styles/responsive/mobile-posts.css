@@ -51,6 +51,7 @@
   }
 
   #pun-viewtopic .post-author ul {
+    --mobile-author-header-height: 34px;
     position: relative;
     box-sizing: border-box;
     width: 100% !important;
@@ -61,12 +62,12 @@
     background: linear-gradient(
       to bottom,
       var(--color-avatop) 0,
-      var(--color-avatop) 34px,
-      transparent 34px
+      var(--color-avatop) var(--mobile-author-header-height),
+      transparent var(--mobile-author-header-height)
     );
     display: grid;
     grid-template-columns: 48px 42px 42px 150px minmax(0, 1fr);
-    grid-template-rows: 34px 52px auto auto;
+    grid-template-rows: var(--mobile-author-header-height) 52px auto auto;
     column-gap: 6px;
     row-gap: 8px;
     align-items: center;
@@ -105,6 +106,8 @@
   #pun-viewtopic .pa-author {
     grid-column: 1 / 4;
     grid-row: 1;
+    min-width: 0;
+    height: var(--mobile-author-header-height);
   }
 
   #pun-searchposts .pa-author {
@@ -133,6 +136,17 @@
   #pun-viewtopic .pa-title {
     grid-column: 4 / 6;
     grid-row: 1;
+    min-width: 0;
+    width: 100%;
+    height: var(--mobile-author-header-height);
+    padding: 3px 10px !important;
+    overflow: hidden;
+    color: var(--color-txt3);
+    font: 600 clamp(7px, 2vw, 10px) / 1.15 var(--font);
+    letter-spacing: clamp(0.03em, 0.2vw, 0.12em);
+    text-align: right;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   #pun-searchposts .pa-title {
