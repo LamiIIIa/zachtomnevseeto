@@ -153,7 +153,7 @@
 .subscribelink,
 #pun-viewforum .modmenu strong,
 .postlink .button {
-  font: 700 10px var(--font) !important;
+  font: 400 10px var(--font) !important;
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }

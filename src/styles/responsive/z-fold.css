@@ -57,6 +57,105 @@
     padding-inline: 2px;
     font-size: 9px;
   }
+
+  /* Карточка автора на внешнем экране Fold не использует широкие колонки. */
+  #pun-viewtopic .post-author ul {
+    --mobile-author-avatar-size: 96px;
+    --mobile-author-inline-padding: 8px;
+    grid-template-columns:
+      52px 40px 34px minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 4px;
+    padding-right: var(--mobile-author-inline-padding);
+    padding-left: var(--mobile-author-inline-padding);
+  }
+
+  #pun-viewtopic .post-author li {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  #pun-viewtopic .pa-author {
+    min-width: 0;
+    padding-inline: 6px !important;
+    font-size: clamp(14px, 5vw, 18px);
+    overflow-wrap: anywhere;
+  }
+
+  #pun-viewtopic .pa-author > a {
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  #pun-viewtopic .pa-title {
+    min-width: 0;
+    padding-inline: 5px !important;
+    font-size: clamp(7px, 2.5vw, 9px);
+    letter-spacing: 0.03em;
+  }
+
+  #pun-viewtopic .pa-avatar {
+    grid-row: 2 / 4;
+    width: var(--mobile-author-avatar-size);
+    height: var(--mobile-author-avatar-size);
+  }
+
+  #pun-viewtopic .pa-avatar img {
+    width: var(--mobile-author-avatar-size) !important;
+    height: var(--mobile-author-avatar-size) !important;
+    max-width: var(--mobile-author-avatar-size) !important;
+    max-height: var(--mobile-author-avatar-size) !important;
+  }
+
+  #pun-viewtopic .pa-fld1 {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  #pun-viewtopic .pa-fld1 img,
+  #pun-viewtopic .pa-fld1 .band {
+    left: 0;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  #pun-viewtopic .pa-fld2 {
+    width: 100%;
+    min-width: 0;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  #pun-viewtopic .pa-fld3 {
+    min-width: 0;
+  }
+}
+
+/* Самые узкие внешние экраны Fold и компактные телефоны. */
+@media screen and (max-width: 344px) {
+  :root {
+    --main-p: 8px;
+    --post-p: 8px;
+  }
+
+  #pun-viewtopic .post-author ul {
+    --mobile-author-avatar-size: 90px;
+    --mobile-author-inline-padding: 6px;
+    grid-template-columns:
+      48px 38px 32px minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 3px;
+    row-gap: 6px;
+  }
+
+  #pun-viewtopic .pa-author {
+    padding-inline: 4px !important;
+  }
+
+  #pun-viewtopic .pa-title {
+    padding-inline: 3px !important;
+    font-size: 7px;
+  }
 }
 
 /* Раскрытый Fold: используем дополнительную ширину для двух колонок. */

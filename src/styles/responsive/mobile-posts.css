@@ -52,11 +52,13 @@
 
   #pun-viewtopic .post-author ul {
     --mobile-author-header-height: 34px;
+    --mobile-author-avatar-size: 100px;
+    --mobile-author-inline-padding: 10px;
     position: relative;
     box-sizing: border-box;
     width: 100% !important;
     margin: 0;
-    padding: 0 10px 10px;
+    padding: 0 var(--mobile-author-inline-padding) 10px;
     border: 0;
     border-radius: 10px;
     background: linear-gradient(
@@ -188,16 +190,41 @@
   }
 
   #pun-viewtopic .pa-online {
+    box-sizing: border-box;
+    display: block !important;
     position: absolute !important;
-    top: 45px;
-    left: 105px;
+    top: calc(var(--mobile-author-header-height) + 10px);
+    right: auto;
+    left: calc(
+      var(--mobile-author-inline-padding) + var(--mobile-author-avatar-size) - 5px
+    );
+    flex: none;
     width: 8px !important;
+    min-width: 8px;
     height: 8px !important;
+    min-height: 8px;
     margin: 0;
     border: 1px solid var(--color-forum);
     background-size: cover;
     box-shadow: none;
     z-index: 20;
+  }
+
+  /* Поиск всех сообщений автора в теме — в нижнем левом углу карточки. */
+  #pun-viewtopic .pa-author #tuser {
+    box-sizing: border-box;
+    position: absolute !important;
+    inset: auto auto 10px var(--mobile-author-inline-padding) !important;
+    z-index: 20;
+    flex: none;
+    width: 20px;
+    min-width: 20px;
+    height: 20px;
+    min-height: 20px;
+    margin: 0;
+    padding: 0;
+    display: block;
+    line-height: 20px;
   }
 
   #pun-viewtopic .pa-fld1 {

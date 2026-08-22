@@ -119,7 +119,7 @@ del:hover {
 
 #plng,
 .editor-character-count {
-  font: 700 9px var(--font);
+  font: 400 9px var(--font);
   padding-top: 2px;
   background: var(--color-dark);
   border-radius: 13px;
@@ -311,15 +311,15 @@ del:hover {
 
 /* Панель после преобразования таблицы в гибкую структуру. */
 #plng,
-  .editor-character-count {
-    position: static;
-    right: auto;
-    top: auto;
-    width: fit-content;
-    max-width: 100%;
-    margin: 0 0 8px auto;
-    padding: 2px 8px;
-  }
+.editor-character-count {
+  position: static;
+  right: auto;
+  top: auto;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 0 8px auto;
+  padding: 2px 8px;
+}
 
 #form-buttons.editor-toolbar-ready {
   box-sizing: border-box;
@@ -450,8 +450,7 @@ del:hover {
     top: auto !important;
     right: max(8px, env(safe-area-inset-right, 0px)) !important;
     bottom: calc(
-      var(--mobile-dock-height, 64px) +
-        env(safe-area-inset-bottom, 0px) + 8px
+      var(--mobile-dock-height, 64px) + env(safe-area-inset-bottom, 0px) + 8px
     ) !important;
     left: max(8px, env(safe-area-inset-left, 0px)) !important;
     width: auto !important;
