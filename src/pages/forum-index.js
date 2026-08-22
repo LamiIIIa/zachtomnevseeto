@@ -29,7 +29,7 @@ export function initForumIndex({ main, root }) {
   initIndexQuotes(root);
 
   // Отмечаем первую категорию для отдельного мобильного отступа после шапки.
-  main.querySelector('.category')?.classList.add('category--first');
+  main.querySelector(".category")?.classList.add("category--first");
 
   // Хлебные крошки находятся рядом с #pun-main, поэтому ищем их от корня страницы.
   const breadcrumbs = root.querySelectorAll("p.container.crumbs");

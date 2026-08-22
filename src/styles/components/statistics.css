@@ -8,11 +8,11 @@
   font-size: 10px;
   gap: 5px;
   grid-template-areas:
-    'tem reg'
-    'soo last'
-    'active active'
-    'day day';
-    list-style: none;
+    "tem reg"
+    "soo last"
+    "active active"
+    "day day";
+  list-style: none;
 }
 
 .statscon .item1 {
@@ -45,7 +45,7 @@
 .statscon strong,
 .statscon a {
   color: var(--color-link);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 /* На десктопе статистика всегда отображается полностью. */

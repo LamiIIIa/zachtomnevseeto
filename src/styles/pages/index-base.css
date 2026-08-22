@@ -159,7 +159,7 @@ podfor {
   height: 100%;
   align-items: flex-end;
   justify-content: flex-end;
-  font: 600 10px var(--font);
+  font: 400 10px var(--font);
   text-transform: uppercase;
 }
 
