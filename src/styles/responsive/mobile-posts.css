@@ -229,6 +229,10 @@
     color: var(--color-link);
   }
 
+  .online .pa-author:after {
+    display: none !important;
+  }
+
   #pun-viewtopic .pa-fld1 {
     position: static !important;
     grid-column: 5;
