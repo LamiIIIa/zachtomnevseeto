@@ -3,8 +3,13 @@ import { t } from "../../i18n/index.js";
 // Страница VIP объясняет способы улучшения аккаунта и поддержки фонда форума.
 const SUPPORT_FORUM_URL = "/vip.php";
 
-// Системный аватар используется, пока настоящий аватар загружается из профиля.
+// Системный аватар используется, если настоящий ещё не найден на страницах форума.
 const DEFAULT_AVATAR_URL = "/img/avatars/default.png";
+
+// Кеш позволяет показывать найденный ранее аватар без фонового перехода в
+// profile.php. Такой запрос MyBB учитывает как реальное посещение профиля и
+// из-за него неверно меняет местоположение пользователя в списке «Активны».
+const STATUS_AVATAR_CACHE_KEY = "forum-status-avatars";
 
 // Перестраивает стандартную строку статуса MyBB для авторизованного пользователя.
 export function initUserStatus(root) {
@@ -89,11 +94,24 @@ function removeStandalonePunctuation(element) {
 function createStatusAvatar(root, profileLink) {
   const profileId = getProfileId(profileLink.href);
 
-  // На главной адрес аватара часто уже есть в данных последнего сообщения.
-  const existingAvatar = Array.from(root.querySelectorAll(".user-avatar")).find(
+  // На главной адрес аватара часто уже есть в данных последнего сообщения, а
+  // на собственной странице профиля — в стандартном блоке #pa-avatar.
+  const listedAvatar = Array.from(root.querySelectorAll(".user-avatar")).find(
     (avatar) => getProfileId(avatar.querySelector("a")?.href) === profileId
   );
+  const authoredPost = Array.from(root.querySelectorAll(".post")).find(
+    (post) =>
+      getProfileId(post.querySelector('.pa-author a[href*="profile.php"]')?.href) ===
+      profileId
+  );
+  const postAvatar = authoredPost?.querySelector(".pa-avatar");
+  const profileAvatar =
+    getProfileId(window.location.href) === profileId
+      ? root.querySelector("#pa-avatar")
+      : null;
+  const existingAvatar = listedAvatar || postAvatar || profileAvatar;
   const existingSource = getAvatarSource(existingAvatar);
+  const cachedSource = getCachedAvatarSource(profileId);
 
   // Создаём простую разметку, которая не наследует стили аватаров карточек.
   const avatar = document.createElement("span");
@@ -104,13 +122,12 @@ function createStatusAvatar(root, profileLink) {
   link.href = profileLink.href;
   link.setAttribute("aria-label", profileLink.textContent.trim());
   image.classList.add("status-user__avatar-image");
-  image.src = existingSource || DEFAULT_AVATAR_URL;
+  image.src = existingSource || cachedSource || DEFAULT_AVATAR_URL;
   image.alt = "";
   link.append(image);
   avatar.append(link);
 
-  // Если адреса на странице нет, настоящий аватар загрузится из профиля.
-  if (!existingSource) void loadProfileAvatar(profileLink.href, image);
+  if (existingSource) cacheAvatarSource(profileId, existingSource);
 
   return avatar;
 }
@@ -140,24 +157,29 @@ function getProfileId(href) {
   }
 }
 
-// Загружает аватар из профиля, когда на текущей странице его ещё нет.
-async function loadProfileAvatar(profileUrl, image) {
+function getCachedAvatarSource(profileId) {
+  if (!profileId) return null;
+
   try {
-    const response = await fetch(profileUrl, { credentials: "same-origin" });
-    if (!response.ok) return;
-
-    const profileHtml = await response.text();
-    const profileDocument = new DOMParser().parseFromString(
-      profileHtml,
-      "text/html"
+    const avatars = JSON.parse(
+      window.localStorage.getItem(STATUS_AVATAR_CACHE_KEY) || "{}"
     );
-    const profileImage = profileDocument.querySelector("#pa-avatar img");
-    const source = profileImage?.getAttribute("src");
-
-    if (!source) return;
-
-    image.src = new URL(source, profileUrl).href;
+    return typeof avatars[profileId] === "string" ? avatars[profileId] : null;
   } catch {
-    // При сетевой ошибке остаётся системный аватар-заглушка.
+    return null;
+  }
+}
+
+function cacheAvatarSource(profileId, source) {
+  if (!profileId || !source) return;
+
+  try {
+    const avatars = JSON.parse(
+      window.localStorage.getItem(STATUS_AVATAR_CACHE_KEY) || "{}"
+    );
+    avatars[profileId] = source;
+    window.localStorage.setItem(STATUS_AVATAR_CACHE_KEY, JSON.stringify(avatars));
+  } catch {
+    // Недоступный localStorage не должен мешать построению панели статуса.
   }
 }
