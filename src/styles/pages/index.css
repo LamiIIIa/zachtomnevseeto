@@ -61,11 +61,11 @@
 @keyframes forum-card-image-pulse {
   0%,
   100% {
-    opacity: 1;
+    opacity: 0.65;
   }
 
   50% {
-    opacity: 0.35;
+    opacity: 0.15;
   }
 }
 
