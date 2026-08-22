@@ -3,6 +3,4 @@ html:is(.shinobi, .oto, .akatsuki, .green, .kakashi) {
   --icon: url('https://forumstatic.ru/files/001c/6f/41/92920.png');
   --color-txt1: #282627;
   --pagination-shadow-color: #7b7b7b;
-
-  background-color: var(--color-forum);
 }
