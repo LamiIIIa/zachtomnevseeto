@@ -10,22 +10,36 @@
     padding: 0 !important;
   }
 
-  html {
-    overflow-x: hidden !important;
+  /*
+   * Селекторы намеренно специфичнее стандартного mobile.css MyBB.
+   * Иначе он снова задаёт html/body height: 100% и превращает body в
+   * отдельный scroll-контейнер, на котором во время прокрутки виден --bg.
+   */
+  html:root {
+    height: auto !important;
+    min-height: 100%;
+    overflow-x: clip !important;
     overflow-y: auto !important;
   }
 
-  body,
-  body.redirect-page {
+  html:root > body,
+  html:root > body.redirect-page {
     position: static;
-    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100%;
+    overflow-x: clip !important;
     overflow-y: visible !important;
-    background-attachment: scroll;
+    background-attachment: scroll !important;
     overscroll-behavior-y: auto;
   }
 
+  /* Десктопная картинка темы не должна проявляться при мобильном скролле. */
+  html:root > body:not(.redirect-page) {
+    background: var(--color-forum) !important;
+  }
+
   /* У страницы остаётся только один скролл — корневой скролл документа. */
-  #pun {
+  html #pun {
     width: 100% !important;
     max-width: 100%;
     min-width: 0;
@@ -38,7 +52,7 @@
     overflow: visible !important;
   }
 
-  #pun > .punbb {
+  html #pun > .punbb {
     width: 100% !important;
     max-width: 100%;
     min-width: 0;

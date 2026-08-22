@@ -87,6 +87,16 @@ export function initScrollControls() {
 }
 
 function getPageScrollRoot() {
+  const documentRoot = document.scrollingElement || document.documentElement
+
+  /*
+   * На мобильном стандартный mobile.css MyBB объявляет body прокручиваемым,
+   * хотя настоящим корнем документа остаётся document.scrollingElement.
+   * Прокрутка body заставляет браузер перерисовывать его десктопный фон и в
+   * Safari часто заканчивается резким прыжком вместо плавной анимации.
+   */
+  if (window.matchMedia?.(MOBILE_LAYOUT_QUERY).matches) return documentRoot
+
   const body = document.body
 
   if (body) {
@@ -97,7 +107,7 @@ function getPageScrollRoot() {
     if (bodyOwnsScroll) return body
   }
 
-  return document.scrollingElement || document.documentElement
+  return documentRoot
 }
 
 function getScrollEventTarget(scrollRoot) {
