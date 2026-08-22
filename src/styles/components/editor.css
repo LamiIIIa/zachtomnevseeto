@@ -332,10 +332,24 @@ del:hover {
   overflow: visible;
 }
 
+/* Сохраняем исходную таблицу: сторонние плагины MyBB добавляют кнопки в её tr. */
+#form-buttons.editor-toolbar-ready > .editor-toolbar-table,
+#form-buttons.editor-toolbar-ready > .editor-toolbar-table > tbody {
+  box-sizing: border-box;
+  width: 100% !important;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
 /* Гибкий список кнопок. */
 #form-buttons .editor-toolbar-items {
   box-sizing: border-box;
+  position: static;
+  inset: auto;
   width: 100%;
+  height: auto;
   margin: 0;
   padding: 0;
   display: flex;
@@ -390,6 +404,73 @@ del:hover {
     width: 34px !important;
     min-width: 34px;
     height: 34px;
+  }
+
+  /* Раскрывающиеся панели больше не перекрывают textarea. */
+  #tags {
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  #tags > .container {
+    position: static !important;
+    inset: auto !important;
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100%;
+    height: auto !important;
+    max-height: min(45dvh, 300px);
+    margin: 6px 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /*
+   * Плагин стикеров создаёт контейнер размером 0 x 0 у верхней границы
+   * редактора и раскрывает окно вверх. На мобильном это уводит окно за
+   * пределы экрана, поэтому закрепляем его над нижней навигацией.
+   */
+  .hvStickerPackModalContainer {
+    box-sizing: border-box;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: calc(var(--mobile-navigation-z, 5000) + 2) !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    overflow: visible !important;
+    pointer-events: none;
+  }
+
+  .hvStickerPackModalContainer > .hvStickerPackModal {
+    box-sizing: border-box;
+    position: absolute !important;
+    top: auto !important;
+    right: max(8px, env(safe-area-inset-right, 0px)) !important;
+    bottom: calc(
+      var(--mobile-dock-height, 64px) +
+        env(safe-area-inset-bottom, 0px) + 8px
+    ) !important;
+    left: max(8px, env(safe-area-inset-left, 0px)) !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: calc(
+      100dvh - var(--mobile-dock-height, 64px) -
+        env(safe-area-inset-bottom, 0px) - 24px
+    );
+    margin: 0 !important;
+    overflow: hidden;
+    pointer-events: auto;
+  }
+
+  .hvStickerPackModalContent {
+    max-height: min(42dvh, 300px) !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Контейнер кнопок отправки и предпросмотра. */

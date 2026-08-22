@@ -1,4 +1,5 @@
 import { forumConfig } from "../../config/forum.js";
+import { MOBILE_LAYOUT_QUERY } from "../../config/layout.js";
 import { t } from "../../i18n/index.js";
 
 const EDITOR_SELECTOR = "#main-reply, #post textarea";
@@ -16,7 +17,15 @@ export function initEditors(root) {
   const observer = new MutationObserver((mutations) => {
     mutations.forEach(({ addedNodes }) => {
       addedNodes.forEach((node) => {
-        if (node instanceof Element) processEditorContent(node);
+        if (!(node instanceof Element)) return;
+
+        processEditorContent(node);
+
+        const toolbar = node.matches("#form-buttons")
+          ? node
+          : node.closest("#form-buttons");
+
+        if (toolbar) initFlexibleToolbar([toolbar]);
       });
     });
   });
@@ -195,29 +204,71 @@ function initDiceButton(toolbars) {
 
 function initFlexibleToolbar(toolbars) {
   toolbars.forEach((toolbar) => {
-    if (toolbar.dataset.flexibleToolbarReady) return;
-
     const table = toolbar.querySelector("table");
-    if (!table) return;
+    let buttonList = toolbar.querySelector(".editor-toolbar-items");
 
-    const cells = Array.from(table.querySelectorAll("td"));
+    if (!buttonList && table) {
+      buttonList = table.querySelector("tr");
+      if (!buttonList) return;
+
+      table.classList.add("editor-toolbar-table");
+      buttonList.classList.add("editor-toolbar-items");
+      buttonList.setAttribute("role", "toolbar");
+      buttonList.setAttribute("aria-label", "Панель форматирования");
+    }
+
+    if (!buttonList) return;
+
+    const cells = Array.from(buttonList.querySelectorAll(":scope > td"));
     if (cells.length === 0) return;
-
-    const buttonList = document.createElement("div");
-    buttonList.className = "editor-toolbar-items";
-    buttonList.setAttribute("role", "toolbar");
-    buttonList.setAttribute("aria-label", "Панель форматирования");
 
     cells.forEach((cell) => {
       cell.classList.add("editor-toolbar-item");
       cell.setAttribute("role", "button");
-      buttonList.append(cell);
     });
-
-    table.replaceWith(buttonList);
 
     toolbar.classList.add("editor-toolbar-ready");
     toolbar.dataset.flexibleToolbarReady = "true";
+    initToolbarScrollGuard(toolbar);
+  });
+}
+
+function initToolbarScrollGuard(toolbar) {
+  if (toolbar.dataset.scrollGuardReady) return;
+  toolbar.dataset.scrollGuardReady = "true";
+
+  const mobile = window.matchMedia(MOBILE_LAYOUT_QUERY);
+  let scrollPosition = null;
+
+  toolbar.addEventListener(
+    "pointerdown",
+    (event) => {
+      if (!mobile.matches || !(event.target instanceof Element)) return;
+      if (!event.target.closest(".editor-toolbar-item")) return;
+
+      const textarea =
+        toolbar.closest("form")?.querySelector(EDITOR_SELECTOR) ||
+        document.querySelector(EDITOR_SELECTOR);
+
+      scrollPosition =
+        textarea && document.activeElement !== textarea ? window.scrollY : null;
+    },
+    true
+  );
+
+  toolbar.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    if (!event.target.closest(".editor-toolbar-item")) return;
+    if (scrollPosition === null) return;
+
+    const top = scrollPosition;
+    scrollPosition = null;
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top, left: window.scrollX, behavior: "auto" });
+      });
+    });
   });
 }
 
