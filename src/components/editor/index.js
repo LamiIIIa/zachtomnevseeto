@@ -2,7 +2,10 @@ import { forumConfig } from "../../config/forum.js";
 import { MOBILE_LAYOUT_QUERY } from "../../config/layout.js";
 import { t } from "../../i18n/index.js";
 
-const EDITOR_SELECTOR = "#main-reply, #post textarea";
+// Служебные плагины MyBB тоже добавляют textarea внутрь #post
+// (#image-area-tinp, #video-area-tinp). Выбираем только поле сообщения, иначе
+// BB-коды попадают в первое служебное поле и пропадают при отправке.
+const EDITOR_SELECTOR = '#main-reply, textarea[name="req_message"]';
 const DICE_PATTERN = /\[dice=((?:\d+[-—])*)(?:(\d)(\d+)|(\d+):(\d+))\]/g;
 
 export function initEditors(root) {
