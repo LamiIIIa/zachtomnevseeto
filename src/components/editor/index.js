@@ -396,7 +396,7 @@ function replaceDiceCodes(postContent) {
     DICE_PATTERN.lastIndex = 0;
     for (const match of source.matchAll(DICE_PATTERN)) {
       fragment.append(source.slice(lastIndex, match.index));
-      fragment.append(createDiceResult(postContent, match));
+      fragment.append(createDiceResult(match));
       lastIndex = match.index + match[0].length;
     }
 
@@ -405,7 +405,7 @@ function replaceDiceCodes(postContent) {
   });
 }
 
-function createDiceResult(postContent, match) {
+function createDiceResult(match) {
   const encodedRolls = match[1]
     .replace(/—/g, "-")
     .split("-")
@@ -414,12 +414,7 @@ function createDiceResult(postContent, match) {
   const isNewScheme = Boolean(match[4]);
   const diceCount = Number(isNewScheme ? match[4] : match[2]);
   const sideCount = Number(isNewScheme ? match[5] : match[3]);
-  const rolls = decodeDiceRolls({
-    postContent,
-    encodedRolls,
-    sideCount,
-    isNewScheme,
-  });
+  const rolls = decodeDiceRolls(encodedRolls);
   const total = rolls.reduce((sum, value) => sum + value, 0);
   const result = document.createElement("div");
   const quote = document.createElement("blockquote");
@@ -444,48 +439,11 @@ function createDiceResult(postContent, match) {
   return result;
 }
 
-function decodeDiceRolls({
-  postContent,
-  encodedRolls,
-  sideCount,
-  isNewScheme,
-}) {
-  // Сохраняем прежний детерминированный алгоритм, чтобы старые броски не изменились.
-  let postNumber = getPostNumber(postContent);
-  let seconds = getPostSeconds(postContent);
-  let randomState = postNumber + seconds;
-
-  return encodedRolls.map((encodedRoll) => {
-    let value = Math.floor(encodedRoll / 1936);
-    if (!isNewScheme || sideCount <= 0) return value;
-
-    seconds = ((seconds >> 1) + ((seconds & 1) << 21)) & 0x3fffff;
-    postNumber = ((postNumber >> 1) + ((postNumber & 1) << 22)) & 0x7fffff;
-    randomState =
-      (((randomState >> 1) +
-        ((randomState & 1 ? 0 : 1) << 23) +
-        value +
-        seconds) ^
-        postNumber) &
-      0xffffff;
-
-    value = (randomState % sideCount) + 1;
-    return value;
-  });
-}
-
-function getPostNumber(postContent) {
-  const identifier =
-    postContent.closest(".post[id]")?.id || postContent.id || "";
-  return Number(identifier.match(/\d+/)?.[0] || 0);
-}
-
-function getPostSeconds(postContent) {
-  const post = postContent.closest(".post");
-  const timestamp = Number(
-    postContent.dataset.posted || post?.dataset.posted || 0
-  );
-  return timestamp ? new Date(timestamp * 1000).getSeconds() : 0;
+function decodeDiceRolls(encodedRolls) {
+  // Результат определяется один раз при нажатии на кубик и хранится внутри
+  // BB-кода. Номер поста и время публикации больше не перебрасывают кубики при
+  // предпросмотре, отправке или последующем редактировании.
+  return encodedRolls.map((encodedRoll) => Math.floor(encodedRoll / 1936));
 }
 
 function configureMyBBEditor() {

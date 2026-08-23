@@ -100,16 +100,18 @@
 .pa-title {
   height: 30px;
   color: var(--color-txt3);
-  font: 400 12px var(--font1);
+  font: 400 10px var(--font);
   letter-spacing: 0.15em;
   box-sizing: border-box;
   z-index: 100;
   justify-content: center;
   align-items: center;
-  padding: 0 10px;
+  padding: 0 20px;
   display: flex;
   top: 50px;
   position: absolute !important;
+  width: 200px !important;
+  line-height: 1;
 }
 
 /* avatar */
