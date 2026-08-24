@@ -151,6 +151,10 @@ function transformViewProfileLayout(main) {
 
   transformProfileItems(leftBlock);
   transformProfileItems(rightBlock);
+  swapProfileItems(
+    rightBlock.querySelector("#pa-posts"),
+    rightBlock.querySelector("#pa-last-visit")
+  );
   normalizeProfilePostLinks(rightBlock);
 
   layout.append(leftBlock, rightBlock);
@@ -163,6 +167,20 @@ function transformViewProfileLayout(main) {
   contentList.replaceWith(contentBlock);
 
   viewProfile.dataset.blockLayoutReady = "true";
+}
+
+function swapProfileItems(firstItem, secondItem) {
+  if (!firstItem || !secondItem || firstItem.parentElement !== secondItem.parentElement) {
+    return;
+  }
+
+  const firstMarker = document.createComment("profile-item-first");
+  const secondMarker = document.createComment("profile-item-second");
+
+  firstItem.replaceWith(firstMarker);
+  secondItem.replaceWith(secondMarker);
+  firstMarker.replaceWith(secondItem);
+  secondMarker.replaceWith(firstItem);
 }
 
 function normalizeProfilePostLinks(profileRight) {
