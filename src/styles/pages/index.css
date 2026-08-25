@@ -18,7 +18,7 @@
   flex-flow: column wrap;
   justify-content: space-around;
   align-items: stretch;
-  gap: 20px;
+  gap: 0px;
   height: 200px;
   padding: 5px;
   transition: box-shadow 0.3s;
