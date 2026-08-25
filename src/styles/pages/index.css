@@ -185,6 +185,57 @@
     grid-column: auto;
   }
 
+  /*
+   * Высота мобильной карточки зависит от исходного содержимого форума.
+   * Иначе длинный список ссылок переносится во вторую flex-колонку и
+   * обрезается фиксированной высотой карточки.
+   */
+  #pun-index .forum-card {
+    height: auto;
+    min-height: 200px;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    gap: 14px;
+  }
+
+  #pun-index .forum-card__main,
+  #pun-index .forum-card .tclcon {
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Сохраняем исходную группу ссылок, но разрешаем ей занимать новые строки. */
+  #pun-index .forum-card .tclcon > span {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    padding: 10px 0;
+    flex-flow: row wrap;
+    align-items: stretch;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  #pun-index .forum-card .tclcon > span > a {
+    box-sizing: border-box;
+    flex: 0 1 auto;
+    width: auto;
+    max-width: 100%;
+    min-width: 0;
+    padding-inline: 8px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  #pun-index .forum-card__last-post {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    margin-top: auto;
+  }
+
   /* Для мобильной версии можно будет назначить отдельные, менее широкие шаблоны. */
   #pun-index .category h2 > .category-title,
   #pun-index #pun-stats h2 > .statistics-title {
