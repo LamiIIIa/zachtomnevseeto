@@ -1,5 +1,4 @@
 import './styles/main.css'
-import './components/story.js'
 
 import { initCommon } from './components/common.js'
 import {
@@ -17,6 +16,7 @@ import { initMessages } from './pages/messages.js'
 import { initPostEditor } from './pages/post-editor.js'
 import { initProfile } from './pages/profile.js'
 import { initSearch } from './pages/search.js'
+import { initStoryThemeBridge } from './components/story-theme-bridge.js'
 import { initTopicView } from './pages/topic-view.js'
 import { initUserList } from './pages/user-list.js'
 
@@ -41,6 +41,7 @@ const pageInitializers = {
 // Применяем viewport и тему до DOMContentLoaded, чтобы уменьшить мигание оформления.
 applyStoredViewportMode()
 applyStoredTheme()
+initStoryThemeBridge()
 
 async function init() {
   const context = getPageContext()
