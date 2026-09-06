@@ -78,3 +78,6 @@
 @import "./responsive/z-fold.css";
 @import "./responsive/mobile-posts.css";
 @import "./responsive/mobile-profile.css";
+
+/* Оформление сюжетного датабука. */
+@import "./components/story.css";

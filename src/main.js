@@ -1,4 +1,5 @@
 import './styles/main.css'
+import './components/story.js'
 
 import { initCommon } from './components/common.js'
 import {
