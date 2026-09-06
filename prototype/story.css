@@ -62,6 +62,10 @@
   color: var(--color-link);
 }
 
+#story .story-panel section > .scrolltext > p {
+  color: var(--color-txt1);
+}
+
 #story .story-panel section > a {
   min-width: 0;
 }
@@ -134,8 +138,12 @@
   height: 100%;
   box-sizing: border-box;
   border: 0;
+  padding: 0 8px;
   background-color: var(--color-forum);
   font-family: var(--font-1);
+  font-size: 16px;
+  line-height: 1.1;
+  white-space: nowrap;
   text-transform: uppercase;
   color: var(--color-link);
 }
@@ -204,5 +212,12 @@
   .extra {
     width: 100%;
     box-sizing: border-box;
+  }
+
+  #pageplace .story-tab {
+    padding: 0 3px;
+    font-size: 10px;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 }

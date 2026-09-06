@@ -6,6 +6,7 @@ const THEME_PROPERTIES = [
   '--color-link',
   '--color-lnthoverbg',
   '--font-1',
+  '--color-txt1',
 ]
 
 export function initStoryThemeBridge() {

@@ -6,6 +6,7 @@
     "--color-link",
     "--color-lnthoverbg",
     "--font-1",
+    "--color-txt1",
   ]);
 
   window.addEventListener("message", (event) => {
