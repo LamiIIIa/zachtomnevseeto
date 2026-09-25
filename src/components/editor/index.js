@@ -44,6 +44,7 @@ function processEditorContent(root) {
 
   initDiceButton(toolbars);
   initFlexibleToolbar(toolbars);
+  initAdminAdditionMenu(collectMatchingElements(root, "#addition-area"));
   initExtraColors(collectMatchingElements(root, "#color-area"));
   initDiceResults(collectMatchingElements(root, ".post-content"));
 }
@@ -321,6 +322,42 @@ function insertAtCursor(textarea, text) {
   textarea.setRangeText(text, start, end, "end");
   textarea.focus();
   textarea.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
+function initAdminAdditionMenu(additionAreas) {
+  // MyBB выводит #navadmin только пользователям с доступом к админ-панели.
+  if (!document.querySelector("#navadmin a")) return;
+
+  additionAreas.forEach((additionArea) => {
+    if (additionArea.querySelector("[data-wide-post-bbcode-button]")) return;
+
+    const button = document.createElement("div");
+    const insertWidePostTag = () => {
+      const textarea =
+        additionArea.closest("form")?.querySelector(EDITOR_SELECTOR) ||
+        document.querySelector(EDITOR_SELECTOR);
+
+      if (!textarea) return;
+      insertAtCursor(textarea, "[widepost]");
+      additionArea.style.display = "none";
+    };
+
+    button.className = "editor-addition-wide-post";
+    button.dataset.widePostBbcodeButton = "true";
+    button.dataset.i18n = "editor.widePost";
+    button.textContent = t("editor.widePost");
+    button.setAttribute("role", "button");
+    button.setAttribute("tabindex", "0");
+
+    button.addEventListener("click", insertWidePostTag);
+    button.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      insertWidePostTag();
+    });
+
+    additionArea.append(button);
+  });
 }
 
 function initExtraColors(colorAreas) {

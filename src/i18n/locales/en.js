@@ -62,6 +62,7 @@ export default {
   editor: {
     characters: 'Characters written:',
     color: 'Text color: {{color}}',
+    widePost: 'Wide post',
     dice: {
       title: 'Dice',
       countPrompt: 'Number of dice',

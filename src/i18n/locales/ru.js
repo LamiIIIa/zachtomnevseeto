@@ -62,6 +62,7 @@ export default {
   editor: {
     characters: "Написано символов:",
     color: "Цвет текста: {{color}}",
+    widePost: "Широкий пост",
     dice: {
       title: "Кубики",
       countPrompt: "Количество кубиков",

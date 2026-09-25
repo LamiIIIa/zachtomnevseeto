@@ -557,6 +557,17 @@ del:hover {
   color: var(--color-txt2);
 }
 
+#addition-area .editor-addition-wide-post {
+  cursor: pointer;
+}
+
+#addition-area .editor-addition-wide-post:focus-visible {
+  color: var(--color-txt2);
+  background: var(--color-forum);
+  outline: 1px solid var(--color-link);
+  outline-offset: -2px;
+}
+
 #font-area div img,
 #size-area div img {
   position: absolute;
