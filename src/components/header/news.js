@@ -1,6 +1,9 @@
 import { forumConfig } from '../../config/forum.js'
 import { t } from '../../i18n/index.js'
 
+const NEWS_CACHE_PREFIX = 'forum-news-v1'
+const API_MAX_RESULTS = 100
+
 export function initHeaderNews(root = document) {
   const container = root?.querySelector('.nvsscroll')
   if (!container || container.dataset.forumNewsReady) return
@@ -12,7 +15,10 @@ export function initHeaderNews(root = document) {
   }
 
   const topicId = getPositiveInteger(container.dataset.topicId) ?? forumConfig.news.topicId
-  const limit = getPositiveInteger(container.dataset.limit) ?? forumConfig.news.limit
+  const limit = Math.min(
+    getPositiveInteger(container.dataset.limit) ?? forumConfig.news.limit,
+    API_MAX_RESULTS,
+  )
   const maxCharacters =
     getPositiveInteger(container.dataset.maxCharacters) ?? forumConfig.news.maxCharacters
 
@@ -27,7 +33,13 @@ export function initHeaderNews(root = document) {
 }
 
 async function loadNews({ container, topicId, limit, maxCharacters }) {
-  const posts = await requestTopicPosts(container, topicId, limit)
+  const cacheKey = getNewsCacheKey(container, topicId, limit)
+  let posts = readNewsCache(cacheKey)
+
+  if (!posts) {
+    posts = await requestTopicPosts(container, topicId, limit)
+    writeNewsCache(cacheKey, posts)
+  }
 
   if (!posts.length) {
     container.dataset.forumNewsReady = 'empty'
@@ -61,7 +73,9 @@ function requestTopicPosts(container, topicId, limit) {
 
     apiUrl.searchParams.set('method', 'post.get')
     apiUrl.searchParams.set('topic_id', String(topicId))
+    apiUrl.searchParams.set('fields', 'message,posted')
     apiUrl.searchParams.set('limit', String(limit))
+    apiUrl.searchParams.set('sort_by', 'posted')
     apiUrl.searchParams.set('sort_dir', 'desc')
     apiUrl.searchParams.set('charset', 'utf-8')
     apiUrl.searchParams.set('callback', callbackName)
@@ -103,6 +117,42 @@ function requestTopicPosts(container, topicId, limit) {
 
     document.body.append(script)
   })
+}
+
+function getNewsCacheKey(container, topicId, limit) {
+  const apiUrl = new URL(container.dataset.apiUrl || forumConfig.news.apiUrl, window.location.origin)
+
+  return `${NEWS_CACHE_PREFIX}:${apiUrl.origin}:${topicId}:${limit}`
+}
+
+function readNewsCache(cacheKey) {
+  try {
+    const cached = JSON.parse(window.sessionStorage.getItem(cacheKey) || 'null')
+
+    if (
+      !cached ||
+      !Array.isArray(cached.posts) ||
+      !Number.isFinite(cached.savedAt) ||
+      Date.now() - cached.savedAt >= forumConfig.news.cacheDuration
+    ) {
+      return null
+    }
+
+    return cached.posts
+  } catch {
+    return null
+  }
+}
+
+function writeNewsCache(cacheKey, posts) {
+  try {
+    window.sessionStorage.setItem(
+      cacheKey,
+      JSON.stringify({ savedAt: Date.now(), posts }),
+    )
+  } catch {
+    // Новости продолжат работать без кеша, если sessionStorage недоступен.
+  }
 }
 
 function extractNewsContent(message = '', maxCharacters) {

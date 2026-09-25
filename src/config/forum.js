@@ -6,6 +6,7 @@ export const forumConfig = Object.freeze({
     limit: 5,
     maxCharacters: 600,
     timeout: 12_000,
+    cacheDuration: 10 * 60 * 1000,
   },
   editor: {
     maxDiceCount: 9,

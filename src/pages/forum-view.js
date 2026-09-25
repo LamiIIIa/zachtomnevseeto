@@ -28,6 +28,7 @@ const PREVIEW_EXCLUDED_SELECTOR = [
   "video",
   "audio",
 ].join(",");
+const MAX_PREVIEW_POSTS = 100;
 
 const forumViewState = {
   topics: new Map(),
@@ -345,34 +346,33 @@ function initTopicPreviews(main) {
 
   if (!mobileView.matches) return;
 
-  const topicCards = main.querySelectorAll(".topic-card[data-topic-id]");
+  const topicCards = Array.from(
+    main.querySelectorAll(".topic-card[data-topic-id][data-last-post-id]")
+  );
 
   if (!topicCards.length) return;
 
-  const loadCardPreview = (topicCard) => {
-    const topicId = Number(topicCard.dataset.topicId);
+  let loadingStarted = false;
 
-    const topicState = forumViewState.topics.get(topicId);
-
-    if (!topicState) return;
-
-    void loadTopicPreview(topicState, topicCard);
+  // Первый появившийся рядом с экраном топик запускает один пакетный запрос
+  // для всей страницы. Повторно запрос в рамках этой страницы не выполняется.
+  const loadPagePreviews = () => {
+    if (loadingStarted) return;
+    loadingStarted = true;
+    void loadTopicPreviews(topicCards);
   };
 
   if (!("IntersectionObserver" in window)) {
-    topicCards.forEach(loadCardPreview);
+    loadPagePreviews();
     return;
   }
 
   const observer = new IntersectionObserver(
     (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
+      if (!entries.some((entry) => entry.isIntersecting)) return;
 
-        observer.unobserve(entry.target);
-
-        loadCardPreview(entry.target);
-      });
+      observer.disconnect();
+      loadPagePreviews();
     },
     {
       root: null,
@@ -386,19 +386,50 @@ function initTopicPreviews(main) {
   });
 }
 
-async function loadTopicPreview(topicState, topicCard) {
-  if (topicState.previewStatus !== "idle") return;
+async function loadTopicPreviews(topicCards) {
+  const entries = topicCards
+    .map((topicCard) => {
+      const topicId = Number(topicCard.dataset.topicId);
+      const topicState = forumViewState.topics.get(topicId);
+      const postId = topicState?.lastPostId;
 
-  topicState.previewStatus = "loading";
+      if (
+        !topicState ||
+        topicState.previewStatus !== "idle" ||
+        !Number.isInteger(postId) ||
+        postId <= 0
+      ) {
+        return null;
+      }
 
-  updateTopicPreview(topicState, topicCard);
+      return { topicCard, topicState, postId };
+    })
+    .filter(Boolean);
+
+  // post.get принимает максимум 100 результатов. Не разбиваем большую страницу
+  // на серию запросов: лишние карточки просто остаются без превью.
+  const requestedEntries = entries.slice(0, MAX_PREVIEW_POSTS);
+  const skippedEntries = entries.slice(MAX_PREVIEW_POSTS);
+
+  skippedEntries.forEach(({ topicCard, topicState }) => {
+    topicState.previewStatus = "empty";
+    updateTopicPreview(topicState, topicCard);
+  });
+
+  if (!requestedEntries.length) return;
+
+  requestedEntries.forEach(({ topicCard, topicState }) => {
+    topicState.previewStatus = "loading";
+    updateTopicPreview(topicState, topicCard);
+  });
 
   try {
+    const postIds = [...new Set(requestedEntries.map(({ postId }) => postId))];
     const parameters = new URLSearchParams({
       method: "post.get",
-      topic_id: String(topicState.id),
-      limit: "1",
-      sort_dir: "desc",
+      post_id: postIds.join(","),
+      fields: "id,message",
+      limit: String(postIds.length),
       charset: "utf-8",
     });
 
@@ -423,25 +454,31 @@ async function loadTopicPreview(topicState, topicCard) {
       ? data.response
       : data.response?.posts;
 
-    const lastPost = posts?.[0];
+    const postsById = new Map(
+      (Array.isArray(posts) ? posts : [])
+        .map((post) => [Number(post.id ?? post.post_id), post])
+        .filter(([postId]) => Number.isInteger(postId))
+    );
 
-    if (!lastPost?.message) {
-      topicState.preview = "";
-      topicState.previewStatus = "empty";
+    requestedEntries.forEach(({ postId, topicCard, topicState }) => {
+      const post = postsById.get(postId);
 
+      topicState.preview = post?.message
+        ? createTopicPreview(post.message)
+        : "";
+      topicState.previewStatus = topicState.preview ? "loaded" : "empty";
       updateTopicPreview(topicState, topicCard);
-      return;
-    }
-    topicState.preview = createTopicPreview(lastPost.message);
-    topicState.previewStatus = topicState.preview ? "loaded" : "empty";
+    });
   } catch (error) {
-    topicState.preview = "";
-    topicState.previewStatus = "error";
+    requestedEntries.forEach(({ topicCard, topicState }) => {
+      topicState.preview = "";
+      topicState.previewStatus = "error";
+      updateTopicPreview(topicState, topicCard);
+    });
 
-    console.warn(`Не удалось загрузить превью темы ${topicState.id}`, error);
+    // Ошибку только показываем в консоли: автоматических повторных запросов нет.
+    console.warn("Не удалось загрузить превью тем", error);
   }
-
-  updateTopicPreview(topicState, topicCard);
 }
 
 function updateTopicPreview(topicState, topicCard) {
