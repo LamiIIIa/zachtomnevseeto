@@ -1,3 +1,7 @@
+div.post-body {
+  width: var(--main-w) !important;
+}
+
 #story {
   background: var(--color-forum);
 }
