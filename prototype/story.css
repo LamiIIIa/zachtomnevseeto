@@ -25,7 +25,8 @@
   background: var(--color-link);
   color: var(--color-forum);
   border-radius: 10px;
-  margin: 10px;
+  margin: 10px 5px;
+  padding: 10px 5px;
   text-transform: uppercase;
   font-family: var(--font-1);
 }
@@ -163,6 +164,11 @@
 #pageplace .story-tab.is-active {
   color: var(--color-lnthoverbg);
   background-color: var(--color-link);
+}
+
+.post-sig,
+.pa-author {
+  display: none !important;
 }
 
 @media (max-width: 600px) {
