@@ -36,6 +36,7 @@
 @import "./pages/messages-base.css";
 @import "./components/message-audio.css";
 @import "./components/radar.css";
+@import "./components/wide-post-bbcode.css";
 @import "./components/secondary-extras.css";
 @import "./components/shop.css";
 @import "./generic/browser.css";

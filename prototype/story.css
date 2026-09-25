@@ -1,7 +1,3 @@
-div.post-body {
-  width: var(--main-w) !important;
-}
-
 #story {
   background: var(--color-forum);
 }
@@ -168,11 +164,6 @@ div.post-body {
 #pageplace .story-tab.is-active {
   color: var(--color-lnthoverbg);
   background-color: var(--color-link);
-}
-
-.post-sig,
-.post-author {
-  display: none !important;
 }
 
 @media (max-width: 600px) {

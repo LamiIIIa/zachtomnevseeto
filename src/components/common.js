@@ -6,6 +6,7 @@ import { initForumElements } from './forum-elements.js'
 import { initMobileNavigation } from './mobile-navigation.js'
 import { initRadars } from './radar.js'
 import { initScrollControls } from './scroll-controls.js'
+import { initWidePostBbcode } from './wide-post-bbcode.js'
 
 export function initCommon({ root }) {
   // Отмечаем, что новый JavaScript-дизайн запущен на текущей странице.
@@ -22,6 +23,7 @@ export function initCommon({ root }) {
   initDonatorLists(root)
   initEditors(root)
   initRadars(root)
+  initWidePostBbcode(root)
   initScrollControls()
 
   // Переносим партнёрские баннеры из скрытого системного футера в видимый.
