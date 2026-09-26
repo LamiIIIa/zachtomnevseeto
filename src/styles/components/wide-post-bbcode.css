@@ -1,7 +1,7 @@
 /* Пост, в содержимом которого установлен BB-тег [widepost]. */
 #pun-viewtopic .post.post--wide .post-body,
 #pun-searchposts .post.post--wide .post-body {
-  width: var(--main-w) !important;
+  width: 100% !important;
 }
 
 #pun-viewtopic .post.post--wide .post-sig,
