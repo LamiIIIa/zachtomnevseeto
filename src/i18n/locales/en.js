@@ -70,6 +70,7 @@ export default {
       sidesPrompt: 'How many sides should each die have?',
       sidesError: 'A die cannot have that many sides.',
       rollDescription: 'The player rolled {{count}} dice with {{sides}} sides.',
+      pending: 'The roll result will appear after the message is submitted.',
       result: 'Roll result: ({{rolls}}) = {{total}}',
     },
   },

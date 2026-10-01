@@ -401,7 +401,13 @@ function initExtraColors(colorAreas) {
 }
 
 function initDiceResults(postContents) {
-  postContents.forEach(replaceDiceCodes);
+  postContents.forEach((postContent) => {
+    // В предпросмотре показываем только факт броска. Сам результат раскрывается
+    // после отправки, когда содержимое появляется внутри опубликованного поста.
+    const revealResult = !postContent.closest("#post-preview");
+
+    replaceDiceCodes(postContent, { revealResult });
+  });
 }
 
 function collectMatchingElements(root, selector) {
@@ -413,7 +419,7 @@ function collectMatchingElements(root, selector) {
   return elements;
 }
 
-function replaceDiceCodes(postContent) {
+function replaceDiceCodes(postContent, { revealResult = true } = {}) {
   const walker = document.createTreeWalker(postContent, NodeFilter.SHOW_TEXT);
   const textNodes = [];
 
@@ -433,7 +439,7 @@ function replaceDiceCodes(postContent) {
     DICE_PATTERN.lastIndex = 0;
     for (const match of source.matchAll(DICE_PATTERN)) {
       fragment.append(source.slice(lastIndex, match.index));
-      fragment.append(createDiceResult(match));
+      fragment.append(createDiceResult(match, { revealResult }));
       lastIndex = match.index + match[0].length;
     }
 
@@ -442,17 +448,10 @@ function replaceDiceCodes(postContent) {
   });
 }
 
-function createDiceResult(match) {
-  const encodedRolls = match[1]
-    .replace(/—/g, "-")
-    .split("-")
-    .filter(Boolean)
-    .map(Number);
+function createDiceResult(match, { revealResult = true } = {}) {
   const isNewScheme = Boolean(match[4]);
   const diceCount = Number(isNewScheme ? match[4] : match[2]);
   const sideCount = Number(isNewScheme ? match[5] : match[3]);
-  const rolls = decodeDiceRolls(encodedRolls);
-  const total = rolls.reduce((sum, value) => sum + value, 0);
   const result = document.createElement("div");
   const quote = document.createElement("blockquote");
   const paragraph = document.createElement("p");
@@ -468,9 +467,24 @@ function createDiceResult(match) {
     document.createElement("br"),
     document.createElement("br")
   );
-  paragraph.append(
-    t("editor.dice.result", { rolls: rolls.join(" + "), total })
-  );
+
+  if (revealResult) {
+    const encodedRolls = match[1]
+      .replace(/—/g, "-")
+      .split("-")
+      .filter(Boolean)
+      .map(Number);
+    const rolls = decodeDiceRolls(encodedRolls);
+    const total = rolls.reduce((sum, value) => sum + value, 0);
+
+    paragraph.append(
+      t("editor.dice.result", { rolls: rolls.join(" + "), total })
+    );
+  } else {
+    result.classList.add("dice-result--pending");
+    paragraph.append(t("editor.dice.pending"));
+  }
+
   quote.append(paragraph);
   result.append(quote);
   return result;
@@ -478,8 +492,8 @@ function createDiceResult(match) {
 
 function decodeDiceRolls(encodedRolls) {
   // Результат определяется один раз при нажатии на кубик и хранится внутри
-  // BB-кода. Номер поста и время публикации больше не перебрасывают кубики при
-  // предпросмотре, отправке или последующем редактировании.
+  // BB-кода, но в предпросмотре не раскрывается. После отправки он остаётся
+  // стабильным и не меняется при перезагрузке или редактировании сообщения.
   return encodedRolls.map((encodedRoll) => Math.floor(encodedRoll / 1936));
 }
 
