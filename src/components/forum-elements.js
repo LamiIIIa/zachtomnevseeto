@@ -46,7 +46,19 @@ function applyElementTitles(root) {
 function addDefaultAvatars(root) {
   root.querySelectorAll('#pun-viewtopic .pa-title').forEach((title) => {
     const authorDetails = title.parentElement
-    if (!authorDetails || authorDetails.querySelector('.pa-avatar')) return
+    if (!authorDetails) return
+
+    // У гостя нет ссылки на профиль. Классы позволяют не применять
+    // гостевую раскладку к заполненному минипрофилю пользователя.
+    const postAuthor = authorDetails.closest('.post-author')
+    const isGuest = !authorDetails.querySelector(
+      '.pa-author a[href*="profile.php"]',
+    )
+
+    postAuthor?.classList.toggle('post-author--guest', isGuest)
+    postAuthor?.classList.toggle('post-author--member', !isGuest)
+
+    if (authorDetails.querySelector('.pa-avatar')) return
 
     const avatarItem = document.createElement('li')
     const avatar = document.createElement('img')
