@@ -10,8 +10,6 @@ const DEFAULT_LABELS = Object.freeze({
   login: "Войти",
   back: "Назад",
   closeMenu: "Закрыть меню",
-  returnToMenu: "Вернуться в основное меню",
-  userLinks: "Личные ссылки",
   confirmLogout: "Выйти из аккаунта?",
 });
 
@@ -19,9 +17,8 @@ class MobileNavigation {
   constructor(root, labels = DEFAULT_LABELS) {
     this.root = root;
     this.labels = labels;
-    this.currentPage = "main";
     this.navLinks = {};
-    this.menuData = {};
+    this.menuLinks = [];
     this.elements = {};
 
     this.handleKeydown = this.handleKeydown.bind(this);
@@ -32,7 +29,7 @@ class MobileNavigation {
     if (this.root.querySelector(".mobile-dock")) return this;
 
     this.navLinks = this.getNavigationLinks();
-    this.menuData = this.getMenuPagesData();
+    this.menuLinks = this.getMenuLinks();
 
     const dockElements = this.createDock();
     const menuElements = this.createMenu();
@@ -60,28 +57,21 @@ class MobileNavigation {
     };
   }
 
-  getMenuPagesData() {
-    const mainPageLinks = [
+  getMenuLinks() {
+    const mainLinks = [
       this.root.querySelector("#navuserlist a"),
       this.root.querySelector("#navsearch a"),
       this.root.querySelector("#navprofile a"),
       this.root.querySelector("#navadmin a"),
     ].filter(Boolean);
 
-    const userPageLinks = Array.from(
+    const userLinks = Array.from(
       this.root.querySelectorAll("#pun-ulinks a[href]")
     );
 
-    const userPageTitle =
-      this.normalizeText(
-        this.root.querySelector("#pun-ulinks h2")?.textContent
-      ) || this.labels.userLinks;
-
-    return {
-      mainPageLinks,
-      userPageLinks,
-      userPageTitle,
-    };
+    // Сначала идут основные пункты, затем все ссылки #pun-ulinks
+    // в том порядке, в котором их вывел движок форума.
+    return [...mainLinks, ...userLinks];
   }
 
   createDock() {
@@ -220,62 +210,31 @@ class MobileNavigation {
 
     menu.hidden = true;
 
-    const mainPageElements = this.createMenuPage({
-      id: "mobile-menu-main-page",
-      name: "main",
-      modifierClass: "mobile-menu__page--main",
+    const pageElements = this.createMenuPage({
+      id: "mobile-menu-page",
       title: this.labels.menuTitle,
       backLabel: this.labels.closeMenu,
-      links: this.menuData.mainPageLinks,
-      hidden: false,
+      links: this.menuLinks,
     });
 
-    const userPageElements = this.createMenuPage({
-      id: "mobile-menu-user-page",
-      name: "user",
-      modifierClass: "mobile-menu__page--user",
-      title: this.menuData.userPageTitle,
-      backLabel: this.labels.returnToMenu,
-      links: this.menuData.userPageLinks,
-      hidden: true,
-    });
-
-    const userPageButton = this.createUserPageButton();
-
-    if (userPageButton) {
-      const userPageItem = this.createElement("li", {
-        className: "mobile-menu__list-item",
-      });
-
-      userPageItem.append(userPageButton);
-      mainPageElements.list.append(userPageItem);
-    }
-
-    menu.append(mainPageElements.page, userPageElements.page);
+    menu.append(pageElements.page);
 
     return {
       menu,
-      mainPage: mainPageElements.page,
-      mainBackButton: mainPageElements.backButton,
-      userPage: userPageElements.page,
-      userBackButton: userPageElements.backButton,
-      userPageButton,
+      backButton: pageElements.backButton,
     };
   }
 
-  createMenuPage({ id, name, modifierClass, title, backLabel, links, hidden }) {
+  createMenuPage({ id, title, backLabel, links }) {
     const titleId = `${id}-title`;
 
     const page = this.createElement("section", {
-      className: `mobile-menu__page ${modifierClass}`,
+      className: "mobile-menu__page",
       attributes: {
         id,
         "aria-labelledby": titleId,
       },
     });
-
-    page.dataset.mobilePage = name;
-    page.hidden = hidden;
 
     const headerElements = this.createMenuHeader({
       title,
@@ -362,20 +321,6 @@ class MobileNavigation {
     );
   }
 
-  createUserPageButton() {
-    if (this.menuData.userPageLinks.length === 0) return null;
-
-    return this.createElement("button", {
-      className: "mobile-menu__submenu-button",
-      text: this.menuData.userPageTitle,
-      attributes: {
-        type: "button",
-        "aria-controls": "mobile-menu-user-page",
-        "aria-expanded": "false",
-      },
-    });
-  }
-
   createElement(tagName, { className = "", text = "", attributes = {} } = {}) {
     const element = document.createElement(tagName);
 
@@ -392,19 +337,10 @@ class MobileNavigation {
   }
 
   bindEvents() {
-    const {
-      menu,
-      moreButton,
-      mainBackButton,
-      userBackButton,
-      userPageButton,
-      logoutButton,
-    } = this.elements;
+    const { menu, moreButton, backButton, logoutButton } = this.elements;
 
     moreButton.addEventListener("click", () => this.openMenu());
-    mainBackButton.addEventListener("click", () => this.closeMenu());
-    userBackButton.addEventListener("click", () => this.returnToMainPage());
-    userPageButton?.addEventListener("click", () => this.openUserPage());
+    backButton.addEventListener("click", () => this.closeMenu());
 
     menu.addEventListener("click", (event) => {
       if (event.target.closest("a")) {
@@ -422,72 +358,32 @@ class MobileNavigation {
   }
 
   openMenu() {
-    const { menu, mainPage, userPage, moreButton, userPageButton } =
-      this.elements;
+    const { menu, moreButton } = this.elements;
 
-    this.currentPage = "main";
-    mainPage.hidden = false;
-    userPage.hidden = true;
     menu.hidden = false;
 
     moreButton.setAttribute("aria-expanded", "true");
-    userPageButton?.setAttribute("aria-expanded", "false");
     document.documentElement.classList.add("mobile-menu-open");
 
-    this.focusLater(this.elements.mainBackButton);
+    this.focusLater(this.elements.backButton);
   }
 
   closeMenu({ restoreFocus = true } = {}) {
-    const { menu, mainPage, userPage, moreButton, userPageButton } =
-      this.elements;
+    const { menu, moreButton } = this.elements;
 
     menu.hidden = true;
-    this.currentPage = "main";
-    mainPage.hidden = false;
-    userPage.hidden = true;
 
     moreButton.setAttribute("aria-expanded", "false");
-    userPageButton?.setAttribute("aria-expanded", "false");
     document.documentElement.classList.remove("mobile-menu-open");
 
     if (restoreFocus) moreButton.focus();
-  }
-
-  openUserPage() {
-    const { mainPage, userPage, userPageButton, userBackButton } =
-      this.elements;
-
-    if (!userPageButton) return;
-
-    this.currentPage = "user";
-    mainPage.hidden = true;
-    userPage.hidden = false;
-    userPageButton.setAttribute("aria-expanded", "true");
-
-    this.focusLater(userBackButton);
-  }
-
-  returnToMainPage() {
-    const { mainPage, userPage, userPageButton } = this.elements;
-
-    this.currentPage = "main";
-    userPage.hidden = true;
-    mainPage.hidden = false;
-    userPageButton?.setAttribute("aria-expanded", "false");
-
-    this.focusLater(userPageButton);
   }
 
   handleKeydown(event) {
     if (event.key !== "Escape" || this.elements.menu?.hidden) return;
 
     event.preventDefault();
-
-    if (this.currentPage === "user") {
-      this.returnToMainPage();
-    } else {
-      this.closeMenu();
-    }
+    this.closeMenu();
   }
 
   focusLater(element) {

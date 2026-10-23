@@ -114,13 +114,12 @@
 
   .mobile-dock__item:focus-visible,
   .mobile-menu__back:focus-visible,
-  .mobile-menu__link:focus-visible,
-  .mobile-menu__submenu-button:focus-visible {
+  .mobile-menu__link:focus-visible {
     outline: 2px solid var(--color-link);
     outline-offset: -2px;
   }
 
-  /* Полноэкранный контейнер двух псевдостраниц. */
+  /* Полноэкранный контейнер одноуровневого меню. */
   .mobile-navigation-ready .mobile-menu:not([hidden]) {
     box-sizing: border-box;
     width: 100%;
@@ -195,7 +194,7 @@
     grid-column: 2;
   }
 
-  /* Прокручивается только список активной псевдостраницы. */
+  /* Шапка остаётся на месте, прокручивается только общий список ссылок. */
   .mobile-menu__list {
     box-sizing: border-box;
     width: 100%;
@@ -210,6 +209,7 @@
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
+    touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -221,8 +221,7 @@
     display: block !important;
   }
 
-  .mobile-menu__link,
-  .mobile-menu__submenu-button {
+  .mobile-menu__link {
     appearance: none;
     box-sizing: border-box;
     width: 100%;
@@ -246,20 +245,12 @@
     touch-action: manipulation;
   }
 
-  .mobile-menu__submenu-button::after {
-    content: "›";
-    color: var(--color-link);
-    font: 400 24px/1 var(--font);
-    flex: 0 0 auto;
-  }
-
-  .mobile-menu__link:is(:hover, :active),
-  .mobile-menu__submenu-button:is(:hover, :active) {
+  .mobile-menu__link:is(:hover, :active) {
     color: var(--color-link);
     border-color: var(--color-link);
   }
 
-  /* Корневой документ не скроллится, пока открыта псевдостраница. */
+  /* Корневой документ не скроллится, пока открыто мобильное меню. */
   html.mobile-menu-open,
   html.mobile-menu-open body {
     overflow: hidden !important;
