@@ -68,7 +68,7 @@
       transparent var(--mobile-author-header-height)
     );
     display: grid;
-    grid-template-columns: 48px 42px 42px 150px minmax(0, 1fr);
+    grid-template-columns: 48px 42px 42px minmax(0, 2fr) minmax(0, 1fr);
     grid-template-rows: var(--mobile-author-header-height) 52px auto auto;
     column-gap: 6px;
     row-gap: 8px;
@@ -136,7 +136,7 @@
   }
 
   #pun-viewtopic .pa-title {
-    grid-column: 4 / 6;
+    grid-column: 4 / 5;
     grid-row: 1;
     min-width: 0;
     width: 100%;
@@ -266,8 +266,6 @@
     box-shadow: none;
     mix-blend-mode: normal;
     object-fit: contain;
-    position: relative;
-    left: -20px;
   }
 
   .pa-fld1 img {
