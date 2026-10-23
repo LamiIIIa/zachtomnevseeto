@@ -293,6 +293,10 @@ del:hover {
   content: "\e853";
 }
 
+#button-float:before {
+  content: "\e25b";
+}
+
 #floatbut:before {
   content: "\e3b5";
 }
