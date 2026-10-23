@@ -746,21 +746,14 @@
 @media screen and (max-width: 700px) {
   #pun-viewtopic .post-author--guest ul {
     min-height: calc(
-      var(--mobile-author-header-height) +
-        var(--mobile-author-avatar-size) + 18px
+      var(--mobile-author-header-height) + var(--mobile-author-avatar-size) +
+        18px
     );
     grid-template-rows:
       minmax(var(--mobile-author-header-height), auto)
       auto
       auto
       auto;
-  }
-
-  #pun-viewtopic .post-author--guest .pa-author,
-  #pun-viewtopic .post-author--guest .pa-title {
-    min-height: var(--mobile-author-header-height);
-    height: auto;
-    align-self: stretch;
   }
 
   #pun-viewtopic .post-author--guest .pa-avatar {
