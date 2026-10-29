@@ -15,75 +15,19 @@
   должен попадать в публичный репозиторий;
 - сторонние плагины уведомлений, репутации, аватара в цитатах, быстроплюсов и
   масок, пока они используются;
-- безопасный загрузчик `forum.js`, приведённый ниже.
+- обычное подключение актуального `forum.js`.
 
 Основной `forum.css` остаётся первым `@import` в окне стиля: он нужен страницам
 админки и перенаправления, где HTML-верх не выводится. На обычной странице
-загрузчик сначала проверяет CSS-маркер `--forum-design-css-ready`. Если импорт
-не сработал, он ровно один раз пробует подключить тот же CSS прямым `link` и
-только после успешной загрузки запускает `forum.js`:
+сам `forum.js` проверяет CSS-маркер `--forum-design-css-ready`. Если импорт не
+сработал, скрипт ровно один раз пробует подключить тот же CSS прямым `link`.
+Преобразование DOM начинается только после успешной проверки маркера:
 
 ```html
-<script>
-(() => {
-  const version = "VERSION_СБОРКИ";
-  const baseUrl = "https://lamiiiia.github.io/zachtomnevseeto/";
-  const cssMarker = "--forum-design-css-ready";
-
-  const cssIsReady = () =>
-    getComputedStyle(document.documentElement)
-      .getPropertyValue(cssMarker)
-      .trim() === "1";
-
-  const loadForumScript = () => {
-    if (document.getElementById("forum-design-js")) return;
-
-    const script = document.createElement("script");
-    script.id = "forum-design-js";
-    script.src = `${baseUrl}forum.js?v=${version}`;
-    document.head.append(script);
-  };
-
-  const loadFallback = () => {
-    if (cssIsReady()) {
-      loadForumScript();
-      return;
-    }
-
-    if (document.getElementById("forum-design-css-fallback")) return;
-
-    const fallback = document.createElement("link");
-    fallback.id = "forum-design-css-fallback";
-    fallback.rel = "stylesheet";
-    fallback.href = `${baseUrl}forum.css?v=${version}`;
-    fallback.addEventListener(
-      "load",
-      () => {
-        if (cssIsReady()) loadForumScript();
-      },
-      { once: true },
-    );
-    fallback.addEventListener(
-      "error",
-      () => console.error("Не удалось загрузить оформление форума"),
-      { once: true },
-    );
-    document.head.append(fallback);
-  };
-
-  if (cssIsReady()) {
-    loadForumScript();
-  } else if (document.readyState === "complete") {
-    loadFallback();
-  } else {
-    window.addEventListener("load", loadFallback, { once: true });
-  }
-})();
-</script>
+<script src="https://lamiiiia.github.io/zachtomnevseeto/forum.js?v=VERSION_СБОРКИ"></script>
 ```
 
-Отдельный безусловный `<script src=".../forum.js">` после установки этого
-загрузчика нужно удалить, иначе защита не будет работать.
+Версию в URL импорта и в URL скрипта нужно обновлять одновременно.
 
 После публикации новой сборки можно удалить разметку `.go-up`/`.go-down` и
 связанный с ней jQuery-скрипт. Кнопки теперь создаёт

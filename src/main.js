@@ -19,6 +19,10 @@ import { initSearch } from './pages/search.js'
 import { initTopicView } from './pages/topic-view.js'
 import { initUserList } from './pages/user-list.js'
 
+const CSS_READY_MARKER = '--forum-design-css-ready'
+const CSS_FALLBACK_ID = 'forum-design-css-fallback'
+const currentBundleUrl = document.currentScript?.src ?? ''
+
 const pageInitializers = {
   index: initForumIndex,
   modviewforum: initForumModeration,
@@ -37,9 +41,91 @@ const pageInitializers = {
   register: initAuth,
 }
 
-// Применяем viewport и тему до DOMContentLoaded, чтобы уменьшить мигание оформления.
-applyStoredViewportMode()
-applyStoredTheme()
+function forumCssIsReady() {
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue(CSS_READY_MARKER)
+    .trim() === '1'
+}
+
+function getFallbackStyleUrl() {
+  if (!currentBundleUrl) return null
+
+  const bundleUrl = new URL(currentBundleUrl, window.location.href)
+  const styleUrl = new URL('forum.css', bundleUrl)
+  styleUrl.search = bundleUrl.search
+
+  return styleUrl.href
+}
+
+function waitForPageLoad() {
+  if (document.readyState === 'complete') return Promise.resolve()
+
+  return new Promise((resolve) => {
+    window.addEventListener('load', resolve, { once: true })
+  })
+}
+
+function waitForCssMarker(maxAttempts = 10) {
+  return new Promise((resolve) => {
+    let attempts = 0
+
+    const checkMarker = () => {
+      if (forumCssIsReady()) {
+        resolve(true)
+        return
+      }
+
+      attempts += 1
+      if (attempts >= maxAttempts) {
+        resolve(false)
+        return
+      }
+
+      window.setTimeout(checkMarker, 50)
+    }
+
+    checkMarker()
+  })
+}
+
+function loadFallbackStyles() {
+  const styleUrl = getFallbackStyleUrl()
+  if (!styleUrl) return Promise.resolve(false)
+
+  return new Promise((resolve) => {
+    const existingLink = document.getElementById(CSS_FALLBACK_ID)
+    const link = existingLink ?? document.createElement('link')
+    let isSettling = false
+    let fallbackTimeout
+
+    const settle = () => {
+      if (isSettling) return
+
+      isSettling = true
+      window.clearTimeout(fallbackTimeout)
+      void waitForCssMarker().then(resolve)
+    }
+
+    link.id = CSS_FALLBACK_ID
+    link.rel = 'stylesheet'
+    link.addEventListener('load', settle, { once: true })
+    link.addEventListener('error', settle, { once: true })
+    fallbackTimeout = window.setTimeout(settle, 12_000)
+    link.href = styleUrl
+
+    if (!existingLink) document.head.append(link)
+  })
+}
+
+async function ensureForumStyles() {
+  if (forumCssIsReady()) return true
+
+  // Даём основному @import завершиться, прежде чем создавать резервный link.
+  await waitForPageLoad()
+  if (forumCssIsReady()) return true
+
+  return loadFallbackStyles()
+}
 
 async function init() {
   const context = getPageContext()
@@ -59,8 +145,24 @@ async function init() {
   document.dispatchEvent(new CustomEvent('forum-design:ready', { detail: context }))
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => void init(), { once: true })
-} else {
-  void init()
+async function boot() {
+  const stylesAreReady = await ensureForumStyles()
+
+  if (!stylesAreReady) {
+    document.documentElement.classList.add('forum-design-css-failed')
+    console.error('Не удалось загрузить оформление форума; преобразование DOM отменено')
+    return
+  }
+
+  // Применяем viewport и тему до инициализации DOM, чтобы уменьшить мигание.
+  applyStoredViewportMode()
+  applyStoredTheme()
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => void init(), { once: true })
+  } else {
+    await init()
+  }
 }
+
+void boot()
