@@ -79,3 +79,8 @@
 @import "./responsive/z-fold.css";
 @import "./responsive/mobile-posts.css";
 @import "./responsive/mobile-profile.css";
+
+/* Должен оставаться последним: HTML-загрузчик запускает JS только при полной загрузке CSS. */
+:root {
+  --forum-design-css-ready: 1;
+}
