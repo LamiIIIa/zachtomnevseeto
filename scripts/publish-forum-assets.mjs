@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { chromium } from 'playwright'
+import { renderPrepaint } from './prepaint.mjs'
 
 const origin = 'https://akatsukigood.forum.cool'
 const hash = value => createHash('sha256').update(value).digest('hex').slice(0, 20)
@@ -16,7 +17,10 @@ export function patchStyle(source, cssUrl) {
 export function patchHeader(source, cssUrl, jsUrl) {
   const pattern = /<script\b[^>]*\bid="forum-local-loader"[^>]*>[\s\S]*?<\/script>/
   if (!pattern.test(source)) throw new Error('Managed JS loader is missing; refusing to replace HTML')
-  return source.replace(pattern, `<script id="forum-local-loader" src="${jsUrl}" charset="utf-8" data-forum-css="${cssUrl}" defer></script>`)
+  // Regenerate the inline first-paint copy on every publication, from the repo.
+  const withoutOldPrepaint = source.replace(/<!-- forum-prepaint:start -->[\s\S]*?<!-- forum-prepaint:end -->\s*/g, '')
+  const updated = withoutOldPrepaint.replace(pattern, `<script id="forum-local-loader" src="${jsUrl}" charset="utf-8" data-forum-css="${cssUrl}" defer></script>`)
+  return renderPrepaint() + '\n' + updated
 }
 
 export function rewriteAssets(css, mapping) {
@@ -110,6 +114,11 @@ export async function publish() {
       await check.locator('.punbb.forum-design--ready').waitFor({ timeout: 45000 })
       const visible = await check.locator('#pun').evaluate(el => getComputedStyle(el).opacity !== '0')
       if (!visible) throw new Error('Forum remained hidden after publication')
+      for (const width of [390, 1280]) {
+        await check.setViewportSize({ width, height: 844 })
+        const mainVisible = await check.locator('#pun-main').evaluate(el => getComputedStyle(el).opacity !== '0')
+        if (!mainVisible || await check.locator('#forum-prepaint-placeholder').count()) throw new Error(`First-paint gate did not release at ${width}px`)
+      }
       console.log(`Published ${manifest.revision}: ${cssUrl} ${jsUrl}`)
     } catch (error) {
       if (styleChanged) {

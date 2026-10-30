@@ -32,6 +32,16 @@ The HTML header contains a script with `id="forum-local-loader"`, `defer`,
 `charset="utf-8"`, and `data-forum-css` pointing at the uploaded CSS.
 Do not remove these markers: publication refuses to replace unmarked fields.
 
+The first HTML-header block between `forum-prepaint:start/end` is also generated
+on every commit from `scripts/prepaint.mjs`. It prevents the original table DOM
+from appearing while the deferred design script loads: only the content area
+is covered by a lightweight local placeholder; header and navigation remain
+visible. No second CSS download is added. The block is removed immediately on
+`forum-design:ready`. If initialization fails, an explicit content fallback
+button appears after five seconds instead of leaving an empty page.
+`scripts/prepaint.test.mjs` checks delayed real JS at mobile and desktop widths,
+JavaScript-disabled/admin pages, failure recovery, and idempotent publication.
+
 ## Enable publication
 
 In this repository's **Settings → Secrets and variables → Actions**, create:
