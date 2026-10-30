@@ -56,8 +56,8 @@ try {
   const other = await browser.newPage()
   await other.route('**/*', route => new URL(route.request().url()).pathname === '/' ? route.fulfill({ contentType: 'text/html', body: fixture('pun-viewtopic') }) : route.abort())
   await other.goto('https://fixture.test/')
-  await other.getByRole('button', { name: 'Показать содержимое' }).waitFor({ state: 'visible', timeout: 8000 })
-  await other.getByRole('button', { name: 'Показать содержимое' }).click()
+  assert.equal(await other.locator('#forum-prepaint-placeholder').count(), 0)
+  assert.equal(await other.locator('[data-forum-prepaint]').count(), 0)
   assert.equal(await other.locator('#pun-main').evaluate(e => getComputedStyle(e).opacity), '1')
   const admin = await browser.newPage()
   await admin.route('**/*', route => route.fulfill({ contentType: 'text/html', body: fixture('pun-admin_index').replace('<script src="/forum.js" defer></script>', '') }))
@@ -67,9 +67,11 @@ try {
   await nojs.route('**/*', route => route.fulfill({ contentType: 'text/html', body: fixture() }))
   await nojs.goto('https://fixture.test/')
   assert.equal(await nojs.locator('#pun-main').evaluate(e => getComputedStyle(e).opacity), '1')
+  assert.ok(!renderPrepaint().includes('Загрузка страницы'))
+  assert.ok(!renderPrepaint().includes('opacity:0'))
   const original = '<script id="forum-local-loader" src="old"></script><div>custom</div>'
   const once = patchHeader(original, 'css1', 'js1'), twice = patchHeader(once, 'css2', 'js2')
   assert.equal((twice.match(/<!-- forum-prepaint:start -->/g) || []).length, 1)
   assert.ok(twice.endsWith('<div>custom</div>'))
-  console.log('PASS: real cards visible before delayed forum.js at 360/390/1280px; full-width last message; no unstyled table frames; blocked script still shows cards; one card after full initialization; other-page failure fallback; admin/no-JS; idempotent pipeline copy.')
+  console.log('PASS: real cards visible before delayed forum.js at 360/390/1280px; full-width last message; no unstyled table frames; blocked script still shows cards; one card after full initialization; other-page content visible without JS or loading overlay; admin/no-JS; idempotent pipeline copy.')
 } finally { await browser.close() }

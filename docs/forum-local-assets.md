@@ -41,9 +41,9 @@ converts them to articles without duplicating cards. The small structural CSS
 uses the same classes and theme variables as the built design. No second CSS
 download is added. Old `forum-early-render-style` fallback rules are removed by
 the publisher to prevent conflicting table display rules.
-Other pages retain a lightweight content placeholder while initializing;
-header and navigation remain visible. An explicit fallback button appears
-after five seconds on those pages if initialization fails.
+All pages show their content immediately. The inline helper never hides the
+main content and never adds a loading placeholder, timer, or fallback button.
+Index cards are decorated progressively as their rows arrive.
 `scripts/prepaint.test.mjs` checks delayed real JS at mobile and desktop widths,
 JavaScript-disabled/admin pages, failure recovery, and idempotent publication.
 
