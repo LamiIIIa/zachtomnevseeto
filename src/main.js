@@ -22,6 +22,7 @@ import { initUserList } from './pages/user-list.js'
 const CSS_READY_MARKER = '--forum-design-css-ready'
 const CSS_FALLBACK_ID = 'forum-design-css-fallback'
 const currentBundleUrl = document.currentScript?.src ?? ''
+const explicitStyleUrl = document.currentScript?.dataset.forumCss ?? ''
 
 const pageInitializers = {
   index: initForumIndex,
@@ -48,6 +49,7 @@ function forumCssIsReady() {
 }
 
 function getFallbackStyleUrl() {
+  if (explicitStyleUrl) return new URL(explicitStyleUrl, window.location.href).href
   if (!currentBundleUrl) return null
 
   const bundleUrl = new URL(currentBundleUrl, window.location.href)

@@ -3,6 +3,7 @@ node_modules/
 
 # Generated build
 dist/
+.forum-asset-cache/
 
 # Local environment and secrets
 .env

@@ -22,7 +22,7 @@
 
 #theme_switcher li input::before {
   color: var(--color-txt3);
-  font: 400 16px/100% 'Font Awesome 6 Pro';
+  font: 900 16px/100% 'Font Awesome 7 Free';
   margin-right: 4px;
   opacity: 0.7;
   text-shadow: -2px 2px 2px black;

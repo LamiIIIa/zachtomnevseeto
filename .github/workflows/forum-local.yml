@@ -1,0 +1,43 @@
+name: Publish local forum assets
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: forum-production
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/cache@v4
+        with:
+          path: .forum-asset-cache
+          key: forum-assets-${{ runner.os }}-${{ hashFiles('src/styles/settings/fonts.css', 'scripts/package-forum-assets.mjs') }}
+      - run: npm ci
+      - run: npm run build:local
+      - run: npm run test:assets
+      - uses: actions/upload-artifact@v4
+        with:
+          name: forum-local-${{ github.sha }}
+          path: dist/forum-local
+          retention-days: 7
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+      - name: Publish and verify forum
+        run: npm run publish:forum
+        env:
+          FORUM_USERNAME: ${{ secrets.FORUM_USERNAME }}
+          FORUM_PASSWORD: ${{ secrets.FORUM_PASSWORD }}
