@@ -18,7 +18,9 @@ export function patchHeader(source, cssUrl, jsUrl) {
   const pattern = /<script\b[^>]*\bid="forum-local-loader"[^>]*>[\s\S]*?<\/script>/
   if (!pattern.test(source)) throw new Error('Managed JS loader is missing; refusing to replace HTML')
   // Regenerate the inline first-paint copy on every publication, from the repo.
-  const withoutOldPrepaint = source.replace(/<!-- forum-prepaint:start -->[\s\S]*?<!-- forum-prepaint:end -->\s*/g, '')
+  const withoutOldPrepaint = source
+    .replace(/<!-- forum-prepaint:start -->[\s\S]*?<!-- forum-prepaint:end -->\s*/g, '')
+    .replace(/<style\b[^>]*\bid="forum-early-render-style"[^>]*>[\s\S]*?<\/style>\s*/g, '')
   const updated = withoutOldPrepaint.replace(pattern, `<script id="forum-local-loader" src="${jsUrl}" charset="utf-8" data-forum-css="${cssUrl}" defer></script>`)
   return renderPrepaint() + '\n' + updated
 }

@@ -33,12 +33,17 @@ The HTML header contains a script with `id="forum-local-loader"`, `defer`,
 Do not remove these markers: publication refuses to replace unmarked fields.
 
 The first HTML-header block between `forum-prepaint:start/end` is also generated
-on every commit from `scripts/prepaint.mjs`. It prevents the original table DOM
-from appearing while the deferred design script loads: only the content area
-is covered by a lightweight local placeholder; header and navigation remain
-visible. No second CSS download is added. The block is removed immediately on
-`forum-design:ready`. If initialization fails, an explicit content fallback
-button appears after five seconds instead of leaving an empty page.
+on every commit from `scripts/prepaint.mjs`. On the forum index it decorates the
+native rows with the final card classes as HTML is parsed. Actual content is
+visible without waiting for forum.js, DOMContentLoaded, images, or fonts. It
+keeps the table cells intact for forum plugins; the full initializer later
+converts them to articles without duplicating cards. The small structural CSS
+uses the same classes and theme variables as the built design. No second CSS
+download is added. Old `forum-early-render-style` fallback rules are removed by
+the publisher to prevent conflicting table display rules.
+Other pages retain a lightweight content placeholder while initializing;
+header and navigation remain visible. An explicit fallback button appears
+after five seconds on those pages if initialization fails.
 `scripts/prepaint.test.mjs` checks delayed real JS at mobile and desktop widths,
 JavaScript-disabled/admin pages, failure recovery, and idempotent publication.
 
