@@ -7,11 +7,19 @@
 ```bash
 npm run build
 npm run build:watch
+npm run build:local
+npm run test:assets
 ```
 
 Результат в `dist/`: `forum.js`, `forum.css` и импортированные ресурсы в `assets/`.
 
 ## Подключение к MyBB
+
+На основном форуме дизайн, шрифты и JavaScript загружаются только из файлов
+самого форума. Коммит в `main` запускает workflow **Publish local forum assets**:
+сборка → загрузка файлов в MyBB → обновление ссылок → проверка мобильной страницы.
+GitHub Pages не участвует в загрузке оформления посетителями основного форума.
+Настройка Secrets и описание установки: [локальные ресурсы](docs/forum-local-assets.md).
 
 `forum.css` подключается первым `@import` в окне стиля MyBB. Это сохраняет
 оформление админки и страниц перенаправления, где HTML-верх не выводится.

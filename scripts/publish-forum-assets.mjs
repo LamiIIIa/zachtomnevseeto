@@ -76,9 +76,11 @@ export async function publish() {
   try {
     const login = await context.newPage()
     await login.goto(`${origin}/login.php`)
-    await login.locator('input[name="req_username"]').fill(process.env.FORUM_USERNAME)
-    await login.locator('input[name="req_password"]').fill(process.env.FORUM_PASSWORD)
-    await login.locator('input[name="login"][type="submit"], button[name="login"]').first().click()
+    // The header also contains a PR login form with the same input names.
+    const loginForm = login.locator('form').filter({ has: login.locator('#fld1') })
+    await loginForm.locator('input[name="req_username"]').fill(process.env.FORUM_USERNAME)
+    await loginForm.locator('input[name="req_password"]').fill(process.env.FORUM_PASSWORD)
+    await loginForm.locator('input[type="submit"], button[type="submit"]').first().click()
     await login.waitForLoadState('domcontentloaded')
     const files = await context.newPage(), style = await context.newPage(), forms = await context.newPage()
     await Promise.all([files.goto(`${origin}/admin_files.php`), style.goto(`${origin}/admin_style.php`), forms.goto(`${origin}/admin_forms.php`)])
