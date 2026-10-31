@@ -38,6 +38,8 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Check delayed first paint
         run: node scripts/prepaint.test.mjs
+      - name: Check background plugins and access groups
+        run: node scripts/background-plugins.test.mjs
       - name: Publish and verify forum
         run: npm run publish:forum
         env:

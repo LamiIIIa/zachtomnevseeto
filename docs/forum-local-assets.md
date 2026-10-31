@@ -14,6 +14,8 @@ npm run test:assets
 
 `dist/forum-local/` contains a flattened CSS file, ASCII-safe JavaScript,
 content-addressed WOFF2/images in `assets/`, and `manifest.json`.
+The manifest also lists four independently uploaded, content-addressed plugin
+scripts from `src/plugins/`. They are not imported by the design bundle.
 External CSS imports are resolved at build time. Fonts are separate files so
 the browser downloads only the faces it needs and caches them independently.
 Existing images on forumstatic.ru remain on that platform. Font Awesome Free
@@ -62,6 +64,52 @@ also be started with **Run workflow**. It signs in via the standard MyBB login,
 uploads missing resources, updates only the managed CSS/JS references, and
 checks that the mobile page reaches `forum-design--ready`. On failure while
 switching references, it restores the previous style and header.
+
+## Optional plugins after the first paint
+
+The HTML footer is patched only for these four known plugins. Their previous
+blocking script elements become inert JSON descriptors, preserving data
+attributes (including the technique search bridge settings). Existing inline
+configuration and unrelated HTML/scripts are preserved. A managed
+`forum-background:start/end` block is regenerated on each push, just like the
+header's first-paint block. Failed deployment restores the previous footer too.
+
+| Source | Plugin | Loading rule |
+|---|---|---|
+| `src/plugins/shop.js` (previously 11008.js) | Shop | Only `/viewtopic.php?id=202`, preserving post 2235 configuration |
+| `src/plugins/technique-search.js` (previously 24002.js) | Technique search | Public pages, groups 1/2/5 |
+| `src/plugins/battle-assistant.js` (previously 28054.js) | Battle assistant | Public pages, groups 1/2/5 |
+| `src/plugins/npc-gallery.js` (previously 80230.js) | NPC gallery | Pages containing the forum 8 gallery target |
+
+Groups were verified in the forum administration: 1 Administrators,
+2 Moderators, 5 Players. Admin configuration pages do not load these tools.
+This client-side loading rule does not replace the forum API's permissions.
+
+The loader waits for both `forum-design:ready` (or its root class) and window
+load, then allows two animation frames and an idle callback before fetching
+optional scripts. Global navigation launchers let the permitted groups open
+the tools even without a reply form; existing editor launchers remain. Clicking
+a launcher prioritizes that tool and shares the same promise as background
+preloading, so it never requests a second copy. Plugin data is fetched when
+the tool is opened, as in the original implementation.
+
+The shop no longer imports the complete design from GitHub a second time.
+The gallery still reads topic 214 and retains its cache, weighted rotation,
+navigation and links. It initializes its data when within 200px of the viewport;
+images load only near the visible horizontal gallery window. `warmImages()`
+and its all-image prefetch have been removed. Original image URLs are retained;
+this saves initial traffic without claiming to compress originals. For smaller
+downloads when viewing the gallery, a future image resizing service could
+generate thumbnails automatically from topic image URLs; manual topic edits
+are not needed. Browser canvas thumbnailing would still download each original
+first and therefore would not solve the first-visit bandwidth problem.
+
+Edit these repository sources for future changes; every main-branch push
+publishes updated plugins and updates their footer descriptors automatically.
+`scripts/background-plugins.test.mjs` runs the actual packaged plugins against
+isolated fixtures: loading order, group filtering, global/editor launchers,
+shop topic filtering, no GitHub CSS import, image requests only on visibility,
+and idempotent footer publication with preserved bridge attributes.
 
 Existing fonts are reused by content-hash filename, not uploaded on every
 commit. CSS and JS versions receive immutable new file URLs. Previous versions

@@ -4,6 +4,7 @@ import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { chromium } from 'playwright'
 import { renderPrepaint } from './prepaint.mjs'
+import { patchPluginFooter } from './background-plugins.mjs'
 
 const origin = 'https://akatsukigood.forum.cool'
 const hash = value => createHash('sha256').update(value).digest('hex').slice(0, 20)
@@ -92,11 +93,16 @@ export async function publish() {
     await Promise.all([files.goto(`${origin}/admin_files.php`), style.goto(`${origin}/admin_style.php`), forms.goto(`${origin}/admin_forms.php`)])
     const originalStyle = await readEditor(style, 'form[content1]')
     const originalHeader = await readEditor(forms, 'form[o_html_header]')
+    const originalFooter = await readEditor(forms, 'form[o_html_footer]')
     // Validate both targets before uploading anything.
     patchStyle(originalStyle, 'https://forumstatic.ru/placeholder.css')
     patchHeader(originalHeader, 'https://forumstatic.ru/placeholder.css', 'https://forumstatic.ru/placeholder.js')
+    const placeholderPlugins = Object.fromEntries(manifest.plugins.map(plugin => [plugin.id, `https://forumstatic.ru/${plugin.file}`]))
+    patchPluginFooter(originalFooter, placeholderPlugins, { requireAll: true })
     let mapping = await fileMapping(files)
     mapping = await upload(files, manifest.assets.map(asset => path.join(dir, asset.file)), mapping)
+    mapping = await upload(files, manifest.plugins.map(plugin => path.join(dir, plugin.file)), mapping)
+    const pluginUrls = Object.fromEntries(manifest.plugins.map(plugin => [plugin.id, mapping[plugin.file]]))
     const css = rewriteAssets(await readFile(path.join(dir, 'forum-local.css'), 'utf8'), mapping)
     const js = await readFile(path.join(dir, 'forum-local.js'), 'utf8')
     const cssName = `fd-style-${hash(css)}.css`, jsName = `fd-script-${hash(js)}.js`
@@ -104,12 +110,14 @@ export async function publish() {
     await writeFile(path.join(dir, jsName), js)
     mapping = await upload(files, [path.join(dir, cssName), path.join(dir, jsName)], mapping)
     const cssUrl = mapping[cssName], jsUrl = mapping[jsName]
-    let styleChanged = false, headerChanged = false
+    let styleChanged = false, headerChanged = false, footerChanged = false
     try {
       styleChanged = true
       await saveEditor(style, 'form[content1]', patchStyle(originalStyle, cssUrl))
       headerChanged = true
       await saveEditor(forms, 'form[o_html_header]', patchHeader(originalHeader, cssUrl, jsUrl))
+      footerChanged = true
+      await saveEditor(forms, 'form[o_html_footer]', patchPluginFooter(originalFooter, pluginUrls, { requireAll: true }))
       const check = await context.newPage()
       await check.setViewportSize({ width: 390, height: 844 })
       await check.goto(origin)
@@ -121,6 +129,10 @@ export async function publish() {
         const mainVisible = await check.locator('#pun-main').evaluate(el => getComputedStyle(el).opacity !== '0')
         if (!mainVisible || await check.locator('#forum-prepaint-placeholder').count()) throw new Error(`First-paint gate did not release at ${width}px`)
       }
+      await check.locator('#forum-tools [data-forum-tool="technique-search"]').waitFor()
+      await check.waitForFunction(() => window.ForumTechniqueSearch && window.ForumBattleAssistant)
+      if (await check.locator('script[src*="/11008.js"]').count() || await check.locator('script[data-forum-plugin-loaded="shop"]').count()) throw new Error('Shop loaded outside its topic')
+      if (await check.locator('script[src*="/24002.js"],script[src*="/28054.js"],script[src*="/80230.js"]').count()) throw new Error('Old blocking plugin reference remains')
       console.log(`Published ${manifest.revision}: ${cssUrl} ${jsUrl}`)
     } catch (error) {
       if (styleChanged) {
@@ -130,6 +142,10 @@ export async function publish() {
       if (headerChanged) {
         await forms.goto(`${origin}/admin_forms.php`)
         await saveEditor(forms, 'form[o_html_header]', originalHeader)
+      }
+      if (footerChanged) {
+        await forms.goto(`${origin}/admin_forms.php`)
+        await saveEditor(forms, 'form[o_html_footer]', originalFooter)
       }
       throw error
     }

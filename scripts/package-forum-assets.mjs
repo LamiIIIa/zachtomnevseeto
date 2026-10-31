@@ -133,11 +133,20 @@ export async function packageAssets(dir = 'dist') {
   const js = Buffer.from((await readFile(path.join(dir, 'forum.js'), 'utf8'))
     .replace(/[^\x00-\x7f]/g, char => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`))
   await writeFile(path.join(out, 'forum-local.js'), js)
+  const plugins = []
+  for (const id of ['technique-search', 'battle-assistant', 'shop', 'npc-gallery']) {
+    const source = (await readFile(`src/plugins/${id}.js`, 'utf8'))
+      .replace(/[^\x00-\x7f]/g, char => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`)
+    const file = `fd-plugin-${id}-${createHash('sha256').update(source).digest('hex').slice(0, 20)}.js`
+    await writeFile(path.join(out, file), source)
+    plugins.push({ id, file, bytes: Buffer.byteLength(source) })
+  }
   await writeFile(path.join(out, 'manifest.json'), JSON.stringify({
     revision: process.env.GITHUB_SHA || 'local',
     css: { file: 'forum-local.css', bytes: cssBytes, sha256: createHash('sha256').update(bundled).digest('hex') },
     js: { file: 'forum-local.js', bytes: js.length, sha256: createHash('sha256').update(js).digest('hex') },
     embedded: report,
+    plugins,
     assets: [...assetFiles].map(([file, bytes]) => ({ file: `assets/${file}`, bytes: bytes.length })),
   }, null, 2))
   console.log(`Portable assets: CSS ${cssBytes} bytes; JS ${js.length} bytes; ${report.length} external dependencies bundled.`)
