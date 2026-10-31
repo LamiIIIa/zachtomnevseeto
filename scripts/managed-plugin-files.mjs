@@ -45,7 +45,7 @@ export async function updateManagedPlugins({ files, editor, dir, manifest, foote
       await saveEditor(editor, 'content', content)
       await editor.goto(`${origin}/admin_files.php?edit&file=${encodeURIComponent(row.file)}&fd_verify=${Date.now()}`)
       const actual = normalized(await editor.locator('textarea[name="content"]').inputValue())
-      if (actual !== normalized(content)) throw new Error(`File verification failed: ${plugin.filename}, expected ${normalized(content).length}, received ${actual.length}, first difference ${[...actual].findIndex((char, i) => char !== normalized(content)[i])}`)
+      if (actual !== normalized(content)) throw new Error(`File verification failed: ${plugin.filename}, expected ${normalized(content).length}, received ${actual.length}, difference ${JSON.stringify((() => { const i = [...actual].findIndex((char, i) => char !== normalized(content)[i]); return { index: i, expected: normalized(content).slice(i-35,i+85), actual: actual.slice(i-35,i+85) } })())}`)
     }
     published.push({ ...row, id: plugin.id, filename: plugin.filename, tag: plugin.tag })
   }
