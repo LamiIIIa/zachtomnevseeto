@@ -18,7 +18,11 @@ async function download(url) {
     const key = createHash('sha256').update(url + UA).digest('hex')
     const cacheFile = path.resolve('.forum-asset-cache', key)
     try { return { bytes: await readFile(cacheFile), type: await readFile(cacheFile + '.type', 'utf8') } } catch {}
-    const response = await fetch(url, { headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(60000) })
+    let response
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try { response = await fetch(url, { headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(60000) }); break }
+      catch (error) { if (attempt === 2) throw error }
+    }
     if (!response.ok) throw new Error(`Asset HTTP ${response.status}: ${url}`)
     const bytes = Buffer.from(await response.arrayBuffer())
     const type = response.headers.get('content-type')?.split(';')[0] ?? 'application/octet-stream'

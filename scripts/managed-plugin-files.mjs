@@ -80,7 +80,7 @@ export async function setTags(page, file, expected) {
     const encoding = response.headers.get('content-type')?.match(/charset=([^; ]+)/i)?.[1] || document.characterSet || 'utf-8'
     return new TextDecoder(encoding).decode(await response.arrayBuffer()).split(',').map(value => value.trim())
   }, { file, desired })
-  if (!desired.every(tag => actual.some(value => key(value) === key(tag)))) throw new Error(`Tag verification failed: ${file}`)
+  if (!desired.every(tag => actual.some(value => key(value) === key(tag)))) throw new Error(`Tag verification failed: ${file}, response ${JSON.stringify(actual)}`)
 }
 export async function labelManagedPlugins(page, publication) {
   let commentsChanged = false
