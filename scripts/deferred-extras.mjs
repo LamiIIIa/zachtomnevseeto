@@ -98,7 +98,8 @@ function installDeferredExtras() {
         script.onerror = function () { cleanup(); script.remove(); reject(new Error('Extra failed: ' + item.id)) }
         timer = setTimeout(function () { cleanup(); script.remove(); reject(new Error('Extra timeout: ' + item.id)) }, 12000)
       } else script.textContent = item.code
-      document.head.appendChild(script)
+      // Legacy plugins inspect script:last to validate their own URL.
+      document.body.appendChild(script)
       if (!item.src) { cleanup(); if (runtimeError) reject(runtimeError); else resolve() }
     })
   }
