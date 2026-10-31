@@ -2,6 +2,9 @@
 // Reimporting a newer plugin must not restore GitHub CSS or gallery prefetching.
 export function preparePlugin(id, original) {
   let source = original.replace(/^\uFEFF/, '').replace(/\r/g, '')
+  // Native file editor decodes numeric HTML entities in textarea readback.
+  // Equivalent JS escape preserves the runtime entity through future edits.
+  source = source.replaceAll('"&#39;"', '"\\x26#39;"').replaceAll("'&#39;'", "'\\x26#39;'")
   if (id === 'shop') {
     return source.replace(/@import\s+url\(['"]https:\/\/lamiiiia\.github\.io\/zachtomnevseeto\/forum\.css[^'"]*['"]\);/gi, '')
   }
