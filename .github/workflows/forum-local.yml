@@ -47,3 +47,10 @@ jobs:
         env:
           FORUM_USERNAME: ${{ secrets.FORUM_USERNAME }}
           FORUM_PASSWORD: ${{ secrets.FORUM_PASSWORD }}
+      - name: Save file cleanup audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: forum-file-audit-${{ github.sha }}
+          path: dist/forum-local/file-audit.*
+          if-no-files-found: ignore

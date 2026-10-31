@@ -6,6 +6,7 @@ import { chromium } from 'playwright'
 import { renderPrepaint } from './prepaint.mjs'
 import { patchPluginFooter, stripHeaderPluginCopies } from './background-plugins.mjs'
 import { patchExtras } from './deferred-extras.mjs'
+import { auditDesignFiles } from './design-file-audit.mjs'
 import { updateManagedPlugins, labelManagedPlugins, restoreManagedPlugins } from './managed-plugin-files.mjs'
 
 const origin = 'https://akatsukigood.forum.cool'
@@ -50,8 +51,10 @@ async function saveEditor(page, name, content) {
     field.dispatchEvent(new Event('input', { bubbles: true }))
     field.dispatchEvent(new Event('change', { bubbles: true }))
   }, { name, content })
-  await page.getByRole('button', { name: 'Сохранить', exact: true }).first().click()
-  await page.waitForLoadState('domcontentloaded')
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
+    page.getByRole('button', { name: 'Сохранить', exact: true }).first().click(),
+  ])
 }
 
 async function fileMapping(page) {
@@ -200,6 +203,7 @@ export async function publish() {
     // Tagging is metadata-only. If it fails, do not reconnect already-retired
     // copies by rolling a fully verified functional release back to old HTML.
     await labelManagedPlugins(files, pluginPublication)
+    await auditDesignFiles(files, forms, style, css + '\n' + js, dir)
     console.log('Managed plugin files: ' + JSON.stringify(pluginPublication.urls))
     console.log('Archived generated plugin copies (not deleted): ' + pluginPublication.retired.map(row => row.file).join(', '))
     console.log(`Published ${manifest.revision}: ${cssUrl} ${jsUrl}`)

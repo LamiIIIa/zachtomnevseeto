@@ -44,7 +44,8 @@ export async function updateManagedPlugins({ files, editor, dir, manifest, foote
       backups.push({ file: row.file, content: previous })
       await saveEditor(editor, 'content', content)
       await editor.goto(`${origin}/admin_files.php?edit&file=${encodeURIComponent(row.file)}&fd_verify=${Date.now()}`)
-      if (normalized(await editor.locator('textarea[name="content"]').inputValue()) !== normalized(content)) throw new Error(`File verification failed: ${plugin.filename}`)
+      const actual = normalized(await editor.locator('textarea[name="content"]').inputValue())
+      if (actual !== normalized(content)) throw new Error(`File verification failed: ${plugin.filename}, expected ${normalized(content).length}, received ${actual.length}, first difference ${[...actual].findIndex((char, i) => char !== normalized(content)[i])}`)
     }
     published.push({ ...row, id: plugin.id, filename: plugin.filename, tag: plugin.tag })
   }
@@ -63,27 +64,21 @@ export async function updateManagedPlugins({ files, editor, dir, manifest, foote
   })
   return { urls, published, retired }
 }
-async function setTags(page, file, expected) {
+export async function setTags(page, file, expected) {
   const row = page.locator('#filetable tr[id]').filter({ has: page.locator(`input[type="checkbox"][value="${file}"]`) })
   const existing = await row.locator('.ft-tags span').allTextContents()
-  const key = tag => tag.toLocaleLowerCase('ru')
-  const desired = []
-  for (const tag of [...existing.filter(tag => tag && !['архив', 'github'].includes(key(tag))), ...expected]) {
-    if (!desired.some(value => key(value) === key(tag))) desired.push(tag)
-  }
+  const key = tag => tag.trim().toLocaleLowerCase('ru')
+  const desired = [...new Map([...existing.filter(tag => tag && !['архив', 'github'].includes(key(tag))), ...expected].map(tag => [key(tag), tag])).values()]
   if (desired.length > 5) throw new Error(`Too many tags on ${file}`)
   if (existing.length === desired.length && desired.every(tag => existing.some(value => key(value) === key(tag)))) return
-  // Rows on other pagination pages are hidden, but their native tag editor works.
-  await row.locator('a.tag-edit').dispatchEvent('click')
-  const modal = page.locator('.pun-modal')
-  while (await modal.locator('.tagify__tag__removeBtn').count()) await modal.locator('.tagify__tag__removeBtn').first().click()
-  for (const tag of desired) {
-    await modal.locator('.tagify__input').fill(tag)
-    await modal.locator('.tagify__input').press('Enter')
-  }
-  await modal.locator('button.tags-save').click()
-  await modal.waitFor({ state: 'detached' })
-  const actual = await row.locator('.ft-tags span').allTextContents()
+  const actual = await page.evaluate(async ({ file, desired }) => {
+    const source = [...document.scripts].map(script => script.textContent).join('\n')
+    const endpoint = source.match(/['"](\/admin_files\.php\?action=update_tags&sk=[^'"]+)['"]/)
+    if (!endpoint) throw new Error('Native tag endpoint missing')
+    const response = await fetch(endpoint[1], { method: 'POST', credentials: 'same-origin', body: new URLSearchParams({ filename: file, tags: desired.join(',') }) })
+    if (!response.ok) throw new Error('Tag update failed')
+    return (await response.text()).split(',').map(value => value.trim())
+  }, { file, desired })
   if (!desired.every(tag => actual.some(value => key(value) === key(tag)))) throw new Error(`Tag verification failed: ${file}`)
 }
 export async function labelManagedPlugins(page, publication) {
@@ -93,7 +88,7 @@ export async function labelManagedPlugins(page, publication) {
     if (await input.inputValue() !== plugin.filename) { await input.fill(plugin.filename); commentsChanged = true }
     await setTags(page, plugin.file, [plugin.tag, 'GitHub'])
   }
-  for (const retired of publication.retired) await setTags(page, retired.file, [retired.tag, 'Архив'])
+  for (const retired of publication.retired) await setTags(page, retired.file, [retired.tag, 'GitHub', 'Архив'])
   if (commentsChanged) {
     page.once('dialog', dialog => dialog.accept())
     await page.locator('#update_comments').click()
