@@ -40,6 +40,8 @@ jobs:
         run: node scripts/prepaint.test.mjs
       - name: Check background plugins and access groups
         run: node scripts/background-plugins.test.mjs
+      - name: Check deferred extras and notification priority
+        run: node scripts/deferred-extras.test.mjs
       - name: Publish and verify forum
         run: npm run publish:forum
         env:

@@ -1,7 +1,6 @@
 // mubb-technique-search ver 16
 (function () {
   'use strict';
-  if ([1, 2, 5].indexOf(Number(window.GroupID || (window.FORUM && window.FORUM.group_id))) === -1) return;
 
   var SCRIPT_ELEMENT = document.currentScript;
   var USER_CONFIG = window.AKATSUKI_TECH_SEARCH || {};
@@ -1212,7 +1211,7 @@ function akatsukiNetwork() {
     wrap.className = 'ats-launcher-wrap';
     wrap.innerHTML = '<button type="button" class="ats-launcher-button" title="\u041f\u043e\u043c\u043e\u0449\u043d\u0438\u043a \u043f\u043e \u043f\u043e\u0438\u0441\u043a\u0443 \u0442\u0435\u0445\u043d\u0438\u043a">\u041f\u043e\u0438\u0441\u043a \u0442\u0435\u0445\u043d\u0438\u043a</button>';
 
-    if (actionRow && actionRow !== form && form.contains(actionRow) && actionRow.parentNode) {
+    if (actionRow && actionRow.parentNode) {
       actionRow.parentNode.insertBefore(wrap, actionRow);
     } else {
       form.appendChild(wrap);

@@ -14,8 +14,8 @@ npm run test:assets
 
 `dist/forum-local/` contains a flattened CSS file, ASCII-safe JavaScript,
 content-addressed WOFF2/images in `assets/`, and `manifest.json`.
-The manifest also lists four independently uploaded, content-addressed plugin
-scripts from `src/plugins/`. They are not imported by the design bundle.
+The manifest also lists four named plugin payloads from `src/plugins/`, updated
+in place on the forum with its native file version. They are not imported by the design bundle.
 External CSS imports are resolved at build time. Fonts are separate files so
 the browser downloads only the faces it needs and caches them independently.
 Existing images on forumstatic.ru remain on that platform. Font Awesome Free
@@ -76,10 +76,10 @@ header's first-paint block. Failed deployment restores the previous footer too.
 
 | Source | Plugin | Loading rule |
 |---|---|---|
-| `src/plugins/shop.js` (previously 11008.js) | Shop | Only `/viewtopic.php?id=202`, preserving post 2235 configuration |
-| `src/plugins/technique-search.js` (previously 24002.js) | Technique search | Only pages with a reply form, groups 1/2/5 |
-| `src/plugins/battle-assistant.js` (previously 28054.js) | Battle assistant | Only pages with a reply form, groups 1/2/5 |
-| `src/plugins/npc-gallery.js` (previously 80230.js) | NPC gallery | Pages containing the forum 8 gallery target |
+| `src/plugins/akatsuki-shop.js` (previously 11008.js) | Shop | Only `/viewtopic.php?id=202`, preserving post 2235 configuration |
+| `src/plugins/mubb-technique-search.js` (previously 24002.js) | Technique search | Only pages with a reply form, groups 1/2/5 |
+| `src/plugins/mubb-battle-assistant.js` (previously 28054.js) | Battle assistant | Only pages with a reply form, groups 1/2/5 |
+| `src/plugins/akatsuki-npc-gallery.js` (previously 80230.js) | NPC gallery | Pages containing the forum 8 gallery target |
 
 Groups were verified in the forum administration: 1 Administrators,
 2 Moderators, 5 Players. Admin configuration pages do not load these tools.
@@ -124,3 +124,8 @@ by the account owner; this publisher does not bypass it.
 The uploader uses the normal MyBB admin interface because the documented MyBB
 API has no file-publishing method. If MyBB changes that interface, publication
 fails instead of overwriting unrelated settings.
+
+## Named managed plugin files
+
+See [plugin deployment and workspace import](plugin-deployment.md) for canonical
+filenames, forum tags, frequent update workflow, and safe archive cleanup.

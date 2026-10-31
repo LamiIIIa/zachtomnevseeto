@@ -1,7 +1,6 @@
 // mubb-battle-assistant ver 69
 (function () {
   'use strict';
-  if ([1, 2, 5].indexOf(Number(window.GroupID || (window.FORUM && window.FORUM.group_id))) === -1) return;
 /* CHARACTER_TEMPLATE_START */
 /* Shared personal-case template adapter. No network calls. */
 function akcmLegacyCode(raw) {
@@ -5461,7 +5460,7 @@ function npcHtmlCode(node) {
     var wrap = document.createElement('div');
     wrap.className = 'aba-launcher-wrap';
     wrap.appendChild(button);
-    if (actionRow && actionRow !== form && form.contains(actionRow) && actionRow.parentNode) actionRow.parentNode.insertBefore(wrap, actionRow);
+    if (actionRow && actionRow.parentNode) actionRow.parentNode.insertBefore(wrap, actionRow);
     else form.appendChild(wrap);
     return true;
   }

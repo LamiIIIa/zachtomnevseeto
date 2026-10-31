@@ -66,34 +66,44 @@ function installBackgroundPlugins() {
   function check() {
     if (started || document.readyState !== 'complete') return
     if (!document.querySelector('.punbb.forum-design--ready')) return
+    if (window.forumDeferredExtras && !window.forumDeferredExtras.ready) return
     started = true
     document.removeEventListener('forum-design:ready', check)
+    document.removeEventListener('forum-extras:ready', check)
     window.removeEventListener('load', check)
     // Allow the finished design to paint before any optional plugin executes.
     requestAnimationFrame(function () { requestAnimationFrame(background) })
   }
   window.forumBackgroundPlugins = { load: load }
   document.addEventListener('forum-design:ready', check)
+  document.addEventListener('forum-extras:ready', check)
   window.addEventListener('load', check)
   check()
 }
 
-export function patchPluginFooter(source, urls, { requireAll = false } = {}) {
+export function patchPluginFooter(source, urls, { requireAll = false, legacyUrls = {}, sourceHashes = {} } = {}) {
   let updated = source.replace(/(?:\r?\n)?<!-- forum-background:start -->[\s\S]*?<!-- forum-background:end -->\s*/g, '')
+  const preferred = new Set([...updated.matchAll(/data-forum-plugin=["']([^"']+)/g)].map(match => match[1]))
   for (const [id, file] of Object.entries(pluginSources)) {
     let found = false
-    const descriptor = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi
+    const descriptor = /<!--[\s\S]*?-->|<script\b([^>]*)>([\s\S]*?)<\/script>/gi
     updated = updated.replace(descriptor, (whole, attrs, body) => {
+      if (whole.startsWith('<!--')) return whole
       const prior = attrs.match(/\bdata-forum-plugin=["']([^"']+)["']/i)
       const src = attrs.match(/\bsrc=["']([^"']+)["']/i)
-      if (prior?.[1] !== id && !src?.[1].match(new RegExp(`/files/001a/12/f3/${file}\\.js(?:[?#]|$)`))) return whole
-      if (found) throw new Error(`Duplicate plugin: ${id}`)
+      const oldPath = src && new URL(src[1], 'https://forumstatic.ru').pathname
+      const legacy = src && (legacyUrls[id] || []).some(url => new URL(url).pathname === oldPath)
+      if (prior?.[1] !== id && !legacy && !src?.[1].match(new RegExp(`/files/001a/12/f3/${file}\\.js(?:[?#]|$)`))) return whole
+      if (prior?.[1] !== id && preferred.has(id)) return ''
+      if (found) return ''
       found = true
-      const attributes = prior ? JSON.parse(body).attributes : Object.fromEntries(
+      const previous = prior ? JSON.parse(body) : null
+      const attributes = previous ? previous.attributes : Object.fromEntries(
         [...attrs.matchAll(/\b(data-[\w-]+)=["']([^"']*)["']/gi)].map(match => [match[1], match[2]]),
       )
       if (!urls[id]) throw new Error(`Missing published plugin: ${id}`)
-      const json = JSON.stringify({ src: urls[id], attributes }).replace(/</g, '\\u003c')
+      const sourceHash = sourceHashes[id] || previous?.sourceHash
+      const json = JSON.stringify({ src: urls[id], attributes, ...(sourceHash ? { sourceHash } : {}) }).replace(/</g, '\\u003c')
       return `<script type="application/json" data-forum-plugin="${id}">${json}</script>`
     })
     if (requireAll && !found) throw new Error(`Managed plugin is missing: ${id}`)
@@ -101,4 +111,19 @@ export function patchPluginFooter(source, urls, { requireAll = false } = {}) {
   return updated + `\n<!-- forum-background:start -->
 <script>(${installBackgroundPlugins.toString()})();</script>
 <!-- forum-background:end -->`
+}
+
+// The footer owns the four descriptors. Remove accidental old direct copies
+// from the header too, without enabling or changing commented examples.
+export function stripHeaderPluginCopies(source, legacyUrls = {}) {
+  return source.replace(/<!--[\s\S]*?-->|<script\b([^>]*)>[\s\S]*?<\/script>/gi, (whole, attrs) => {
+    if (whole.startsWith('<!--')) return whole
+    if (/\bdata-forum-plugin=/.test(attrs)) return ''
+    const src = attrs.match(/\bsrc=["']([^"']+)["']/i)?.[1]
+    if (!src) return whole
+    const pathname = new URL(src, 'https://forumstatic.ru').pathname
+    const known = Object.values(pluginSources).some(file => pathname.endsWith(`/001a/12/f3/${file}.js`))
+      || Object.values(legacyUrls).flat().some(url => new URL(url).pathname === pathname)
+    return known ? '' : whole
+  })
 }

@@ -13,6 +13,7 @@
   var ROOT_ID = 'akatsuki-npc-gallery';
   var STYLE_ID = ROOT_ID + '-style';
   var CACHE_KEY = 'akatsuki-npc-gallery-v17-topic-' + CONFIG.sourceTopicId;
+  var imagePool = {};
 
   function isTargetPage() {
     return !!document.querySelector('#forum_f' + CONFIG.targetForumId + ', a[href*="viewforum.php?id=' + CONFIG.targetForumId + '"]');
@@ -142,6 +143,16 @@
     }
   }
 
+  function warmImages(cards) {
+    cards.forEach(function (card) {
+      if (!card.image || imagePool[card.image]) return;
+      var image = new Image();
+      image.decoding = 'async';
+      image.src = card.image;
+      imagePool[card.image] = image;
+    });
+  }
+
   function fetchDocument(url) {
     return fetch(url, { credentials: 'same-origin', cache: 'no-store' })
       .then(function (response) {
@@ -229,7 +240,7 @@
     var loyalty = cleanText(card.loyalty).replace(/^.*?:\s*/, '');
     return '<a class="ng-card" href="' + escapeHtml(card.url) + '" title="\u041E\u0442\u043A\u0440\u044B\u0442\u044C">' +
       '<span class="ng-name">' + escapeHtml(name) + '</span>' +
-      '<span class="ng-photo"><img loading="lazy" decoding="async" fetchpriority="low" data-ng-src="' + escapeHtml(card.image) + '" alt="' + escapeHtml(name) + '"></span>' +
+      '<span class="ng-photo"><img loading="lazy" src="' + escapeHtml(card.image) + '" alt="' + escapeHtml(name) + '"></span>' +
       '<span class="ng-loyalty">' + escapeHtml(loyalty) + '</span></a>';
   }
 
@@ -237,23 +248,6 @@
     var track = root.querySelector('.ng-track');
     track.innerHTML = cards.length ? cards.map(cardHtml).join('') : '<p class="ng-empty">\u041A\u0430\u0440\u0442\u043E\u0447\u043A\u0438 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u044B.</p>';
     var viewport = root.querySelector('.ng-viewport');
-    if (root._ngImages) root._ngImages.disconnect();
-    var images = track.querySelectorAll('img[data-ng-src]');
-    function revealImage(image) {
-      image.src = image.getAttribute('data-ng-src');
-      image.removeAttribute('data-ng-src');
-    }
-    if (window.IntersectionObserver) {
-      root._ngImages = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (!entry.isIntersecting) return;
-          revealImage(entry.target);
-          root._ngImages.unobserve(entry.target);
-        });
-      }, { root: viewport, rootMargin: '0px 140px', threshold: 0 });
-      images.forEach(function (image) { root._ngImages.observe(image); });
-    } else images.forEach(revealImage);
-
     var previous = root.querySelector('.ng-prev');
     var next = root.querySelector('.ng-next');
     var container = root.querySelector('.slider-container');
@@ -334,13 +328,11 @@
     root.className = 'ng-gallery';
     root.innerHTML = '<h5>\u0438\u0445 \u0436\u0434\u0443\u0442</h5><div class="slider-container"><button class="ng-arrow ng-prev" type="button" aria-label="\u041D\u0430\u0437\u0430\u0434"></button><div class="ng-viewport slider-track-wrapper"><div class="ng-track slider-track"><p class="ng-status">\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u043F\u0435\u0440\u0441\u043E\u043D\u0430\u0436\u0435\u0439\u2026</p></div></div><button class="ng-arrow ng-next" type="button" aria-label="\u0412\u043F\u0435\u0440\u0451\u0434"></button></div>';
     description.insertBefore(root, description.querySelector('.modlist'));
-    function begin() {
-      if (root.dataset.ngStarted) return;
-      root.dataset.ngStarted = '1';
     var setCards = startRotation(root);
 
     var cached = readSessionCache();
     if (cached) {
+      warmImages(cached.cards);
       setCards(cached.cards);
     }
 
@@ -351,21 +343,13 @@
 
     refresh.then(function (cards) {
       if (!cards) return;
+      warmImages(cards);
       writeSessionCache(cards);
       setCards(cards);
     }).catch(function () {
       if (cached) return;
       root.querySelector('.ng-track').innerHTML = '<p class="ng-empty">\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u043F\u0435\u0440\u0441\u043E\u043D\u0430\u0436\u0435\u0439. <a class="ng-source" href="' + CONFIG.baseUrl + '/viewtopic.php?id=' + CONFIG.sourceTopicId + '">\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A</a></p>';
     });
-    }
-    if (window.IntersectionObserver) {
-      var visible = new IntersectionObserver(function (entries) {
-        if (!entries.some(function (entry) { return entry.isIntersecting; })) return;
-        visible.disconnect();
-        begin();
-      }, { rootMargin: '200px 0px' });
-      visible.observe(root);
-    } else begin();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);

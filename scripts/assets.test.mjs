@@ -52,7 +52,7 @@ test('built package contains no external CSS/font dependency and ASCII JS is val
   const js = await readFile('dist/forum-local/forum-local.js', 'utf8')
   assert.ok(!/[^\x00-\x7f]/.test(js))
   new Script(js)
-  for (const plugin of manifest.plugins) {
+  for (const plugin of [...manifest.plugins, ...manifest.extras]) {
     const source = await readFile(`dist/forum-local/${plugin.file}`, 'utf8')
     assert.ok(!/[^\x00-\x7f]/.test(source))
     assert.ok(!/@import[^;]*github\.io/.test(source))

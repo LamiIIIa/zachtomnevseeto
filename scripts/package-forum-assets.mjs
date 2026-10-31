@@ -4,6 +4,8 @@ import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import postcss from 'postcss'
 import valueParser from 'postcss-value-parser'
+import { pluginDefinitions, pluginContentHash } from './plugin-config.mjs'
+import { preparePlugin } from './prepare-plugins.mjs'
 
 const FORUM_HOSTS = new Set(['forumstatic.ru', 'forumavatars.ru', 'upforme.ru'])
 const cache = new Map()
@@ -133,13 +135,23 @@ export async function packageAssets(dir = 'dist') {
   const js = Buffer.from((await readFile(path.join(dir, 'forum.js'), 'utf8'))
     .replace(/[^\x00-\x7f]/g, char => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`))
   await writeFile(path.join(out, 'forum-local.js'), js)
+  // Public platform runtime used by compatibility tests only, never published.
+  await writeFile(path.join(out, 'test-mybb-libs.js'), (await download('https://akatsukigood.forum.cool/js/libs.min.js?v=4')).bytes)
   const plugins = []
-  for (const id of ['technique-search', 'battle-assistant', 'shop', 'npc-gallery']) {
-    const source = (await readFile(`src/plugins/${id}.js`, 'utf8'))
+  for (const plugin of pluginDefinitions) {
+    const source = preparePlugin(plugin.id, await readFile(`src/plugins/${plugin.filename}`, 'utf8'))
       .replace(/[^\x00-\x7f]/g, char => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`)
-    const file = `fd-plugin-${id}-${createHash('sha256').update(source).digest('hex').slice(0, 20)}.js`
+    const file = plugin.filename
     await writeFile(path.join(out, file), source)
-    plugins.push({ id, file, bytes: Buffer.byteLength(source) })
+    plugins.push({ ...plugin, file, bytes: Buffer.byteLength(source), sha256: createHash('sha256').update(source).digest('hex'), sourceHash: pluginContentHash(source) })
+  }
+  const extras = []
+  for (const id of ['quote-avatars', 'post-preview', 'profile-masks']) {
+    const source = (await readFile(`src/plugins/compat/${id}.js`, 'utf8'))
+      .replace(/[^\x00-\x7f]/g, char => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`)
+    const file = `fd-extra-${id}-${createHash('sha256').update(source).digest('hex').slice(0, 20)}.js`
+    await writeFile(path.join(out, file), source)
+    extras.push({ id, file, bytes: Buffer.byteLength(source) })
   }
   await writeFile(path.join(out, 'manifest.json'), JSON.stringify({
     revision: process.env.GITHUB_SHA || 'local',
@@ -147,6 +159,7 @@ export async function packageAssets(dir = 'dist') {
     js: { file: 'forum-local.js', bytes: js.length, sha256: createHash('sha256').update(js).digest('hex') },
     embedded: report,
     plugins,
+    extras,
     assets: [...assetFiles].map(([file, bytes]) => ({ file: `assets/${file}`, bytes: bytes.length })),
   }, null, 2))
   console.log(`Portable assets: CSS ${cssBytes} bytes; JS ${js.length} bytes; ${report.length} external dependencies bundled.`)
