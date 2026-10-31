@@ -129,10 +129,14 @@ export async function publish() {
         const mainVisible = await check.locator('#pun-main').evaluate(el => getComputedStyle(el).opacity !== '0')
         if (!mainVisible || await check.locator('#forum-prepaint-placeholder').count()) throw new Error(`First-paint gate did not release at ${width}px`)
       }
-      await check.locator('#forum-tools [data-forum-tool="technique-search"]').waitFor()
-      await check.waitForFunction(() => window.ForumTechniqueSearch && window.ForumBattleAssistant)
+      if (await check.locator('#forum-tools').count()) throw new Error('Unexpected global tools outside reply form')
+      if (await check.locator('script[data-forum-plugin-loaded="technique-search"],script[data-forum-plugin-loaded="battle-assistant"]').count()) throw new Error('Editor tools loaded on index without reply form')
       if (await check.locator('script[src*="/11008.js"]').count() || await check.locator('script[data-forum-plugin-loaded="shop"]').count()) throw new Error('Shop loaded outside its topic')
       if (await check.locator('script[src*="/24002.js"],script[src*="/28054.js"],script[src*="/80230.js"]').count()) throw new Error('Old blocking plugin reference remains')
+      await check.goto(`${origin}/viewtopic.php?id=448`)
+      await check.locator('form .ats-launcher-button').waitFor({ timeout: 45000 })
+      await check.locator('form .aba-launcher-button').waitFor({ timeout: 45000 })
+      if (await check.locator('#forum-tools').count()) throw new Error('Unexpected global tools on topic')
       console.log(`Published ${manifest.revision}: ${cssUrl} ${jsUrl}`)
     } catch (error) {
       if (styleChanged) {

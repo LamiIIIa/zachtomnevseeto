@@ -1212,7 +1212,7 @@ function akatsukiNetwork() {
     wrap.className = 'ats-launcher-wrap';
     wrap.innerHTML = '<button type="button" class="ats-launcher-button" title="\u041f\u043e\u043c\u043e\u0449\u043d\u0438\u043a \u043f\u043e \u043f\u043e\u0438\u0441\u043a\u0443 \u0442\u0435\u0445\u043d\u0438\u043a">\u041f\u043e\u0438\u0441\u043a \u0442\u0435\u0445\u043d\u0438\u043a</button>';
 
-    if (actionRow && actionRow.parentNode) {
+    if (actionRow && actionRow !== form && form.contains(actionRow) && actionRow.parentNode) {
       actionRow.parentNode.insertBefore(wrap, actionRow);
     } else {
       form.appendChild(wrap);
@@ -1264,12 +1264,6 @@ function akatsukiNetwork() {
     startBridgeServer();
     return;
   }
-
-  window.ForumTechniqueSearch = { open: function () {
-    if (!state.uiBuilt) buildUi();
-    state.textarea = findReplyTextarea();
-    openModal();
-  } };
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);

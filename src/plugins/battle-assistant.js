@@ -5461,7 +5461,7 @@ function npcHtmlCode(node) {
     var wrap = document.createElement('div');
     wrap.className = 'aba-launcher-wrap';
     wrap.appendChild(button);
-    if (actionRow && actionRow.parentNode) actionRow.parentNode.insertBefore(wrap, actionRow);
+    if (actionRow && actionRow !== form && form.contains(actionRow) && actionRow.parentNode) actionRow.parentNode.insertBefore(wrap, actionRow);
     else form.appendChild(wrap);
     return true;
   }
@@ -5498,12 +5498,6 @@ function npcHtmlCode(node) {
     var attempts = 0;
     var retry = setInterval(function () { attempts += 1; if (ensureReplyUi() || attempts >= 60) clearInterval(retry); }, 500);
   }
-
-  window.ForumBattleAssistant = { open: function () {
-    if (!state.uiBuilt) buildUi();
-    state.textarea = findReplyTextarea();
-    openModal();
-  } };
 
   if (document.readyState === 'loading') on(document, 'DOMContentLoaded', init);
   else init();

@@ -13,9 +13,12 @@ function installBackgroundPlugins() {
   document.querySelectorAll('script[data-forum-plugin]').forEach(function (node) {
     config[node.getAttribute('data-forum-plugin')] = JSON.parse(node.textContent)
   })
+  function replyFormPresent() {
+    return !!document.querySelector('form[action*="post.php"] textarea[name="req_message"],form[action*="edit.php"] textarea[name="req_message"],#pun-viewtopic form textarea[name="req_message"],#pun-post form textarea[name="req_message"],#pun-edit form textarea[name="req_message"]')
+  }
   function permitted(id) {
     if (id === 'technique-search' || id === 'battle-assistant') {
-      return [1, 2, 5].indexOf(Number(window.GroupID || (window.FORUM && window.FORUM.group_id))) !== -1
+      return replyFormPresent() && [1, 2, 5].indexOf(Number(window.GroupID || (window.FORUM && window.FORUM.group_id))) !== -1
     }
     if (id === 'shop') {
       return /\/viewtopic\.php$/i.test(location.pathname) && new URLSearchParams(location.search).get('id') === '202'
@@ -39,50 +42,30 @@ function installBackgroundPlugins() {
     })
     return jobs[id]
   }
-  function launcher(id, label, api) {
-    if (!permitted(id) || !config[id]) return
-    var tools = document.getElementById('forum-tools')
-    if (!tools) {
-      tools = document.createElement('div')
-      tools.id = 'forum-tools'
-      tools.setAttribute('role', 'group')
-      tools.setAttribute('aria-label', 'Инструменты игрока')
-      var nav = document.getElementById('pun-navlinks')
-      if (!nav) return
-      nav.appendChild(tools)
-    }
-    var button = document.createElement('button')
-    button.type = 'button'
-    button.textContent = label
-    button.setAttribute('data-forum-tool', id)
-    button.onclick = function () {
-      button.disabled = true
-      load(id).then(function () {
-        if (!window[api]) throw new Error('Plugin did not initialize: ' + id)
-        window[api].open()
-        button.textContent = label
-      }).catch(function (error) {
-        console.error(error)
-        button.textContent = 'Повторить: ' + label
-      }).finally(function () { button.disabled = false })
-    }
-    tools.appendChild(button)
-  }
   function background() {
-    // The two editor plugins keep their existing launcher next to the reply.
-    // Header launchers additionally make them available on all public pages.
-    launcher('technique-search', 'Поиск техник', 'ForumTechniqueSearch')
-    launcher('battle-assistant', 'Боевой помощник', 'ForumBattleAssistant')
     function run() {
       ;['shop', 'technique-search', 'battle-assistant', 'npc-gallery'].reduce(function (chain, id) {
         return chain.then(function () { return load(id).catch(function (error) { console.error(error) }) })
       }, Promise.resolve())
     }
+    // Some quick-reply forms are inserted later. Never load tools without one.
+    var editorScheduled = false
+    var editorObserver = new MutationObserver(function () {
+      if (editorScheduled || !permitted('technique-search')) return
+      editorScheduled = true
+      load('technique-search').then(function () { return load('battle-assistant') }).then(function () {
+        editorObserver.disconnect()
+      }).catch(function (error) { editorScheduled = false; console.error(error) })
+    })
+    if ([1, 2, 5].indexOf(Number(window.GroupID || (window.FORUM && window.FORUM.group_id))) !== -1) {
+      editorObserver.observe(document.body, { childList: true, subtree: true })
+    }
     if (window.requestIdleCallback) requestIdleCallback(run, { timeout: 1500 })
     else setTimeout(run, 0)
   }
   function check() {
-    if (started || document.readyState !== 'complete' || !document.querySelector('.punbb.forum-design--ready')) return
+    if (started || document.readyState !== 'complete') return
+    if (!document.querySelector('.punbb.forum-design--ready')) return
     started = true
     document.removeEventListener('forum-design:ready', check)
     window.removeEventListener('load', check)
@@ -116,7 +99,6 @@ export function patchPluginFooter(source, urls, { requireAll = false } = {}) {
     if (requireAll && !found) throw new Error(`Managed plugin is missing: ${id}`)
   }
   return updated + `\n<!-- forum-background:start -->
-<style>#forum-tools{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:10px 0}#forum-tools button{font:inherit;font-size:13px;cursor:pointer;padding:5px 10px;border:1px solid var(--color-sub-border,#b7a7a7);border-radius:8px;color:var(--color-link,#8f3131);background:var(--color-forum,#fbf2e5)}#forum-tools button:disabled{cursor:wait;opacity:.6}</style>
 <script>(${installBackgroundPlugins.toString()})();</script>
 <!-- forum-background:end -->`
 }

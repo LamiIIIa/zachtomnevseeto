@@ -77,8 +77,8 @@ header's first-paint block. Failed deployment restores the previous footer too.
 | Source | Plugin | Loading rule |
 |---|---|---|
 | `src/plugins/shop.js` (previously 11008.js) | Shop | Only `/viewtopic.php?id=202`, preserving post 2235 configuration |
-| `src/plugins/technique-search.js` (previously 24002.js) | Technique search | Public pages, groups 1/2/5 |
-| `src/plugins/battle-assistant.js` (previously 28054.js) | Battle assistant | Public pages, groups 1/2/5 |
+| `src/plugins/technique-search.js` (previously 24002.js) | Technique search | Only pages with a reply form, groups 1/2/5 |
+| `src/plugins/battle-assistant.js` (previously 28054.js) | Battle assistant | Only pages with a reply form, groups 1/2/5 |
 | `src/plugins/npc-gallery.js` (previously 80230.js) | NPC gallery | Pages containing the forum 8 gallery target |
 
 Groups were verified in the forum administration: 1 Administrators,
@@ -87,11 +87,13 @@ This client-side loading rule does not replace the forum API's permissions.
 
 The loader waits for both `forum-design:ready` (or its root class) and window
 load, then allows two animation frames and an idle callback before fetching
-optional scripts. Global navigation launchers let the permitted groups open
-the tools even without a reply form; existing editor launchers remain. Clicking
-a launcher prioritizes that tool and shares the same promise as background
-preloading, so it never requests a second copy. Plugin data is fetched when
-the tool is opened, as in the original implementation.
+optional scripts. The technique search and battle assistant are fetched only
+when an actual reply/edit textarea exists, for groups 1/2/5. They retain their
+original buttons inside that reply form. There are no global launchers or
+buttons above the page. A late-inserted reply form triggers background loading
+once it appears. There are no exceptions that load editor tools without a
+reply form, including hidden frames.
+Plugin data is fetched when the tool is opened, as in the original implementation.
 
 The shop no longer imports the complete design from GitHub a second time.
 The gallery still reads topic 214 and retains its cache, weighted rotation,
@@ -107,7 +109,7 @@ first and therefore would not solve the first-visit bandwidth problem.
 Edit these repository sources for future changes; every main-branch push
 publishes updated plugins and updates their footer descriptors automatically.
 `scripts/background-plugins.test.mjs` runs the actual packaged plugins against
-isolated fixtures: loading order, group filtering, global/editor launchers,
+isolated fixtures: loading order, group filtering, reply-only launchers and late-inserted forms,
 shop topic filtering, no GitHub CSS import, image requests only on visibility,
 and idempotent footer publication with preserved bridge attributes.
 
