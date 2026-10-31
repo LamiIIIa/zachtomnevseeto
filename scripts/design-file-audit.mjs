@@ -11,7 +11,7 @@ export async function auditDesignFiles(files, forms, style, source, dir) {
     if (!row.comment.startsWith('fd-') && !['97290.js', '50624.js', '15715.css'].includes(row.file)) continue
     if (row.comment.startsWith('fd-plugin-')) continue
     const asset = /^fd-[a-f0-9]+\./.test(row.comment)
-    const kind = /\.(woff2?|ttf|otf)$/i.test(row.comment) ? 'Шрифты' : /\.css$/i.test(row.comment) ? 'CSS' : /\.js$/i.test(row.comment) ? 'JS' : 'Изображения'
+    const kind = /\.(woff2?|ttf|otf)$/i.test(row.comment) ? 'Шрифты' : /\.css$/i.test(row.comment) ? 'Стили' : /\.js$/i.test(row.comment) ? 'Скрипты' : 'Изображения'
     const candidate = !asset && !referenced.has(row.file)
     await setTags(files, row.file, ['GitHub', 'Дизайн', kind, ...(candidate ? ['Архив'] : [])])
     report.push({ file: row.file, comment: row.comment, referenced: referenced.has(row.file), candidate })
