@@ -6,7 +6,6 @@ export const extraRules = {
   '67329': ['episode-generator', 'episode'],
   '74246': ['chronology-tabs', 'chronology'],
   '19286': ['application-generator', 'application'],
-  '26781': ['pr-login', 'all'],
   '77306': ['quote-avatars', 'posts'],
   '86722': ['html-code-editor', 'editor'],
   '26102': ['code-selection', 'content'],
@@ -158,7 +157,6 @@ function installDeferredExtras() {
 
 const tokens = /<!--[\s\S]*?-->|<script\b([^>]*)>([\s\S]*?)<\/script>|<img\b[^>]*>/gi
 function inlineRule(code) {
-  if (/\bPR\.(?:nick|set|pass)/.test(code)) return 'all'
   if (/\bselect_text\b|\bsetLinkAndAva\s*\(/.test(code)) return 'content'
   if (/hvScriptSet\.addMask/.test(code)) return 'masks'
   if (/\bPPREV\b|\bParseContent\b|\bsetCookiePPrev\b/.test(code)) return 'editor'
@@ -183,7 +181,13 @@ export function patchExtras(source, section, urls = {}) {
     }
     const descriptor = attrs.match(/data-forum-extra=["']([^"']+)/)
     let item
-    if (descriptor) item = JSON.parse(code)
+    if (descriptor) {
+      item = JSON.parse(code)
+      // Restore PR loader and its private configuration to their original
+      // parser-executed positions in HTML header, including prior deployments.
+      if (item.id === 'pr-login') return `<script src="${item.src}"${item.attributes?.charset ? ` charset="${item.attributes.charset}"` : ''}></script>`
+      if (item.code && /\bPR\.(?:nick|set|pass)/.test(item.code)) return `<script>${item.code}</script>`
+    }
     else {
       const src = attrs.match(/\bsrc=["']([^"']+)["']/i)?.[1]
       if (src) {
