@@ -77,7 +77,8 @@ export async function setTags(page, file, expected) {
     if (!endpoint) throw new Error('Native tag endpoint missing')
     const response = await fetch(endpoint[1], { method: 'POST', credentials: 'same-origin', body: new URLSearchParams({ filename: file, tags: desired.join(',') }) })
     if (!response.ok) throw new Error('Tag update failed')
-    return (await response.text()).split(',').map(value => value.trim())
+    const encoding = response.headers.get('content-type')?.match(/charset=([^; ]+)/i)?.[1] || document.characterSet || 'utf-8'
+    return new TextDecoder(encoding).decode(await response.arrayBuffer()).split(',').map(value => value.trim())
   }, { file, desired })
   if (!desired.every(tag => actual.some(value => key(value) === key(tag)))) throw new Error(`Tag verification failed: ${file}`)
 }
