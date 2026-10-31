@@ -51,10 +51,15 @@ async function saveEditor(page, name, content) {
     field.dispatchEvent(new Event('input', { bubbles: true }))
     field.dispatchEvent(new Event('change', { bubbles: true }))
   }, { name, content })
-  await Promise.all([
-    page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
-    page.getByRole('button', { name: 'Сохранить', exact: true }).first().click(),
-  ])
+  if (name === 'content') {
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
+      page.getByRole('button', { name: 'Сохранить', exact: true }).first().click(),
+    ])
+  } else {
+    await page.getByRole('button', { name: 'Сохранить', exact: true }).first().click()
+    await page.waitForLoadState('domcontentloaded')
+  }
 }
 
 async function fileMapping(page) {
