@@ -120,7 +120,10 @@ export async function publish() {
       await saveEditor(forms, 'form[o_html_footer]', patchPluginFooter(originalFooter, pluginUrls, { requireAll: true }))
       const check = await context.newPage()
       await check.setViewportSize({ width: 390, height: 844 })
-      await check.goto(origin)
+      // Login can cache the index with the previous footer. Verify freshly
+      // rendered HTML rather than that pre-publication navigation response.
+      const verification = `${manifest.revision}-${Date.now()}`
+      await check.goto(`${origin}/?fd_verify=${verification}`)
       await check.locator('.punbb.forum-design--ready').waitFor({ timeout: 45000 })
       const visible = await check.locator('#pun').evaluate(el => getComputedStyle(el).opacity !== '0')
       if (!visible) throw new Error('Forum remained hidden after publication')
@@ -133,7 +136,7 @@ export async function publish() {
       if (await check.locator('script[data-forum-plugin-loaded="technique-search"],script[data-forum-plugin-loaded="battle-assistant"]').count()) throw new Error('Editor tools loaded on index without reply form')
       if (await check.locator('script[src*="/11008.js"]').count() || await check.locator('script[data-forum-plugin-loaded="shop"]').count()) throw new Error('Shop loaded outside its topic')
       if (await check.locator('script[src*="/24002.js"],script[src*="/28054.js"],script[src*="/80230.js"]').count()) throw new Error('Old blocking plugin reference remains')
-      await check.goto(`${origin}/viewtopic.php?id=448`)
+      await check.goto(`${origin}/viewtopic.php?id=448&fd_verify=${verification}`)
       await check.locator('form .ats-launcher-button').waitFor({ timeout: 45000 })
       await check.locator('form .aba-launcher-button').waitFor({ timeout: 45000 })
       if (await check.locator('#forum-tools').count()) throw new Error('Unexpected global tools on topic')
