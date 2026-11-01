@@ -42,6 +42,8 @@ jobs:
         run: node scripts/background-plugins.test.mjs
       - name: Check deferred extras and notification priority
         run: node scripts/deferred-extras.test.mjs
+      - name: Check early nonblocking profile masks
+        run: node scripts/mask-rendering.test.cjs
       - name: Publish and verify forum
         run: npm run publish:forum
         env:

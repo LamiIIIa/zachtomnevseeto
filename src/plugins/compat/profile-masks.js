@@ -97,13 +97,23 @@ const hvScriptSet = {
     const storageState = { lastRead: null, lastWrite: null, errors: [] };
 
     let prevMasks = [];
+    let maskStorageRevision = 0;
 
-    getStorageMask();
     setupDebugData();
 
     let posts = [];
 
+    const appliedPosts = new WeakMap();
+    let postsJob = null, postsAgain = false;
     function getPosts() {
+      if (postsJob) { postsAgain = true; return postsJob; }
+      postsJob = processPosts().catch(error => console.error('Mask rendering failed', error)).finally(() => {
+        postsJob = null;
+        if (postsAgain) { postsAgain = false; getPosts(); }
+      });
+      return postsJob;
+    }
+    async function processPosts() {
       posts = document.querySelectorAll('.post');
       let changedPosts = {};
       let changedUsersId = [];
@@ -111,13 +121,17 @@ const hvScriptSet = {
         const postEl = posts[i].querySelector('.post-content');
         const postId = posts[i].getAttribute('id');
         const postProfile = posts[i].querySelector('.post-author ul');
+        if (!postEl || !postProfile) continue;
         const postText = postEl.innerHTML;
+        if (appliedPosts.get(posts[i]) === postText) continue;
         const postSignature = posts[i].querySelector('.post-sig dd');
         const postChangeList = getTags(postText);
         const userId = posts[i].dataset.userId;
 
         if (Object.keys(postChangeList).length !== 0) {
           changedPosts[i] = {
+            element: posts[i],
+            source: postText,
             postId: postId,
             userId: userId,
             text: postEl,
@@ -131,11 +145,13 @@ const hvScriptSet = {
           }
         }
       }
-      let checkAccess = changedUsersId.length > 0 ? getAccess(changedUsersId) : {};
+      let checkAccess = changedUsersId.length > 0 ? await getAccess(changedUsersId) : {};
 
       that.data.changedPosts = changedPosts;
 
       for (let _i in changedPosts) {
+        const current = changedPosts[_i];
+        if (!current.element.isConnected || current.text.innerHTML !== current.source || !checkAccess[current.userId]) continue;
         if (changedPosts.hasOwnProperty(_i)) {
           changedPosts[_i].username = checkAccess[changedPosts[_i].userId].username;
           changedPosts[_i].groupId = checkAccess[changedPosts[_i].userId].groupId;
@@ -271,6 +287,7 @@ const hvScriptSet = {
         if (!hiddenHvBlock) {
           changedPosts[_i].text.innerHTML = changedPosts[_i].clearedText + (sign ? sign[0] : '');
         }
+        appliedPosts.set(current.element, current.text.innerHTML);
       }
     }
 
@@ -339,8 +356,8 @@ const hvScriptSet = {
       return tagList;
     }
 
-    function getAccess(usersId) {
-      let userInfo = getUsersInfo(usersId);
+    async function getAccess(usersId) {
+      let userInfo = await getUsersInfo(usersId);
       const forumName = getClearedForumName(window.FORUM.topic.forum_name);
       for (let id in userInfo) {
         if (userInfo.hasOwnProperty(id)) {
@@ -377,41 +394,23 @@ const hvScriptSet = {
       return userInfo;
     }
 
-    function getUsersInfo(usersId) {
-      let usersIdStr = usersId.filter(item => +item > 1).join(',');
-      let usersInfo = {};
-      if (usersId.includes('1')) {
-        usersInfo['1'] = {
-          'userId': '1',
-          'username': 'Guest',
-          'groupId': '3',
-          'groupTitle': 'Гость'
-        };
-      }
-      if (usersIdStr) {
-        $.ajax({
-          async: false,
-          url: '/api.php',
-          data: {
-            method: 'users.get',
-            user_id: usersIdStr
-          },
-          success: function success(json) {
-            for (let i in json.response.users) {
-              if (json.response.users.hasOwnProperty(i)) {
-                usersInfo[json.response.users[i].user_id] = {
-                  'userId': i,
-                  'username': json.response.users[i].username,
-                  'groupId': json.response.users[i].group_id,
-                  'groupTitle': json.response.users[i].group_title
-                };
-              }
-            }
-          }
+    const usersCache = new Map();
+    async function getUsersInfo(usersId) {
+      const ids = [...new Set(usersId.map(String))];
+      if (ids.includes('1')) usersCache.set('1', {userId:'1',username:'Guest',groupId:'3',groupTitle:'Гость'});
+      const missing = ids.filter(id => +id > 1 && !usersCache.has(id));
+      if (missing.length) {
+        const json = await $.ajax({url:'/api.php',dataType:'json',timeout:15000,
+          data:{method:'users.get',user_id:missing.join(',')}});
+        if (json.error || !json.response || !json.response.users) throw new Error('Cannot read mask author permissions');
+        Object.values(json.response.users).forEach(user => {
+          usersCache.set(String(user.user_id), {userId:String(user.user_id),username:user.username,
+            groupId:String(user.group_id),groupTitle:user.group_title});
         });
       }
-
-      return usersInfo;
+      const result = {};
+      ids.forEach(id => { if (usersCache.has(id)) result[id] = {...usersCache.get(id)}; });
+      return result;
     }
 
     function getDialog() {
@@ -637,6 +636,7 @@ const hvScriptSet = {
       updateRememberTopicMaskState();
       maskDialog.style.display = 'block';
       getMaskStorage(prevMasks);
+      void loadDialogMasks();
       document.addEventListener('keyup', hideMaskByEsc);
     }
 
@@ -1113,6 +1113,7 @@ const hvScriptSet = {
         return false;
       }
 
+      maskStorageRevision++;
       prevMasks = nextMasks;
       if (options.updateUi) {
         getMaskStorage(prevMasks);
@@ -1170,6 +1171,7 @@ const hvScriptSet = {
         }
       }
 
+      maskStorageRevision++;
       prevMasks = nextMasks;
       getMaskStorage(prevMasks);
     }
@@ -1392,6 +1394,7 @@ const hvScriptSet = {
         return fail(result.reason, 'Запись не удалась (' + result.reason + '), список на сервере не изменён.', summary);
       }
 
+      maskStorageRevision++;
       prevMasks = next;
       getMaskStorage(prevMasks);
       console.log('hvScriptSet import:', summary);
@@ -2266,19 +2269,24 @@ const hvScriptSet = {
         false;
     }
 
-    function getStorageMask() {
-      const remote = fetchRemoteMasks();
-      if (!remote.ok) {
-        console.error('hvScriptSet: Не удалось загрузить список масок.');
-        return;
-      }
-      prevMasks = remote.masks;
-      getMaskStorage(prevMasks);
+    let dialogMasksJob = null;
+    function loadDialogMasks() {
+      if (dialogMasksJob) return dialogMasksJob;
+      const startedRevision = maskStorageRevision;
+      dialogMasksJob = Promise.resolve($.ajax({url:'/api.php',dataType:'json',timeout:15000,
+        data:{method:'storage.get',key:'maskListUser'}})).then(res => {
+          if (res.error && String(res.error.code) !== '404') throw new Error('Cannot load saved masks');
+          if (startedRevision !== maskStorageRevision) return;
+          prevMasks = parseMaskStorage(res.response?.storage?.data?.maskListUser || '');
+          getMaskStorage(prevMasks);
+        }).catch(error => { console.error(error); $.jGrowl('Не удалось загрузить список масок. Открой окно ещё раз.'); })
+        .finally(() => { dialogMasksJob = null; });
+      return dialogMasksJob;
     }
 
     function saveMaskSettings(localSettings) {
       $.ajax({
-        async: false,
+        timeout: 15000,
         url: '/api.php',
         data: {
           method: 'storage.get',
@@ -2399,8 +2407,7 @@ const hvScriptSet = {
     if (!options) {
       init();
     }
-    if (window.forumDeferredExtras) window.forumDeferredExtras.onReady(init);
-    else if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => init());
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => init());
     else init();
     $(document).on('pun_post', () => {
       getPosts();

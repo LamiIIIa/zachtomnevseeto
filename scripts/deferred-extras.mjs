@@ -53,6 +53,7 @@ function installDeferredExtras() {
   if (window.forumDeferredExtras || /\/admin_[^/]*\.php$/i.test(location.pathname)) return
   var state = { ready: false, errors: [], onReady: onReady }
   var readyCallbacks = [], done = {}, running = false, started = false, scheduled = false
+  var masksStarted = false, masksJob = Promise.resolve()
   window.forumDeferredExtras = state
   function onReady(callback) { if (state.ready) callback(); else readyCallbacks.push(callback) }
   function editor() {
@@ -130,6 +131,22 @@ function installDeferredExtras() {
       document.dispatchEvent(new Event('forum-extras:ready'))
     }
   }
+  function startMasks() {
+    if (masksStarted || document.readyState === 'loading') return;
+    masksStarted = true;
+    masksJob = (async function () {
+      var pending = items().filter(function (item) {
+        return !done[item.id] && eligible(item.rule) && (item.id === 'profile-fields' || item.id === 'profile-masks' || item.code && /hvScriptSet\.addMask/.test(item.code));
+      });
+      for (var item of pending) {
+        done[item.id] = true;
+        try { await execute(item) }
+        catch (error) { state.errors.push({id:item.id,message:error.message}); console.error(error) }
+      }
+    })();
+  }
+  document.addEventListener('DOMContentLoaded', startMasks);
+  startMasks();
   function schedule() {
     if (scheduled || running || !items().some(function (item) { return !done[item.id] && eligible(item.rule) })) return
     scheduled = true
@@ -144,7 +161,7 @@ function installDeferredExtras() {
     document.removeEventListener('DOMContentLoaded', start)
     window.removeEventListener('load', start)
     requestAnimationFrame(function () { requestAnimationFrame(function () {
-      void run().then(function () {
+      void masksJob.then(function () { return run() }).then(function () {
         new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true })
       })
     }) })
