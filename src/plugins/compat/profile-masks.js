@@ -131,7 +131,6 @@ const hvScriptSet = {
         if (Object.keys(postChangeList).length !== 0) {
           changedPosts[i] = {
             element: posts[i],
-            source: postText,
             postId: postId,
             userId: userId,
             text: postEl,
@@ -151,7 +150,16 @@ const hvScriptSet = {
 
       for (let _i in changedPosts) {
         const current = changedPosts[_i];
-        if (!current.element.isConnected || current.text.innerHTML !== current.source || !checkAccess[current.userId]) continue;
+        if (!current.element.isConnected || current.element.querySelector('.post-content') !== current.text
+          || current.element.querySelector('.post-author ul') !== current.profile
+          || current.element.dataset.userId !== current.userId || !checkAccess[current.userId]) continue;
+        // Fonts, quotes and spoilers may update the body while permissions load.
+        // Only an actual change of the mask invalidates this rendering pass.
+        if (JSON.stringify(getTags(current.text.innerHTML)) !== JSON.stringify(current.changeList)) {
+          postsAgain = true;
+          continue;
+        }
+        current.clearedText = getClearedPost(current.text, current.changeList);
         if (changedPosts.hasOwnProperty(_i)) {
           changedPosts[_i].username = checkAccess[changedPosts[_i].userId].username;
           changedPosts[_i].groupId = checkAccess[changedPosts[_i].userId].groupId;
