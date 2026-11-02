@@ -57,7 +57,44 @@ function installPrepaint() {
   check()
 }
 
+// Read preferences while the parser is still in HTML header, before post text paints.
+function installTextPrepaint() {
+  function setFontSize(size) {
+    var style = document.getElementById('forum-post-font-preference');
+    if (!style) { style = document.createElement('style'); style.id = 'forum-post-font-preference'; document.head.appendChild(style) }
+    var value = Number(size);
+    style.textContent = size != null && Number.isFinite(value) && value >= 6 && value <= 40
+      ? '#pun .post .post-content p,#post-preview .post-content p,#profile-signature .post-content p,.parsedsig .post-content p{font-size:' + value + 'px}' : '';
+  }
+  window.forumTextLayout = {setFontSize:setFontSize};
+  try { var preference = localStorage.getItem('FNTsize'); if (preference) setFontSize(preference.split(',')[1]) } catch (_) {}
+  function reserveQuotes() {
+    if (!document.getElementById('fntSlider') && !document.getElementById('forum-font-slider-space')) {
+      var first = document.querySelector('.post h3 > span');
+      if (first) {
+        var space = document.createElement('div');
+        space.id = 'forum-font-slider-space'; space.className = 'FNTslider';
+        space.style.visibility = 'hidden'; space.setAttribute('aria-hidden','true');
+        var strong = first.querySelector('strong');
+        if (strong) strong.insertAdjacentElement('afterend',space); else first.appendChild(space);
+      }
+    }
+    document.querySelectorAll('.quote-box:not(.spoiler-box):not(.fd-quote-reserved)').forEach(function (box) {
+      var cite = box.querySelector(':scope > cite'), label = cite && cite.textContent;
+      if (label && !/^(HTML\+? написал|Скрытый\sтекст)/.test(label)) box.classList.add('fd-quote-reserved');
+    });
+  }
+  var observer = new MutationObserver(reserveQuotes);
+  observer.observe(document.documentElement, {childList:true,subtree:true});
+  reserveQuotes();
+  document.addEventListener('DOMContentLoaded', function () { reserveQuotes(); observer.disconnect() }, {once:true});
+}
+
 const css = `
+.punbb .post-content .quote-box.fd-quote-reserved:not(.with-avatar) > cite {visibility:hidden;}
+@media(min-width:701px){.punbb .post-content .quote-box.fd-quote-reserved:not(.spoiler-box){padding-left:45px!important;}}
+@media(max-width:700px){.punbb .post-content .quote-box.fd-quote-reserved:not(.spoiler-box){padding:10px 10px 5px!important;}}
+
 #pun-index table.fd-fast-table {display:grid!important;width:100%!important;margin:0!important;border-collapse:separate!important;}
 #pun-index table.fd-fast-table > tbody {display:contents!important;}
 #pun-index table.fd-fast-table > thead {display:none!important;}
@@ -68,6 +105,7 @@ const css = `
 #pun-index table.fd-fast-table td.tc2,#pun-index table.fd-fast-table td.tc3,#pun-index table.fd-fast-table .icon {display:none!important;}
 `
 
-export function renderPrepaint() {
-  return `<!-- forum-prepaint:start -->\n<style id="forum-prepaint-style">${css}</style>\n<script>(${installPrepaint.toString()})();</script>\n<!-- forum-prepaint:end -->`
+export function renderPrepaint(fontUrls = []) {
+  const fonts = [...new Set(fontUrls)].map(url => `<link data-forum-text-font rel="preload" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="high" href="${url.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">`).join('\n')
+  return `<!-- forum-prepaint:start -->\n${fonts}\n<style id="forum-prepaint-style">${css}</style>\n<script>(${installTextPrepaint.toString()})();\n(${installPrepaint.toString()})();</script>\n<!-- forum-prepaint:end -->`
 }

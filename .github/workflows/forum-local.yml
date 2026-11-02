@@ -44,6 +44,8 @@ jobs:
         run: node scripts/deferred-extras.test.mjs
       - name: Check early nonblocking profile masks
         run: node scripts/mask-rendering.test.cjs
+      - name: Check stable post text and quote geometry
+        run: node scripts/text-layout.test.mjs
       - name: Publish and verify forum
         run: npm run publish:forum
         env:

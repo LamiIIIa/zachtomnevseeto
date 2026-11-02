@@ -119,6 +119,14 @@ export async function bundleCss(source, base, ancestors = new Set()) {
       decl.parent.append({ prop: 'font-display', value: 'swap' })
     }
   }
+  root.walkAtRules('font-face', rule => {
+    const family = rule.nodes.find(n => n.prop === 'font-family')?.value || '';
+    if (/Balsamiq Sans|Nunito Sans/.test(family)) {
+      const display = rule.nodes.find(n => n.prop === 'font-display');
+      if (display) display.value = 'optional';
+      else rule.append({prop:'font-display',value:'optional'});
+    }
+  });
   root.walkAtRules('charset', rule => rule.remove())
   return root.toString()
 }
@@ -150,14 +158,25 @@ export async function packageAssets(dir = 'dist') {
     plugins.push({ ...plugin, file, bytes: Buffer.byteLength(source), sha256: createHash('sha256').update(source).digest('hex'), sourceHash: pluginContentHash(source) })
   }
   const extras = []
-  for (const id of ['quote-avatars', 'post-preview', 'profile-masks']) {
+  for (const id of ['quote-avatars', 'post-preview', 'profile-masks', 'post-font-size']) {
     const source = (await readFile(`src/plugins/compat/${id}.js`, 'utf8'))
       .replace(/[^\x00-\x7f]/g, char => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`)
     const file = `fd-extra-${id}-${createHash('sha256').update(source).digest('hex').slice(0, 20)}.js`
     await writeFile(path.join(out, file), source)
     extras.push({ id, file, bytes: Buffer.byteLength(source) })
   }
+  const criticalFonts = [];
+  postcss.parse(bundled).walkAtRules('font-face', rule => {
+    const value = prop => rule.nodes.find(n => n.prop === prop)?.value || '';
+    if (!/Balsamiq Sans|Nunito Sans/.test(value('font-family'))) return;
+    const weights = value('font-weight').split(/\s+/).map(Number);
+    if (!(weights[0] === 400 || weights.length === 2 && weights[0] <= 400 && weights[1] >= 400)) return;
+    if (!/U\+0400-045F|U\+0000-00FF/i.test(value('unicode-range'))) return;
+    const asset = /assets\/(fd-[a-f0-9]+\.woff2)/.exec(value('src'))?.[1];
+    if (asset && !criticalFonts.includes(asset)) criticalFonts.push(asset);
+  });
   await writeFile(path.join(out, 'manifest.json'), JSON.stringify({
+    criticalFonts,
     revision: process.env.GITHUB_SHA || 'local',
     css: { file: 'forum-local.css', bytes: cssBytes, sha256: createHash('sha256').update(bundled).digest('hex') },
     js: { file: 'forum-local.js', bytes: js.length, sha256: createHash('sha256').update(js).digest('hex') },

@@ -136,7 +136,7 @@ function installDeferredExtras() {
     masksStarted = true;
     masksJob = (async function () {
       var pending = items().filter(function (item) {
-        return !done[item.id] && eligible(item.rule) && (item.id === 'profile-fields' || item.id === 'profile-masks' || item.code && /hvScriptSet\.addMask/.test(item.code));
+        return !done[item.id] && eligible(item.rule) && (['profile-fields','profile-masks','quote-avatars','post-font-size'].includes(item.id) || item.code && /hvScriptSet\.addMask|setLinkAndAva\s*\(/.test(item.code));
       });
       for (var item of pending) {
         done[item.id] = true;

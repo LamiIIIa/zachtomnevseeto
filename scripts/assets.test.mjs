@@ -59,3 +59,19 @@ test('built package contains no external CSS/font dependency and ASCII JS is val
     new Script(source)
   }
 })
+
+
+test('primary text fonts preload local regular/italic Latin and Cyrillic faces without late swap', async () => {
+  const manifest = JSON.parse(await readFile('dist/forum-local/manifest.json','utf8'));
+  assert.equal(manifest.criticalFonts.length,8);
+  for (const file of manifest.criticalFonts) assert.ok(manifest.assets.some(asset => asset.file === 'assets/'+file));
+  const css = postcss.parse(await readFile('dist/forum-local/forum-local.css','utf8'));
+  css.walkAtRules('font-face', rule => {
+    const value = prop => rule.nodes.find(n=>n.prop===prop)?.value;
+    if (/Balsamiq Sans|Nunito Sans/.test(value('font-family'))) assert.equal(value('font-display'),'optional');
+  });
+  const html = patchHeader('<script id="forum-local-loader" src="old"></script>', 'style.css', 'script.js', ['https://forumstatic.ru/font.woff2']);
+  assert.ok(html.includes('as="font"'));
+  assert.ok(html.includes('crossorigin="anonymous"'));
+  assert.equal((patchHeader(html,'style.css','script.js',['https://forumstatic.ru/font.woff2']).match(/data-forum-text-font/g)||[]).length,1);
+});

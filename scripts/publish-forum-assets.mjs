@@ -18,7 +18,7 @@ export function patchStyle(source, cssUrl) {
   return source.replace(markers, `/* forum-local:start */\n@import url("${cssUrl}");\n/* forum-local:end */`)
 }
 
-export function patchHeader(source, cssUrl, jsUrl) {
+export function patchHeader(source, cssUrl, jsUrl, fontUrls = []) {
   const pattern = /<script\b[^>]*\bid="forum-local-loader"[^>]*>[\s\S]*?<\/script>/
   if (!pattern.test(source)) throw new Error('Managed JS loader is missing; refusing to replace HTML')
   // Regenerate the inline first-paint copy on every publication, from the repo.
@@ -27,7 +27,7 @@ export function patchHeader(source, cssUrl, jsUrl) {
     .replace(/<style\b[^>]*\bid="forum-early-render-style"[^>]*>[\s\S]*?<\/style>\s*/g, '')
     .replace(/<link\b[^>]*\bid="forum-style-hint"[^>]*>\s*/g, '')
   const updated = withoutOldPrepaint.replace(pattern, `<script id="forum-local-loader" src="${jsUrl}" charset="utf-8" data-forum-css="${cssUrl}" fetchpriority="high" defer></script>`)
-  return renderPrepaint() + `\n<link id="forum-style-hint" rel="preload" as="style" href="${cssUrl}" fetchpriority="high">\n` + updated
+  return renderPrepaint(fontUrls) + `\n<link id="forum-style-hint" rel="preload" as="style" href="${cssUrl}" fetchpriority="high">\n` + updated
 }
 
 export function rewriteAssets(css, mapping) {
@@ -154,7 +154,7 @@ export async function publish() {
       styleChanged = true
       await saveEditor(style, 'form[content1]', patchStyle(originalStyle, cssUrl))
       headerChanged = true
-      await saveEditor(forms, 'form[o_html_header]', patchExtras(patchHeader(stripHeaderPluginCopies(originalHeader, legacyUrls), cssUrl, jsUrl), 'header', extraUrls))
+      await saveEditor(forms, 'form[o_html_header]', patchExtras(patchHeader(stripHeaderPluginCopies(originalHeader, legacyUrls), cssUrl, jsUrl, (manifest.criticalFonts || []).map(file => mapping[file]).filter(Boolean)), 'header', extraUrls))
       footerChanged = true
       await saveEditor(forms, 'form[o_html_footer]', patchExtras(patchPluginFooter(originalFooter, pluginUrls, { requireAll: true, legacyUrls, sourceHashes }), 'footer', extraUrls))
       const check = await context.newPage()
