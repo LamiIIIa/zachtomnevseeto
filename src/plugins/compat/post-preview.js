@@ -11,12 +11,15 @@
 *********************************/
 
 //==== ФУНКЦИЯ PARSECONTENT() РАСПАРС КОНТЕНТА TEXTAREA ====//
-function ParseContent () {
-
-  if($('#main-reply:first').parents('.post').length)return;
+function ParseContent (field) {
+  var controller = window.forumPostPreview;
+  if (controller && !controller.enabled) return;
+  var editor = field && field.tagName === 'TEXTAREA' ? field : controller && controller.editor;
+  if (!editor) editor = document.querySelector('#main-reply,textarea[name="req_message"]');
+  if (!editor) return;
 
   //==== Распарс bbcode в контенте textarea ====//
-  var cnt = $('#main-reply:first').val(); //alert(cnt);
+  var cnt = editor.value; //alert(cnt);
 
   // Отключаем распознавание HTML кодов
   cnt = cnt.replace(/&/g,'&amp;');      cnt = cnt.replace(/</g,'&lt;');      cnt = cnt.replace(/>/g,'&gt;');
@@ -175,7 +178,7 @@ function generateSection(className, content) {
 }
 
   // Добавляем обработку кликов для вкладок
-  $('#post-preview').on('click', '.vkladka', function(event) {
+  $('#post-preview').off('click.forumPreviewTabs', '.vkladka').on('click.forumPreviewTabs', '.vkladka', function(event) {
       event.preventDefault();
       const id = $(this).attr('data-number');   
       $(this).closest(".wrapper").find(".vkladka, .window").removeClass("activevkladka");    
@@ -201,47 +204,97 @@ function generateSection(className, content) {
 
 }//Конец Функции
 
-if($('#pun-post, #pun-edit, #pun-poll, #pun-viewtopic').length)(function() {
-  document.head.insertAdjacentHTML('beforeend', '<style>#post-preview .code-box pre{max-height:13em;}</style>');
-
-  if(PPREV.position == 2) {
-    document.head.insertAdjacentHTML('beforeend', '<style>#post-preview{display:block!important;}</style>');
-    if($('#pun-viewtopic').length){
-      document.head.insertAdjacentHTML('beforeend', '<style>#TstPrevCnt td{border-color:transparent!important;}#PFld2{vertical-align:top;}#post-preview .post-box{margin-top:2.5em;height:13em!important;overflow-y:auto;}</style>');
-    } if($('#pun-post,#pun-edit,#pun-poll').length){
-      document.head.insertAdjacentHTML('beforeend', '<style>#TstPrevCnt td{border-color:transparent!important}#PFld2{vertical-align:top}#post-preview .post-box{margin-top:2.5em;height:21em!important;overflow-y:auto}</style>');
-    }
+// Dynamic edit forms are inserted after startup and may live inside a .post.
+(function () {
+  if (window.forumPostPreview) return;
+  var timer, lastEditor, lastValue;
+  var selector = '#main-reply,textarea[name="req_message"]';
+  var labels = ['Включить быстрый предпросмотр','Отключить быстрый предпросмотр'];
+  var state = {editor:null,enabled:!/(?:^|;\s*)_PreviewToggle=OFF(?:;|$)/.test(document.cookie),refresh:refresh};
+  window.forumPostPreview = state;
+  function isEditor(node) {
+    return node && node.matches && node.matches(selector) && !node.closest('#hv_preview_form,#post-preview');
   }
-  if($('#post-preview').html() === null) {
-    var pprevcont='<fieldset id="post-preview"><legend><span>Предварительный просмотр сообщения</span></legend><div class="fs-box"><div class="post-box"><div class="post-content"></div></div></div></fieldset>';
-    function setPrev(sel) {
-      $(sel).each(function () {
-	$(this).find('fieldset:first').before('<table id="TstPrevCnt"><tr><td id="PFld1"></td><td id="PFld2"></td></tr></table>');
-	$(this).find('fieldset:last').find('script').remove();
-	$(this).find('fieldset:last').appendTo($(this).find('#PFld1'));
-	$(this).find('#post-preview').remove();
-	$(pprevcont).appendTo($(this).find('#PFld2'));
-	$(this).find('#post-preview').css('height',($(this).find('fieldset:not(#post-preview)').css('height')));
-      });
-    }
-    if(PPREV.position == 0) {$('#post fieldset').before(pprevcont);}
-    if(PPREV.position == 1) {$('#post fieldset').after(pprevcont); }
-    if(PPREV.position == 2) {	       setPrev($('#post'));	   }
-  } else {
-    if(PPREV.position == 1) {$('#post-preview').each(function(){$(this).insertAfter($(this).parents('#post').find('fieldset:nth-of-type(2)'));});}
-    if(PPREV.position == 2) {	       setPrev($('#post'));	   }
+  function findEditor() {
+    if (isEditor(document.activeElement)) return document.activeElement;
+    var editing = document.querySelector('.post textarea[name="req_message"],.post #main-reply');
+    if (isEditor(editing)) return editing;
+    if (state.editor && state.editor.isConnected) return state.editor;
+    return Array.from(document.querySelectorAll(selector)).find(isEditor);
   }
-
-  //==== Показываем / Скрываем Предпросмотр при Загрузке Страницы ====//
-  if($('#post-preview').text().length < 1) {$('#post-preview').hide();} else {$('#post-preview').show();ParseContent();}
-
-  var sTim;
-
-  //====Вызов функции ====//
-  $('#main-reply:first').live('input',function () {  ParseContent();  });
-
-  $('#form-buttons img, .pl-quote, .pa-author>a, div[id$="-area"] *, .pl-BBquote, #Bubble').click(function (){
-    clearTimeout(sTim);sTim = setTimeout(function (){ParseContent();},40);
-  });
-
-}());
+  function buttonState() {
+    document.querySelectorAll('#togglePreview').forEach(function (toggle) {
+      toggle.dataset.previewState = state.enabled ? 'on' : 'off';
+      var button = toggle.querySelector('input,button');
+      if (!button) return;
+      var label = labels[state.enabled ? 1 : 0];
+      if (button.tagName === 'INPUT') button.value = label; else button.textContent = label;
+      button.title = label; button.setAttribute('aria-label',label);
+      button.setAttribute('aria-pressed',String(state.enabled));
+    });
+  }
+  function mount(editor) {
+    var form = editor.form;
+    if (!form) return null;
+    var preview = document.getElementById('post-preview');
+    if (!preview) {
+      preview = document.createElement('fieldset'); preview.id = 'post-preview';
+      preview.innerHTML = '<legend><span>Предварительный просмотр сообщения</span></legend><div class="fs-box"><div class="post-box"><div class="post-content"></div></div></div>';
+    }
+    if (!form.contains(preview)) {
+      var fieldset = editor.closest('fieldset'), target = fieldset || editor;
+      var secondColumn = form.querySelector('#PFld2');
+      if (secondColumn && Number(PPREV.position) === 2) secondColumn.appendChild(preview);
+      else if (Number(PPREV.position) === 0) target.parentNode.insertBefore(preview,target);
+      else target.parentNode.insertBefore(preview,target.nextSibling);
+    }
+    if (!form.querySelector('#togglePreview')) {
+      var toggle = document.createElement('small'); toggle.id = 'togglePreview';
+      toggle.innerHTML = '<input type="button" class="button">';
+      var legend = editor.closest('fieldset')?.querySelector(':scope > legend');
+      if (legend) legend.insertAdjacentElement('afterend',toggle);
+      else editor.parentNode.insertBefore(toggle,editor);
+    }
+    buttonState();
+    return preview;
+  }
+  function refresh(field,force) {
+    var editor = isEditor(field) ? field : findEditor();
+    if (!editor) return;
+    state.editor = editor;
+    var preview = mount(editor);
+    if (!preview) return;
+    if (!state.enabled) { preview.style.setProperty('display','none','important'); return; }
+    preview.style.removeProperty('display');
+    if (!force && lastEditor === editor && lastValue === editor.value) return;
+    lastEditor = editor; lastValue = editor.value;
+    ParseContent(editor);
+  }
+  function schedule(editor) {
+    clearTimeout(timer); timer = setTimeout(function () { refresh(editor); },40);
+  }
+  window.togglePreview = function (button) {
+    var form = button && button.closest('form');
+    var editor = form && Array.from(form.querySelectorAll(selector)).find(isEditor);
+    state.enabled = !state.enabled;
+    document.cookie = '_PreviewToggle='+(state.enabled?'ON':'OFF')+'; path=/; SameSite=Lax; max-age=2592000';
+    buttonState(); refresh(editor,true);
+  };
+  document.addEventListener('click',function (event) {
+    if (event.target.closest('#togglePreview input,#togglePreview button')) {
+      event.preventDefault(); event.stopImmediatePropagation(); window.togglePreview(event.target); return;
+    }
+    if (event.target.closest('#form-buttons,.pl-quote,.pl-BBquote,.pa-author>a,div[id$="-area"],#Bubble')) schedule();
+  },true);
+  document.addEventListener('input',function (event) { if (isEditor(event.target)) schedule(event.target); },true);
+  document.addEventListener('change',function (event) { if (isEditor(event.target)) schedule(event.target); },true);
+  document.addEventListener('focusin',function (event) { if (isEditor(event.target)) refresh(event.target); },true);
+  $(document).on('pun_preedit.forumPreview pun_edit.forumPreview pun_post.forumPreview',function () { schedule(); });
+  new MutationObserver(function (mutations) {
+    if (mutations.some(function (mutation) { return Array.from(mutation.addedNodes).some(function (node) {
+      return node.nodeType === 1 && (isEditor(node) || node.querySelector(selector));
+    }) })) schedule();
+  }).observe(document.body,{childList:true,subtree:true});
+  document.head.insertAdjacentHTML('beforeend','<style>#post-preview .code-box pre{max-height:13em}</style>');
+  refresh(null,true);
+})();

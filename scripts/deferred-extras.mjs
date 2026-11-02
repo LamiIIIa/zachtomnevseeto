@@ -219,6 +219,11 @@ export function patchExtras(source, section, urls = {}) {
         item = { id: `${section}-inline-${createHash('sha256').update(code).digest('hex').slice(0, 16)}`, rule, code, attributes: {} }
       }
     }
+    // The managed preview owns the toggle and cookie for every editor context.
+    // Retire the old wrapper that replaces ParseContent with a no-op function.
+    if (item.code && /setCookiePPrev\s*=/.test(item.code) && /window\.togglePreview/.test(item.code)) {
+      item.code = 'if(window.forumPostPreview)window.forumPostPreview.refresh();';
+    }
     if (urls[item.id]) { item.src = urls[item.id]; item.attributes.charset = 'utf-8' }
     const json = JSON.stringify(item).replace(/[^\x00-\x7f]/g, char => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`).replace(/</g, '\\u003c')
     return `<script type="application/json" data-forum-extra="${item.id}">${json}</script>`
