@@ -21,6 +21,7 @@ try {
   assert.equal(await page.evaluate(()=>!!window.nativeQuote),false)
   await page.locator('textarea').fill('')
   await page.locator('.pl-quote a').click()
+  await page.waitForFunction(()=>window.nativeQuote===true)
   assert.equal(await page.evaluate(()=>window.nativeQuote),true,'No selection must retain native full-post quoting')
   assert.equal(await page.locator('textarea').inputValue(),'')
   await page.close()
