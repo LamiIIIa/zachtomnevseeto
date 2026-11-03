@@ -82,6 +82,12 @@ function initCharacterCounter(textarea) {
     }
   }
 
+  // The preview toggle can arrive later from a deferred plugin. Keep the
+  // counter out of legend independently, above the editor toolbar.
+  const toolbar = fieldset?.querySelector("#form-buttons");
+  if (toolbar) toolbar.before(counter);
+  else if (legend) legend.after(counter);
+
   const value = counter.querySelector("[data-character-count-value], b");
   const label = counter.querySelector("[data-character-count-label]");
   const update = () => {
