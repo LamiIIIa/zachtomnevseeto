@@ -8,14 +8,18 @@ export function initQuoteSelection(root = document) {
   root.dataset.quoteSelectionReady = "true";
 
   let savedSelection = null;
+  let quoteSelection = null;
 
   function rememberSelection() {
+    if (quoteSelection) return;
     const selection = window.getSelection();
 
     if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+      savedSelection = null;
       return;
     }
 
+    savedSelection = null;
     const selectedText = selection.toString().trim();
 
     if (!selectedText) return;
@@ -48,14 +52,17 @@ export function initQuoteSelection(root = document) {
 
     const quoteLink = event.target.closest(QUOTE_LINK_SELECTOR);
 
-    if (!quoteLink || !root.contains(quoteLink) || !savedSelection) {
+    const selected = quoteSelection || savedSelection;
+    quoteSelection = null;
+
+    if (!quoteLink || !root.contains(quoteLink) || !selected) {
       return;
     }
 
     const post = quoteLink.closest(".post[id^='p']");
     const postId = post?.id.match(/^p(\d+)$/)?.[1];
 
-    if (postId !== savedSelection.postId) return;
+    if (postId !== selected.postId) return;
 
     const href = quoteLink.getAttribute("href") || "";
 
@@ -70,13 +77,26 @@ export function initQuoteSelection(root = document) {
     const quoteAuthorData = quoteArguments[1];
 
     window.insert(
-      `[quote="${quoteAuthorData}"]${savedSelection.text}[/quote]\n`
+      `[quote="${quoteAuthorData}"]${selected.text}[/quote]\n`
     );
 
     window.getSelection()?.removeAllRanges();
     savedSelection = null;
   }
 
+  // Read the complete live range before the quote link receives focus.
+  // selectionchange may still contain an earlier double-clicked word, and
+  // legacy mouse handlers can collapse the range before the click arrives.
+  root.addEventListener("pointerdown", (event) => {
+    quoteSelection = null;
+    rememberSelection();
+    if (event.target instanceof Element && event.target.closest(QUOTE_LINK_SELECTOR)) {
+      quoteSelection = savedSelection;
+    }
+  }, true);
+  root.addEventListener("pointerup", (event) => {
+    if (!(event.target instanceof Element) || !event.target.closest(QUOTE_LINK_SELECTOR)) rememberSelection();
+  }, true);
   document.addEventListener("selectionchange", rememberSelection);
 
   root.addEventListener("click", quoteSelectedText, true);

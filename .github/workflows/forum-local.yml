@@ -48,6 +48,8 @@ jobs:
         run: node scripts/text-layout.test.mjs
       - name: Check live editing preview and toggle
         run: node scripts/post-preview-edit.test.mjs
+      - name: Check complete selected-text quoting
+        run: node scripts/quote-selection.test.mjs
       - name: Publish and verify forum
         run: npm run publish:forum
         env:
