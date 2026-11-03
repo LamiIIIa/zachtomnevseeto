@@ -108,7 +108,7 @@ export async function publish() {
   })
   try {
     const login = await context.newPage()
-    await login.goto(`${origin}/login.php`)
+    await login.goto(`${origin}/login.php`, { waitUntil: 'domcontentloaded', timeout: 60000 })
     // The header also contains a PR login form with the same input names.
     const loginForm = login.locator('form').filter({ has: login.locator('#fld1') })
     await loginForm.locator('input[name="req_username"]').fill(process.env.FORUM_USERNAME)
