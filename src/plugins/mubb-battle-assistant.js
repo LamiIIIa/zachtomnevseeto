@@ -1,4 +1,4 @@
-// mubb-battle-assistant ver 72
+// mubb-battle-assistant ver 73
 (function () {
   'use strict';
 /* CHARACTER_TEMPLATE_START */
@@ -2125,6 +2125,17 @@ function npcHtmlCode(node) {
   }
 
   function rebalanceActions() {
+    if (state.actions.some(function (action) { return action.continuedTechniqueKey; })) {
+      var continued = continuedTechniques();
+      state.actions = state.actions.filter(function (action) {
+        return !action.continuedTechniqueKey || continued.has(action.continuedTechniqueKey) &&
+          (!action.combinationAction || state.actions.indexOf(action.combinationAction) !== -1);
+      });
+      var opening = state.actions.filter(function (action) { return action.startActiveEffect || action.continuedTechniqueKey; });
+      state.actions = opening.filter(function (action) { return action.startActiveEffect; })
+        .concat(opening.filter(function (action) { return action.continuedTechniqueKey; }),
+          state.actions.filter(function (action) { return !action.startActiveEffect && !action.continuedTechniqueKey; }));
+    }
     rebalanceFullConcentration();
     updateArtifactActionChecks();
     updateTurnEnhancementDamage();
@@ -3049,7 +3060,7 @@ function npcHtmlCode(node) {
     var isClonesTab = state.builderTab === 'clones';
     var isSituationsTab = state.builderTab === 'situations';
     var isEnvironmentTab = state.builderTab === 'environment';
-    state.nodes.builder.innerHTML = '<div class="aba-builder-tabs">' +
+    state.nodes.builder.innerHTML = '<section class="aba-action-editor aba-action-editor-direct" data-continued-techniques hidden></section><div class="aba-builder-tabs">' +
       '<button type="button" data-builder-tab="actions" class="' + (isActionsTab ? 'is-active' : '') + '">\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u044f</button>' +
       '<button type="button" data-builder-tab="techniques" class="' + (isTechniquesTab ? 'is-active' : '') + '">\u0422\u0435\u0445\u043d\u0438\u043a\u0438 \u043f\u0435\u0440\u0441\u043e\u043d\u0430\u0436\u0430</button>' +
       '<button type="button" data-builder-tab="situations" class="' + (isSituationsTab ? 'is-active' : '') + '">\u0411\u043e\u0435\u0432\u044b\u0435 \u0441\u0438\u0442\u0443\u0430\u0446\u0438\u0438</button>' +
@@ -3076,6 +3087,7 @@ function npcHtmlCode(node) {
         renderActionType(button.dataset.actionType);
       });
     });
+    renderContinuedTechniques();
     if (isTechniquesTab) renderTechniqueDirectory(state.nodes.builder.querySelector('.aba-builder-panel'));
     else if (isClonesTab) renderActiveClones();
     else if (isEnvironmentTab) renderEnvironmentEditor();
@@ -3459,7 +3471,7 @@ function npcHtmlCode(node) {
   }
 
   function renderEditor(action, selectedTechnique) {
-    var editor = state.nodes.builder.querySelector('.aba-action-editor');
+    var editor = state.nodes.builder.querySelector('.aba-builder-panel .aba-action-editor');
     if (!editor) return;
     if (action === 'create-clone') {
       renderCloneCreationEditor(editor); return;
@@ -3921,6 +3933,154 @@ function npcHtmlCode(node) {
     };
   }
 
+  function continuedTechniques() {
+    var continued = new Map();
+    state.actions.forEach(function (action) {
+      if (!/^technique:/.test(action.activeEffectKey || '')) return;
+      if (action.startActiveEffect) continued.set(action.activeEffectKey, action);
+      else continued.delete(action.activeEffectKey);
+    });
+    return continued;
+  }
+
+  function combinationElement(detail) {
+    var element = normalizeText(detail.element);
+    if (/\u0432\u043e\u0434[\u0430\u044b\u044f]|\u0432\u043e\u0434\u043d|suiton/.test(element)) return 'water';
+    if (/\u043c\u043e\u043b\u043d\u0438|raiton/.test(element)) return 'lightning';
+    if (/\u0432\u0435\u0442\u0435\u0440|\u0432\u0435\u0442\u0440\u0430|f[u\u016b]ton/.test(element)) return 'wind';
+    if (/\u043e\u0433\u043e\u043d\u044c|\u043e\u0433\u043d\u044f|katon/.test(element)) return 'fire';
+    return '';
+  }
+
+  function activeTechniqueAction(item, mode, editor, combination, rank) {
+    var calculation = techniqueCalculation(item, mode, rank);
+    var boost = mode === 'support' ? { chakra: 0, bonus: 0 } : techniqueChakraBoostData(editor, Object.assign({}, item, { rank: rank }), mode);
+    var power = calculation.power + boost.bonus;
+    var powerText = boost.bonus && /^\d+$/.test(calculation.powerText) ? String(power) :
+      calculation.powerText + (boost.bonus ? ' +' + boost.bonus : '');
+    var labels = { attack: '\u0410\u0442\u0430\u043a\u0430 \u0430\u043a\u0442\u0438\u0432\u043d\u043e\u0439 \u0442\u0435\u0445\u043d\u0438\u043a\u043e\u0439', defense: '\u0417\u0430\u0449\u0438\u0442\u0430 \u0430\u043a\u0442\u0438\u0432\u043d\u043e\u0439 \u0442\u0435\u0445\u043d\u0438\u043a\u043e\u0439', support: '\u042d\u0444\u0444\u0435\u043a\u0442 \u0430\u043a\u0442\u0438\u0432\u043d\u043e\u0439 \u0442\u0435\u0445\u043d\u0438\u043a\u0438' };
+    var check = techniqueCheck(item.detail);
+    var conditions = mode === 'attack' ? attackConditionData(editor) : { accuracy: 0, text: '', targetDodgePenalty: 0 };
+    var effect = mode === 'support' ? item.detail.effect : calculation.powerLabel;
+    var code = coloredTechniqueBbcode(item) + '; ' + effect +
+      (mode !== 'support' || clean(item.detail.power) ? ': ' + powerText : '');
+    if (mode === 'attack') code += '; ' + check.label + ': ' + (check.value + conditions.accuracy);
+    if (conditions.text) code += '; ' + conditions.text;
+    if (conditions.targetDodgePenalty) code += '; \u0438\u0442\u043e\u0433\u043e\u0432\u044b\u0439 \u0448\u0442\u0440\u0430\u0444 \u043a \u0443\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u044e \u0446\u0435\u043b\u0438: \u2212' + conditions.targetDodgePenalty;
+    if (boost.chakra) code += '; \u0443\u0441\u0438\u043b\u0435\u043d\u0438\u0435 \u0447\u0430\u043a\u0440\u043e\u0439: +' + boost.bonus;
+    var notes = calculation.notes.filter(function (note) { return !/^\u043e\u0436\u043e\u0433:/.test(note); });
+    if (mode === 'attack' && techniqueRuleProfile(item, mode).fire && /^\d+$/.test(powerText)) {
+      notes.push('\u043e\u0436\u043e\u0433: ' + combatRound(power * 0.1) + ' \u0443\u0440\u043e\u043d\u0430 \u0432 \u0445\u043e\u0434, 3 \u0445\u043e\u0434\u0430');
+    }
+    if (notes.length) code += '; ' + notes.join('; ');
+    if (combination) code += '; \u043a\u043e\u043c\u0431\u0438\u043d\u0430\u0446\u0438\u044f \u0441 \u00ab' + combination.summary + '\u00bb';
+    var key = 'technique:' + item.postId;
+    var action = { label: labels[mode], summary: item.name, code: code, link: item.url, od: 0, ot: 0,
+      chakraSpend: boost.chakra, techniqueUseKey: key, techniqueTurnLimit: techniqueTurnLimit(item.detail),
+      continuedTechniqueKey: key, effectiveRank: rank, combinationAction: combination,
+      attackFocus: mode === 'attack', counterAttack: mode === 'attack' && !!combatState().counterAttack };
+    if (mode === 'attack') attachCriticalAction(action, 'technique', {}, item.detail, power, 1, conditions);
+    return action;
+  }
+
+  function renderContinuedTechniques() {
+    var panel = state.nodes.builder && state.nodes.builder.querySelector('[data-continued-techniques]');
+    if (!panel || !state.character || state.actorScope) return;
+    var continued = continuedTechniques();
+    var entries = (state.character.techniques || []).filter(function (item) {
+      return item.detail && continued.has('technique:' + item.postId);
+    });
+    var weapons = state.actions.filter(function (action) {
+      return /^(?:\u0411\u043b\u0438\u0436\u043d\u0438\u0439 \u0431\u043e\u0439 \u0441 \u043e\u0440\u0443\u0436\u0438\u0435\u043c|\u0414\u0430\u043b\u044c\u043d\u0438\u0439 \u0431\u043e\u0439 \u0441 \u043e\u0440\u0443\u0436\u0438\u0435\u043c|\u0421\u0442\u0440\u0435\u043b\u044c\u0431\u0430|\u0410\u0442\u0430\u043a\u0430 \u043e\u0433\u043d\u0435\u0441\u0442\u0440\u0435\u043b\u044c\u043d\u044b\u043c \u043e\u0440\u0443\u0436\u0438\u0435\u043c)$/.test(action.label);
+    });
+    var signature = JSON.stringify([entries.map(function (item) {
+      return [item.postId, continued.get('technique:' + item.postId).effectiveRank];
+    }), weapons.map(function (action) { return [state.actions.indexOf(action), action.summary]; })]);
+    if (panel.dataset.signature === signature) return;
+    panel.dataset.signature = signature;
+    panel.hidden = !entries.length;
+    panel.innerHTML = entries.length ? '<h4>\u0410\u043a\u0442\u0438\u0432\u043d\u044b\u0435 \u0442\u0435\u0445\u043d\u0438\u043a\u0438</h4><div class="aba-option-grid"></div><div data-continued-editor></div>' : '';
+    entries.forEach(function (original) {
+      var key = 'technique:' + original.postId;
+      var category = techniqueCategory(original.detail);
+      var modes = [];
+      if (category.attack) modes.push(['attack', '\u0410\u0442\u0430\u043a\u0430']);
+      if (category.defense) modes.push(['defense', '\u0417\u0430\u0449\u0438\u0442\u0430']);
+      if (category.support || category.enhancement || !modes.length) modes.push(['support', '\u042d\u0444\u0444\u0435\u043a\u0442']);
+      modes.forEach(function (mode) {
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = mode[1] + ' \u00b7 ' + original.name;
+        panel.querySelector('.aba-option-grid').appendChild(button);
+        on(button, 'click', function () {
+          var support = continuedTechniques().get(key);
+          if (!support) return;
+          var item = Object.assign({}, original);
+          var editor = panel.querySelector('[data-continued-editor]');
+          var rank = support.effectiveRank || original.rank;
+          var element = combinationElement(item.detail);
+          var pair = { water: 'lightning', lightning: 'water', wind: 'fire', fire: 'wind' }[element];
+          var weaponCompatible = element === 'wind' || element === 'lightning';
+          var calculation;
+          try { calculation = techniqueCalculation(item, mode[0], rank); }
+          catch (error) { setBuilderMessage(error.message, 'error'); return; }
+          editor.className = 'aba-action-editor';
+          editor.innerHTML = '<h4>' + escapeHtml(button.textContent) + '</h4><p>' + escapeHtml(calculation.powerLabel + ': ' + calculation.powerText) + '</p>' +
+            (mode[0] === 'support' ? '' : techniqueChakraBoostFields(Object.assign({}, item, { rank: rank }), mode[0])) +
+            (mode[0] === 'attack' ? modifierBlock(attackContextFields(false)) : '') +
+            (pair || weaponCompatible ? '<label>\u041a\u043e\u043c\u0431\u0438\u043d\u0430\u0446\u0438\u044f<select data-continued-combination><option value="">\u0411\u0435\u0437 \u043a\u043e\u043c\u0431\u0438\u043d\u0430\u0446\u0438\u0438</option></select></label>' : '') +
+            (weaponCompatible && !weapons.length ? '<p class="aba-note">\u0414\u043b\u044f \u043a\u043e\u043c\u0431\u0438\u043d\u0430\u0446\u0438\u0438 \u0441 \u043e\u0440\u0443\u0436\u0438\u0435\u043c \u0441\u043d\u0430\u0447\u0430\u043b\u0430 \u0434\u043e\u0431\u0430\u0432\u044c\u0442\u0435 \u0430\u0442\u0430\u043a\u0443 \u043e\u0440\u0443\u0436\u0438\u0435\u043c \u0432 \u0445\u043e\u0434.</p>' : '') +
+            '<button class="aba-primary" type="button" data-add-continued>\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435</button>';
+          bindEditor(editor);
+          var select = editor.querySelector('[data-continued-combination]');
+          var options = [];
+          function addOption(entry, name) {
+            options.push(entry);
+            select.add(new Option(name, String(options.length)));
+          }
+          if (select && weaponCompatible) weapons.forEach(function (weapon) { addOption({ weapon: weapon }, '\u041e\u0440\u0443\u0436\u0438\u0435 \u00b7 ' + weapon.summary); });
+          if (select && pair) {
+            var pending = new Option('\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0441\u043e\u0432\u043c\u0435\u0441\u0442\u0438\u043c\u044b\u0445 \u0442\u0435\u0445\u043d\u0438\u043a\u2026', 'loading');
+            pending.disabled = true;
+            select.add(pending);
+            actorAll(state.character.techniques.filter(function (candidate) {
+              return candidate.postId !== original.postId;
+            }).map(function (candidate) {
+              return loadTechniqueDetail(candidate).then(function () { return candidate; }).catch(function () { return null; });
+            })).then(function (candidates) {
+              if (!select.isConnected) return;
+              pending.remove();
+              candidates.filter(function (candidate) {
+                return candidate && combinationElement(candidate.detail) === pair;
+              }).forEach(function (candidate) { addOption({ technique: candidate }, '\u0422\u0435\u0445\u043d\u0438\u043a\u0430 \u00b7 ' + candidate.name); });
+              if (!options.length) {
+                var empty = new Option('\u041d\u0435\u0442 \u0441\u043e\u0432\u043c\u0435\u0441\u0442\u0438\u043c\u044b\u0445 \u0442\u0435\u0445\u043d\u0438\u043a \u0438\u043b\u0438 \u0430\u0442\u0430\u043a', 'empty');
+                empty.disabled = true;
+                select.add(empty);
+              }
+            });
+          }
+          on(editor.querySelector('[data-add-continued]'), 'click', function () {
+            if (continuedTechniques().get(key) !== support) return setBuilderMessage('\u0421\u043d\u0430\u0447\u0430\u043b\u0430 \u043f\u0440\u043e\u0434\u043e\u043b\u0436\u0438\u0442\u0435 \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0443 \u0442\u0435\u0445\u043d\u0438\u043a\u0438.', 'error');
+            var option = select && options[Number(select.value) - 1];
+            var partner = option && option.weapon;
+            if (partner && state.actions.indexOf(partner) === -1) return setBuilderMessage('\u0414\u043e\u0431\u0430\u0432\u044c\u0442\u0435 \u0430\u0442\u0430\u043a\u0443 \u043e\u0440\u0443\u0436\u0438\u0435\u043c \u0432 \u0445\u043e\u0434.', 'error');
+            try {
+              if (option && option.technique) {
+                var partnerMode = techniqueCategory(option.technique.detail).attack ? 'attack' : techniqueCategory(option.technique.detail).defense ? 'defense' : 'support';
+                partner = situationTechniqueAction(option.technique, partnerMode, false);
+                partner.summary = option.technique.name;
+              }
+              var action = activeTechniqueAction(item, mode[0], editor, partner, rank);
+              if (option && option.technique) addSituationChain([partner, action]);
+              else addAction(action);
+            } catch (error) { setBuilderMessage(error.message, 'error'); }
+          });
+        });
+      });
+    });
+  }
+
   function renderActiveEffectsEditor(editor) {
     editor.innerHTML = '<h4>\u0420\u0430\u043d\u0435\u0435 \u0430\u043a\u0442\u0438\u0432\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u044b\u0435 \u0442\u0435\u0445\u043d\u0438\u043a\u0438 \u0438 \u0441\u043f\u043e\u0441\u043e\u0431\u043d\u043e\u0441\u0442\u0438</h4><p>\u041f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430 \u0442\u0435\u043a\u0443\u0449\u0435\u0433\u043e \u0445\u043e\u0434\u0430 \u0441\u043f\u0438\u0441\u044b\u0432\u0430\u0435\u0442\u0441\u044f \u0442\u043e\u043b\u044c\u043a\u043e \u0438\u0437 \u043e\u0431\u0449\u0435\u0433\u043e \u0437\u0430\u043f\u0430\u0441\u0430 \u0447\u0430\u043a\u0440\u044b. \u0415\u0451 \u0442\u0430\u043a\u0436\u0435 \u043c\u043e\u0436\u043d\u043e \u043f\u0440\u0435\u043a\u0440\u0430\u0442\u0438\u0442\u044c.</p><div class="aba-loading">\u041f\u043e\u0438\u0441\u043a \u044d\u0444\u0444\u0435\u043a\u0442\u043e\u0432 \u0441 \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u043e\u0439\u2026</div>';
     loadActiveEffectEntries().then(function (available) {
@@ -3939,6 +4099,10 @@ function npcHtmlCode(node) {
         var modifiers = !stopping ? enhancementModifierSummary(entry.item.detail) : '';
         detail.innerHTML = '<div class="aba-summary"><strong>' + escapeHtml(entry.item.name) + '</strong><span>\u041f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430: ' + escapeHtml(entry.item.detail.support) + '</span>' + (modifiers ? '<span>\u041c\u043e\u0434\u0438\u0444\u0438\u043a\u0430\u0442\u043e\u0440\u044b: ' + escapeHtml(modifiers) + '</span>' : '') + '<button class="aba-primary" type="button">' + (stopping ? '\u041f\u0440\u0435\u043a\u0440\u0430\u0442\u0438\u0442\u044c \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0443' : '\u041e\u043f\u043b\u0430\u0442\u0438\u0442\u044c \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0443 \u00b7 ' + support + ' \u0447\u0430\u043a\u0440\u044b') + '</button></div>';
         on(detail.querySelector('button'), 'click', function () {
+          var last = state.actions.filter(function (action) { return action.activeEffectKey === activeEffectKey(entry); }).slice(-1)[0];
+          if (!stopping && last && last.startActiveEffect) {
+            return setBuilderMessage('\u041f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430 \u0443\u0436\u0435 \u043e\u043f\u043b\u0430\u0447\u0435\u043d\u0430 \u0432 \u044d\u0442\u043e\u043c \u0445\u043e\u0434\u0443.', 'error');
+          }
           addAction(activeEffectAction(entry, stopping, false));
         });
       }
@@ -4986,7 +5150,7 @@ function npcHtmlCode(node) {
   function bindStartBuffs(node) {
     function refresh() {
       rebalanceActions(); renderCharacter();
-      var editor = state.nodes.builder && state.nodes.builder.querySelector('.aba-action-editor');
+      var editor = state.nodes.builder && state.nodes.builder.querySelector('.aba-builder-panel .aba-action-editor');
       if (editor && editor.querySelector('[data-add="dodge"]') && editor.querySelector('p')) editor.querySelector('p').innerHTML = '\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u0435\u043b\u044c: <b>\u0423\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u0435 ' + statValue('dodge') + '</b>.';
       if (editor && editor.querySelector('[data-add="ordinary-unarmed"]') && editor.querySelector('p')) editor.querySelector('p').innerHTML = '\u041f\u0440\u043e\u0432\u0435\u0440\u043a\u0430: <b>\u0410\u0442\u0430\u043a\u0430 \u0431\u043b\u0438\u0436\u043d\u0438\u0439 \u0431\u043e\u0439 ' + statValue('meleeAttack') + '</b>. \u0423\u0440\u043e\u043d \u0431\u0435\u0437 \u043e\u0440\u0443\u0436\u0438\u044f: <b>' + damageText('unarmedDamage') + '</b>.';
 
@@ -5258,6 +5422,7 @@ function npcHtmlCode(node) {
 
   function renderQueue() {
     if (state.actorScope) return;
+    renderContinuedTechniques();
     if (!state.nodes.queue) return;
     if (!state.actions.length) {
       state.nodes.queue.innerHTML = '<div class="aba-empty">\u0414\u043e\u0431\u0430\u0432\u043b\u0435\u043d\u043d\u044b\u0435 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f \u043f\u043e\u044f\u0432\u044f\u0442\u0441\u044f \u0437\u0434\u0435\u0441\u044c \u0432 \u043f\u043e\u0440\u044f\u0434\u043a\u0435 \u0432\u044b\u043f\u043e\u043b\u043d\u0435\u043d\u0438\u044f.</div>';
