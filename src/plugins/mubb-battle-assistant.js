@@ -1,4 +1,4 @@
-// mubb-battle-assistant ver 71
+// mubb-battle-assistant ver 72
 (function () {
   'use strict';
 /* CHARACTER_TEMPLATE_START */
@@ -2417,12 +2417,17 @@ function npcHtmlCode(node) {
   function updateTurnEnhancementDamage() {
     state.actions.forEach(function (action) {
       if (!action.turnDamageType) return;
-      var damage = action.damageWeapon ? weaponAttackDamage(action.damageWeapon) : damageText('unarmedDamage');
+      var thrown = action.throwCount > 0;
+      var damage = thrown ? thrownWeaponDamage(action.damageWeapon, action.throwCount) :
+        action.damageWeapon ? weaponAttackDamage(action.damageWeapon) : damageText('unarmedDamage');
+      var critical = action.criticalData;
+      if (thrown && critical && critical.chance) critical.criticalDamage = weaponCriticalDamage(arithmeticExpressionNumber(damage, 0), action.criticalSource);
       var strengthBonus = action.turnDamageType === 'strength' ? turnEnhancementAmount('strength') * 10 : 0;
       if (strengthBonus) damage += ' +' + strengthBonus;
       ['code', 'baseCode', 'summary', 'baseSummary'].forEach(function (field) {
         if (!action[field]) return;
         action[field] = action[field].replace(/((?:\u0443\u0440\u043e\u043d \u0431\u0435\u0437 \u043e\u0440\u0443\u0436\u0438\u044f|\u0443\u0440\u043e\u043d \u043e\u0442 \u0430\u0442\u0430\u043a\u0438 \u043e\u0440\u0443\u0436\u0438\u0435\u043c|\u0443\u0440\u043e\u043d)\s*:\s*|, \u0443\u0440\u043e\u043d )([^;]*)/i, function (_, label) { return label + damage; });
+        if (thrown && critical && critical.chance) action[field] = action[field].replace(/(\u043a\u0440\u0438\u0442\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u0443\u0440\u043e\u043d:\s*)\d+/i, function (_, label) { return label + critical.criticalDamage; });
       });
     });
   }
@@ -2542,6 +2547,12 @@ function npcHtmlCode(node) {
     return appendDamageModifier(String(Math.max(0, value)), 'weaponDamage');
   }
 
+  function thrownWeaponDamage(text, count) {
+    var damage = equipmentDamage(text || '\u0443\u0440\u043e\u043d \u043d\u0435 \u0443\u043a\u0430\u0437\u0430\u043d');
+    if (!/\d/.test(damage)) return damage;
+    return appendDamageModifier(String(Math.max(0, arithmeticExpressionNumber(damage, 0)) * count), 'weaponDamage');
+  }
+
   function selectedWeaponVariant(weapon, editor) {
     var select = editor.querySelector('[data-field="weapon-variant"]');
     if (!select) return weapon;
@@ -2616,6 +2627,12 @@ function npcHtmlCode(node) {
     return divisor && chance > 0 ? Math.max(1, Math.floor(chance / divisor)) : 0;
   }
 
+  function weaponCriticalDamage(normalDamage, source) {
+    var explicit = clean(source && source.critical).replace(/\([^)]*(?:\u0432\u0435\u0440\u043e\u044f\u0442\u043d\u043e\u0441\u0442|\u0448\u0430\u043d\u0441)[^)]*\)/gi, '');
+    var extra = explicit && /\d/.test(explicit) ? arithmeticExpressionNumber(equipmentDamage(explicit), 0) : 0;
+    return extra > 0 ? combatRound(normalDamage + extra) : combatRound(normalDamage * 1.5);
+  }
+
   function criticalAttackData(type, source, detail, damage, count, conditions) {
     if (!combatState().criticalEnabled) return null;
     var taijutsu = statValue('taijutsu'), ninjutsu = statValue('ninjutsu');
@@ -2632,9 +2649,7 @@ function npcHtmlCode(node) {
     var normalDamage = Math.max(0, arithmeticExpressionNumber(String(damage || 0), Number(damage) || 0));
     var criticalDamage;
     if (type === 'weapon') {
-      var explicit = clean(source && source.critical).replace(/\([^)]*(?:\u0432\u0435\u0440\u043e\u044f\u0442\u043d\u043e\u0441\u0442|\u0448\u0430\u043d\u0441)[^)]*\)/gi, '');
-      var extra = explicit && /\d/.test(explicit) ? arithmeticExpressionNumber(equipmentDamage(explicit), 0) : 0;
-      criticalDamage = extra > 0 ? combatRound(normalDamage + extra) : combatRound(normalDamage * 1.5);
+      criticalDamage = weaponCriticalDamage(normalDamage, source);
     } else if (type === 'unarmed') criticalDamage = combatRound(normalDamage * (taijutsu >= 8 ? 2 : 1.5));
     else {
       var ownFormula = techniqueText.match(/\u043a\u0440\u0438\u0442\u0438\u0447\u0435\u0441\u043a[\u0430-\u044f]*\s+\u0443\u0440\u043e\u043d[^\d]{0,20}(\d+(?:[.,]\d+)?)\s*%/i);
@@ -4474,10 +4489,11 @@ function npcHtmlCode(node) {
       var rangedConditions = kind === 'ordinary-ranged' ? attackConditionData(editor) : { accuracy: 0, targetDodgePenalty: 0, text: '' };
       var rangedLabel = kind === 'ordinary-ranged' ? '\u0414\u0430\u043b\u044c\u043d\u0438\u0439 \u0431\u043e\u0439 \u0441 \u043e\u0440\u0443\u0436\u0438\u0435\u043c' : '\u0417\u0430\u0449\u0438\u0442\u0430 \u0434\u0430\u043b\u044c\u043d\u0435\u0433\u043e \u0431\u043e\u044f';
       var rangedBoost = enhancementData(editor, kind === 'ordinary-ranged' ? 'ranged-attack' : 'ranged-defense', ranged);
+      var rangedDamage = thrownWeaponDamage(ranged.damage, count);
       var rangedCounter = kind === 'ordinary-ranged' && !!combatState().counterAttack;
       var rangedValue = statValue('rangedAttack') - penalty + rangedConditions.accuracy + rangedBoost.check;
       var rangedPenaltyText = [maximumHands ? '\u043f\u043e \u0447\u0435\u0442\u044b\u0440\u0435 \u0435\u0434\u0438\u043d\u0438\u0446\u044b: \u2212' + maximumHands + ' \u043a \u0442\u043e\u0447\u043d\u043e\u0441\u0442\u0438' : '', hand === 'off' || hand === 'both' ? '\u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u0430\u044f \u0440\u0443\u043a\u0430: \u22121 \u043a \u0442\u043e\u0447\u043d\u043e\u0441\u0442\u0438' : ''].filter(Boolean).join('; ');
-      action = { label: rangedLabel, od: 1, ot: 0, summary: ranged.name + ' \u00d7' + count + ', \u0430\u0442\u0430\u043a\u0430 ' + rangedValue, code: ranged.name + ' \u00d7' + count + ' (' + (hand === 'off' ? '\u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u0430\u044f \u0440\u0443\u043a\u0430' : hand === 'both' ? '\u043e\u0431\u0435 \u0440\u0443\u043a\u0438' : '\u043e\u0441\u043d\u043e\u0432\u043d\u0430\u044f \u0440\u0443\u043a\u0430') + '); \u0410\u0442\u0430\u043a\u0430 \u043d\u0430 \u0434\u0438\u0441\u0442\u0430\u043d\u0446\u0438\u0438: ' + rangedValue + (rangedPenaltyText ? '; ' + rangedPenaltyText : '') + (rangedConditions.text ? '; ' + rangedConditions.text : '') + (rangedConditions.targetDodgePenalty ? '; \u0438\u0442\u043e\u0433\u043e\u0432\u044b\u0439 \u0448\u0442\u0440\u0430\u0444 \u043a \u0443\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u044e \u0446\u0435\u043b\u0438: \u2212' + rangedConditions.targetDodgePenalty : '') + (kind === 'ordinary-ranged' ? '; \u0443\u0440\u043e\u043d: ' + weaponAttackDamage(ranged.damage) + (rangedBoost.damage ? ' +' + rangedBoost.damage : '') : '') + (rangedBoost.defense ? '; \u0437\u0430\u0449\u0438\u0442\u0430: ' + (statValue('defense') + rangedBoost.defense) : '') + (rangedBoost.text ? '; ' + rangedBoost.text : ''), attackFocus: kind === 'ordinary-ranged', counterAttack: rangedCounter, chakraSpend: rangedBoost.chakra, enhancementType: rangedBoost.enabled ? rangedBoost.type : '' };
+      action = { label: rangedLabel, od: 1, ot: 0, summary: ranged.name + ' \u00d7' + count + ', \u0430\u0442\u0430\u043a\u0430 ' + rangedValue, code: ranged.name + ' \u00d7' + count + ' (' + (hand === 'off' ? '\u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u0430\u044f \u0440\u0443\u043a\u0430' : hand === 'both' ? '\u043e\u0431\u0435 \u0440\u0443\u043a\u0438' : '\u043e\u0441\u043d\u043e\u0432\u043d\u0430\u044f \u0440\u0443\u043a\u0430') + '); \u0410\u0442\u0430\u043a\u0430 \u043d\u0430 \u0434\u0438\u0441\u0442\u0430\u043d\u0446\u0438\u0438: ' + rangedValue + (rangedPenaltyText ? '; ' + rangedPenaltyText : '') + (rangedConditions.text ? '; ' + rangedConditions.text : '') + (rangedConditions.targetDodgePenalty ? '; \u0438\u0442\u043e\u0433\u043e\u0432\u044b\u0439 \u0448\u0442\u0440\u0430\u0444 \u043a \u0443\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u044e \u0446\u0435\u043b\u0438: \u2212' + rangedConditions.targetDodgePenalty : '') + (kind === 'ordinary-ranged' ? '; \u0443\u0440\u043e\u043d: ' + rangedDamage : '') + (rangedBoost.defense ? '; \u0437\u0430\u0449\u0438\u0442\u0430: ' + (statValue('defense') + rangedBoost.defense) : '') + (rangedBoost.text ? '; ' + rangedBoost.text : ''), attackFocus: kind === 'ordinary-ranged', counterAttack: rangedCounter, chakraSpend: rangedBoost.chakra, enhancementType: rangedBoost.enabled ? rangedBoost.type : '' };
     } else if (kind === 'dodge') {
       var dodgeBoost = enhancementData(editor, 'dodge');
       var kaguraDodge = hasPassiveAbility('kaguraEye') ? Number((editor.querySelector('[data-field="kagura-dodge"]') || {}).value || 0) : 0;
@@ -4704,7 +4720,11 @@ function npcHtmlCode(node) {
         }
         if (kind === 'ordinary-unarmed') attachCriticalAction(action, 'unarmed', {}, null, damageText('unarmedDamage'), 1, unarmedConditions);
         if (kind === 'ordinary-melee') attachCriticalAction(action, 'weapon', melee.source || {}, null, meleeDamage, 1, meleeConditions);
-        if (kind === 'ordinary-ranged') attachCriticalAction(action, 'weapon', ranged.source || {}, null, weaponAttackDamage(ranged.damage), count, rangedConditions);
+        if (kind === 'ordinary-ranged') {
+          action.throwCount = count;
+          action.criticalSource = ranged.source || {};
+          attachCriticalAction(action, 'weapon', action.criticalSource, null, rangedDamage, count, rangedConditions);
+        }
         if (kind === 'ordinary-firearm') attachCriticalAction(action, 'weapon', firearm.source || {}, null, firearmDamage, 1, firearmConditions);
         if (kind === 'ordinary-shooting') attachCriticalAction(action, 'weapon', shootingAmmo || {}, null, shootingDamage, shootingCount, shootingConditions);
         action.baseCode = action.code;
