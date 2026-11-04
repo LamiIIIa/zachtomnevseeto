@@ -1,4 +1,4 @@
-// mubb-battle-assistant ver 70
+// mubb-battle-assistant ver 71
 (function () {
   'use strict';
 /* CHARACTER_TEMPLATE_START */
@@ -1613,7 +1613,7 @@ function npcHtmlCode(node) {
       labeledValue(text, '\u0427\u0430\u043a\u0440\u0430', ['\u041f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430', '\u0422\u0438\u043f \u044d\u0444\u0444\u0435\u043a\u0442\u0430', '\u0423\u0440\u043e\u043d', '\u0414\u0430\u043b\u044c\u043d\u043e\u0441\u0442\u044c', '\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435', '\u041f\u0440\u0438\u043c\u0435\u0447\u0430\u043d\u0438\u0435']);
     var support = labeledValue(text, '\u041f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430 \u0442\u0435\u0445\u043d\u0438\u043a\u0438', ['\u0422\u0438\u043f \u044d\u0444\u0444\u0435\u043a\u0442\u0430', '\u0423\u0440\u043e\u043d', '\u0414\u0430\u043b\u044c\u043d\u043e\u0441\u0442\u044c', '\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435', '\u041f\u0440\u0438\u043c\u0435\u0447\u0430\u043d\u0438\u0435', '\u041f\u0440\u043e\u0432\u0435\u0440\u043a\u0430', '\u0422\u0440\u0435\u0431\u043e\u0432\u0430\u043d\u0438\u044f', '\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0438']) ||
       labeledValue(text, '\u041f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430', ['\u0422\u0438\u043f \u044d\u0444\u0444\u0435\u043a\u0442\u0430', '\u0423\u0440\u043e\u043d', '\u0414\u0430\u043b\u044c\u043d\u043e\u0441\u0442\u044c', '\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435', '\u041f\u0440\u0438\u043c\u0435\u0447\u0430\u043d\u0438\u0435', '\u041f\u0440\u043e\u0432\u0435\u0440\u043a\u0430', '\u0422\u0440\u0435\u0431\u043e\u0432\u0430\u043d\u0438\u044f', '\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0438']);
-    var block = labeledValue(text, '\u0412\u0438\u0434', ['\u0420\u0430\u043d\u0433', '\u0421\u0442\u0438\u0445\u0438\u044f \u0447\u0430\u043a\u0440\u044b', '\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u0447\u0430\u043a\u0440\u044b', '\u041f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430', '\u0422\u0438\u043f \u044d\u0444\u0444\u0435\u043a\u0442\u0430']);
+    var block = labeledValue(text, '\u0412\u0438\u0434', ['\u041a\u043b\u0430\u0441\u0441(?: \u0442\u0435\u0445\u043d\u0438\u043a\u0438)?', '\u0420\u0430\u043d\u0433', '\u0421\u0442\u0438\u0445\u0438\u044f \u0447\u0430\u043a\u0440\u044b', '\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u0447\u0430\u043a\u0440\u044b', '\u041f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430', '\u0422\u0438\u043f \u044d\u0444\u0444\u0435\u043a\u0442\u0430']);
     var normalizedText = text.toLocaleLowerCase('ru').replace(/\u0451/g, '\u0435');
     return {
       text: text,
@@ -1626,6 +1626,7 @@ function npcHtmlCode(node) {
       chakra: chakra,
       support: support,
       block: block,
+      techniqueClass: labeledValue(text, '\u041a\u043b\u0430\u0441\u0441(?: \u0442\u0435\u0445\u043d\u0438\u043a\u0438)?', ['\u0412\u0438\u0434', '\u0420\u0430\u043d\u0433', '\u0421\u0442\u0438\u0445\u0438\u044f(?: \u0447\u0430\u043a\u0440\u044b)?', '\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u0447\u0430\u043a\u0440\u044b', '\u0420\u0430\u0441\u0445\u043e\u0434 \u0447\u0430\u043a\u0440\u044b', '\u041f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430', '\u0422\u0438\u043f \u044d\u0444\u0444\u0435\u043a\u0442\u0430', '\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435']) || block,
       discount: /(?:^|[^\d])[-]\s*1\s*\u043e\u0442(?=$|[^a-z\u0430-\u044f0-9])/i.test(normalizedText) ? 1 : 0,
       html: content.innerHTML,
       technique: technique
@@ -4033,14 +4034,28 @@ function npcHtmlCode(node) {
 
   function renderTechniqueDirectory(panel) {
     var techniques = state.character.techniques || [];
-    panel.innerHTML = '<div class="aba-action-editor aba-action-editor-direct"><h4>\u0422\u0435\u0445\u043d\u0438\u043a\u0438 \u043f\u0435\u0440\u0441\u043e\u043d\u0430\u0436\u0430</h4><label>\u041f\u043e\u0438\u0441\u043a \u043f\u043e \u0432\u0441\u0435\u043c \u0440\u0430\u043d\u0433\u0430\u043c<input type="search" data-technique-directory-search placeholder="\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0442\u0435\u0445\u043d\u0438\u043a\u0438"></label><p>\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u043d\u0430 \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0438\u043b\u0438 \u0432\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0440\u0430\u0437\u0434\u0435\u043b, \u0447\u0442\u043e\u0431\u044b \u043e\u0442\u043a\u0440\u044b\u0442\u044c \u0442\u0435\u0445\u043d\u0438\u043a\u0443 \u0432 \u0444\u043e\u0440\u043c\u0435 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f.</p><div data-technique-directory-list></div><p class="aba-empty" data-technique-directory-empty hidden></p></div>';
+    panel.innerHTML = '<div class="aba-action-editor aba-action-editor-direct"><h4>\u0422\u0435\u0445\u043d\u0438\u043a\u0438 \u043f\u0435\u0440\u0441\u043e\u043d\u0430\u0436\u0430</h4><label>\u041f\u043e\u0438\u0441\u043a \u043f\u043e \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u044e<input type="search" data-technique-directory-search placeholder="\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0442\u0435\u0445\u043d\u0438\u043a\u0438"></label><div class="aba-inline"><label>\u0420\u0430\u043d\u0433<select data-technique-directory-rank><option value="">\u0412\u0441\u0435 \u0440\u0430\u043d\u0433\u0438</option></select></label><label>\u041a\u043b\u0430\u0441\u0441 \u0442\u0435\u0445\u043d\u0438\u043a\u0438<select data-technique-directory-class><option value="">\u0412\u0441\u0435 \u043a\u043b\u0430\u0441\u0441\u044b</option></select></label></div><p>\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u043d\u0430 \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0438\u043b\u0438 \u0432\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0440\u0430\u0437\u0434\u0435\u043b, \u0447\u0442\u043e\u0431\u044b \u043e\u0442\u043a\u0440\u044b\u0442\u044c \u0442\u0435\u0445\u043d\u0438\u043a\u0443 \u0432 \u0444\u043e\u0440\u043c\u0435 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f.</p><div data-technique-directory-list></div><p class="aba-empty" data-technique-directory-empty hidden></p></div>';
     var search = panel.querySelector('[data-technique-directory-search]');
+    var rankFilter = panel.querySelector('[data-technique-directory-rank]');
+    var classFilter = panel.querySelector('[data-technique-directory-class]');
+    var classes = new Map();
+    function registerClass(label) {
+      var key = normalizeText(label);
+      if (!key || classes.has(key)) return;
+      classes.set(key, label);
+      var selected = classFilter.value;
+      classFilter.options.length = 1;
+      Array.from(classes.entries()).sort(function (a, b) { return a[1].localeCompare(b[1], 'ru'); })
+        .forEach(function (entry) { classFilter.add(new Option(entry[1], entry[0])); });
+      classFilter.value = selected;
+    }
     var list = panel.querySelector('[data-technique-directory-list]');
     var empty = panel.querySelector('[data-technique-directory-empty]');
     var groups = [];
     RANKS.forEach(function (rank) {
       var items = techniques.filter(function (item) { return item.rank === rank; });
       if (!items.length) return;
+      rankFilter.add(new Option(rank, rank));
       var group = document.createElement('section');
       group.innerHTML = '<h4>\u0420\u0430\u043d\u0433 ' + rank + '</h4>';
       list.appendChild(group);
@@ -4052,6 +4067,7 @@ function npcHtmlCode(node) {
         var title = row.querySelector('[data-directory-technique]');
         var links = row.querySelector('.aba-directory-routes');
         var routes = [];
+        var entry = { node: row, name: normalizeText(item.name), classes: [] };
         function open(route) {
           state.builderTab = 'actions';
           renderActionMenu(route);
@@ -4059,6 +4075,10 @@ function npcHtmlCode(node) {
         on(title, 'click', function () { if (routes.length) open(routes[0]); });
         function showRoutes(failed) {
           if (!row.isConnected) return;
+          var classLabel = clean(item.detail && (item.detail.techniqueClass || item.detail.block));
+          entry.classes = classLabel.split(/[,;/]/).map(function (label) { return clean(label); }).filter(Boolean);
+          entry.classes.forEach(registerClass);
+          if (classFilter.value) filter();
           routes = techniqueDestinations(item);
           links.textContent = '';
           title.disabled = !routes.length;
@@ -4084,9 +4104,9 @@ function npcHtmlCode(node) {
           loadTechniqueDetail(item).then(function () { showRoutes(false); }).catch(function () { showRoutes(true); });
         }
         load();
-        return { node: row, name: normalizeText(item.name) };
+        return entry;
       });
-      groups.push({ node: group, rows: rows });
+      groups.push({ node: group, rank: rank, rows: rows });
     });
     function filter() {
       var query = normalizeText(search.value);
@@ -4094,16 +4114,20 @@ function npcHtmlCode(node) {
       groups.forEach(function (group) {
         var matches = 0;
         group.rows.forEach(function (row) {
-          row.node.hidden = row.name.indexOf(query) === -1;
+          row.node.hidden = row.name.indexOf(query) === -1 ||
+            !!rankFilter.value && group.rank !== rankFilter.value ||
+            !!classFilter.value && !row.classes.some(function (label) { return normalizeText(label) === classFilter.value; });
           if (!row.node.hidden) matches++;
         });
         group.node.hidden = !matches;
         count += matches;
       });
       empty.hidden = count > 0;
-      empty.textContent = techniques.length ? '\u041f\u043e \u044d\u0442\u043e\u043c\u0443 \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u044e \u043d\u0438\u0447\u0435\u0433\u043e \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e.' : '\u0412 \u043b\u0438\u0447\u043d\u043e\u043c \u0434\u0435\u043b\u0435 \u043d\u0435\u0442 \u0442\u0435\u0445\u043d\u0438\u043a.';
+      empty.textContent = techniques.length ? '\u041f\u043e \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u043c \u0444\u0438\u043b\u044c\u0442\u0440\u0430\u043c \u043d\u0438\u0447\u0435\u0433\u043e \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e.' : '\u0412 \u043b\u0438\u0447\u043d\u043e\u043c \u0434\u0435\u043b\u0435 \u043d\u0435\u0442 \u0442\u0435\u0445\u043d\u0438\u043a.';
     }
     on(search, 'input', filter);
+    on(rankFilter, 'change', filter);
+    on(classFilter, 'change', filter);
     filter();
   }
 
