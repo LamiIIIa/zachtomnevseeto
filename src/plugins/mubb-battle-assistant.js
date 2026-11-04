@@ -1,4 +1,4 @@
-// mubb-battle-assistant ver 69
+// mubb-battle-assistant ver 70
 (function () {
   'use strict';
 /* CHARACTER_TEMPLATE_START */
@@ -3021,23 +3021,26 @@ function npcHtmlCode(node) {
     };
   }
 
-  function renderActionMenu() {
+  function renderActionMenu(destination) {
     if (!state.nodes.builder) return;
     if (!state.character) {
       state.nodes.builder.innerHTML = '<div class="aba-empty">\u0421\u043d\u0430\u0447\u0430\u043b\u0430 \u0432\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u043b\u0438\u0447\u043d\u043e\u0435 \u0434\u0435\u043b\u043e \u043f\u0435\u0440\u0441\u043e\u043d\u0430\u0436\u0430.</div>';
       return;
     }
     state.builderTab = state.builderTab || 'actions';
+    var isTechniquesTab = state.builderTab === 'techniques';
+    var isActionsTab = state.builderTab === 'actions';
     var isClonesTab = state.builderTab === 'clones';
     var isSituationsTab = state.builderTab === 'situations';
     var isEnvironmentTab = state.builderTab === 'environment';
     state.nodes.builder.innerHTML = '<div class="aba-builder-tabs">' +
-      '<button type="button" data-builder-tab="actions" class="' + (isSituationsTab || isEnvironmentTab || isClonesTab ? '' : 'is-active') + '">\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u044f</button>' +
+      '<button type="button" data-builder-tab="actions" class="' + (isActionsTab ? 'is-active' : '') + '">\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u044f</button>' +
+      '<button type="button" data-builder-tab="techniques" class="' + (isTechniquesTab ? 'is-active' : '') + '">\u0422\u0435\u0445\u043d\u0438\u043a\u0438 \u043f\u0435\u0440\u0441\u043e\u043d\u0430\u0436\u0430</button>' +
       '<button type="button" data-builder-tab="situations" class="' + (isSituationsTab ? 'is-active' : '') + '">\u0411\u043e\u0435\u0432\u044b\u0435 \u0441\u0438\u0442\u0443\u0430\u0446\u0438\u0438</button>' +
       '<button type="button" data-builder-tab="environment" class="' + (isEnvironmentTab ? 'is-active' : '') + '">\u041e\u0431\u0441\u0442\u043e\u044f\u0442\u0435\u043b\u044c\u0441\u0442\u0432\u0430 \u043e\u043a\u0440\u0443\u0436\u0435\u043d\u0438\u044f</button>' +
       '<button type="button" data-builder-tab="clones" class="' + (isClonesTab ? 'is-active' : '') + '">\u0421\u043f\u0443\u0442\u043d\u0438\u043a\u0438 \u0438 \u043a\u043b\u043e\u043d\u044b</button>' +
       '</div>' +
-      '<div class="aba-action-types' + (isSituationsTab || isEnvironmentTab || isClonesTab ? ' is-hidden' : '') + '">' +
+      '<div class="aba-action-types' + (isActionsTab ? '' : ' is-hidden') + '">' +
       '<button type="button" data-action-type="attack"><span>\u0410\u0442\u0430\u043a\u043e\u0432\u0430\u0442\u044c</span><small>\u041e\u0431\u044b\u0447\u043d\u0430\u044f \u0430\u0442\u0430\u043a\u0430, \u0442\u0435\u0445\u043d\u0438\u043a\u0430 \u0438\u043b\u0438 \u0441\u043f\u0443\u0442\u043d\u0438\u043a</small></button>' +
       '<button type="button" data-action-type="defense"><span>\u0417\u0430\u0449\u0438\u0442\u0438\u0442\u044c\u0441\u044f</span><small>\u0423\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u0435, \u0431\u043b\u043e\u043a \u0438\u043b\u0438 \u0442\u0435\u0445\u043d\u0438\u043a\u0430</small></button>' +
       '<button type="button" data-action-type="support"><span>\u041f\u043e\u0434\u0433\u043e\u0442\u043e\u0432\u0438\u0442\u044c\u0441\u044f</span><small>\u041f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430, \u043f\u0440\u0435\u0434\u043c\u0435\u0442\u044b \u0438 \u043f\u0440\u0438\u0437\u044b\u0432</small></button>' +
@@ -3057,10 +3060,15 @@ function npcHtmlCode(node) {
         renderActionType(button.dataset.actionType);
       });
     });
-    if (isClonesTab) renderActiveClones();
+    if (isTechniquesTab) renderTechniqueDirectory(state.nodes.builder.querySelector('.aba-builder-panel'));
+    else if (isClonesTab) renderActiveClones();
     else if (isEnvironmentTab) renderEnvironmentEditor();
     else if (isSituationsTab) renderActionType('situations');
-    else renderActionType('attack');
+    else {
+      var type = destination ? destination.type : 'attack';
+      if (destination) state.nodes.builder.querySelector('[data-action-type="' + type + '"]').classList.add('is-active');
+      renderActionType(type, destination);
+    }
   }
 
   function renderEnvironmentEditor() {
@@ -3130,7 +3138,7 @@ function npcHtmlCode(node) {
     return '<div class="aba-action-intro"><strong>' + escapeHtml(info[0]) + '</strong><p>' + escapeHtml(info[1]) + '</p></div>';
   }
 
-  function renderActionType(type) {
+  function renderActionType(type, destination) {
     var panel = state.nodes.builder.querySelector('.aba-builder-panel');
     if (type === 'active-effects') {
       panel.innerHTML = actionTypeIntro(type) + '<div class="aba-action-editor aba-action-editor-direct"></div><div class="aba-builder-message" aria-live="polite"></div>';
@@ -3220,9 +3228,21 @@ function npcHtmlCode(node) {
       on(button, 'click', function () {
         Array.prototype.forEach.call(panel.querySelectorAll('[data-action]'), function (item) { item.classList.toggle('is-active', item === button); });
         if (button.dataset.action === 'companion') { state.builderTab = 'clones'; renderActionMenu(); return; }
-        renderEditor(button.dataset.action);
+        var selected = destination && destination.action === button.dataset.action ? destination.technique : null;
+        destination = null;
+        renderEditor(button.dataset.action, selected);
       });
     });
+    if (destination) {
+      var target = panel.querySelector('[data-action="' + destination.action + '"]');
+      if (target) {
+        target.click();
+        var editor = panel.querySelector('.aba-action-editor');
+        editor.tabIndex = -1;
+        editor.focus({ preventScroll: true });
+        editor.scrollIntoView({ block: 'nearest' });
+      }
+    }
   }
 
   function situationCloneAllowed(item) {
@@ -3422,7 +3442,7 @@ function npcHtmlCode(node) {
     }).catch(function (error) { status.textContent = '\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u043f\u043e\u0441\u0442: ' + error.message; status.className = 'aba-enemy-load-status aba-error'; });
   }
 
-  function renderEditor(action) {
+  function renderEditor(action, selectedTechnique) {
     var editor = state.nodes.builder.querySelector('.aba-action-editor');
     if (!editor) return;
     if (action === 'create-clone') {
@@ -3491,7 +3511,7 @@ function npcHtmlCode(node) {
     } else if (action === 'active-effects') {
       renderActiveEffectsEditor(editor);
     } else if (action === 'illusion-release' || action === 'chakra-transfer' || action === 'healing') {
-      renderSpecialTechniqueEditor(editor, action);
+      renderSpecialTechniqueEditor(editor, action, selectedTechnique);
     } else if (action === 'received-healing' || action === 'received-wound') {
       var enemyTop = action === 'received-wound' ? '<div class="aba-inline aba-enemy-load"><label>\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u043f\u043e\u0441\u0442 \u043f\u0440\u043e\u0442\u0438\u0432\u043d\u0438\u043a\u0430<input data-field="enemy-post" type="url" placeholder="https://\u2026#p\u2026"></label><button class="aba-refresh" type="button" data-load-enemy-post>\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c</button></div><div class="aba-enemy-load-status" aria-live="polite"></div><label>\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u044f \u043f\u0440\u043e\u0442\u0438\u0432\u043d\u0438\u043a\u0430 \u0438\u0437 \u043f\u043e\u0441\u0442\u0430<textarea data-field="enemy-actions" rows="3" placeholder="\u041f\u043e\u0441\u043b\u0435 \u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0438 \u043e\u0442\u043c\u0435\u0442\u044c\u0442\u0435 \u043d\u0443\u0436\u043d\u044b\u0435 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f \u043d\u0438\u0436\u0435"></textarea></label><div class="aba-enemy-actions-found"></div>' : '';
       editor.innerHTML = '<h4>' + (action === 'received-healing' ? '\u041f\u043e\u043b\u0443\u0447\u0435\u043d\u043e \u043b\u0435\u0447\u0435\u043d\u0438\u0435' : '\u041f\u043e\u043b\u0443\u0447\u0435\u043d\u043e \u0440\u0430\u043d\u0435\u043d\u0438\u0435') + '</h4><p>' + (action === 'received-healing' ? '\u041b\u0435\u0447\u0435\u043d\u0438\u0435 \u0443\u0432\u0435\u043b\u0438\u0447\u0438\u0442 HP, \u043d\u043e \u043d\u0435 \u0432\u044b\u0448\u0435 \u043c\u0430\u043a\u0441\u0438\u043c\u0430\u043b\u044c\u043d\u043e\u0433\u043e \u0437\u043d\u0430\u0447\u0435\u043d\u0438\u044f.' : '\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u0435 \u043f\u043e\u0441\u0442 \u043f\u0440\u043e\u0442\u0438\u0432\u043d\u0438\u043a\u0430 \u0438 \u043e\u0442\u043c\u0435\u0442\u044c\u0442\u0435 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f, \u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u043d\u0430\u043d\u0435\u0441\u043b\u0438 \u0443\u0440\u043e\u043d, \u043b\u0438\u0431\u043e \u0437\u0430\u043f\u043e\u043b\u043d\u0438\u0442\u0435 \u0437\u043d\u0430\u0447\u0435\u043d\u0438\u044f \u0432\u0440\u0443\u0447\u043d\u0443\u044e.') + '</p>' + enemyTop + '<label>\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e HP / \u0432\u0445\u043e\u0434\u044f\u0449\u0438\u0439 \u0443\u0440\u043e\u043d<input data-field="hp-amount" type="number" min="1" step="1" value="1"></label>' + (action === 'received-wound' ? '<label>\u0422\u0438\u043f \u0432\u0445\u043e\u0434\u044f\u0449\u0435\u0439 \u0430\u0442\u0430\u043a\u0438<select data-field="incoming-attack-type"><option value="technique">\u0422\u0435\u0445\u043d\u0438\u043a\u0430 \u0438\u043b\u0438 \u0434\u0440\u0443\u0433\u043e\u0439 \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a</option><option value="unarmed">\u0420\u0443\u043a\u043e\u043f\u0430\u0448\u043d\u0430\u044f \u0430\u0442\u0430\u043a\u0430 \u0431\u0435\u0437 \u043e\u0440\u0443\u0436\u0438\u044f</option><option value="weapon">\u041e\u0431\u044b\u0447\u043d\u0430\u044f \u0430\u0442\u0430\u043a\u0430 \u043e\u0440\u0443\u0436\u0438\u0435\u043c</option><option value="ranged">\u041e\u0431\u044b\u0447\u043d\u0430\u044f \u0434\u0430\u043b\u044c\u043d\u044f\u044f \u0430\u0442\u0430\u043a\u0430 \u043e\u0440\u0443\u0436\u0438\u0435\u043c</option></select></label><label class="aba-check"><input type="checkbox" data-field="incoming-hidden"><span>\u0421\u043a\u0440\u044b\u0442\u0430\u044f \u0440\u0443\u043a\u043e\u043f\u0430\u0448\u043d\u0430\u044f \u0430\u0442\u0430\u043a\u0430</span></label><label class="aba-check"><input type="checkbox" data-field="incoming-extra-factors"><span>\u0415\u0441\u0442\u044c \u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0435 \u0444\u0430\u043a\u0442\u043e\u0440\u044b, \u043f\u043e\u0437\u0432\u043e\u043b\u044f\u044e\u0449\u0438\u0435 \u0441\u043a\u0440\u044b\u0442\u043e\u0439 \u0430\u0442\u0430\u043a\u0435 \u043f\u043e\u0434\u0435\u0439\u0441\u0442\u0432\u043e\u0432\u0430\u0442\u044c</span></label><label class="aba-check"><input type="checkbox" data-field="incoming-critical"><span>\u0415\u0441\u0442\u044c \u043a\u0440\u0438\u0442\u0438\u0447\u0435\u0441\u043a\u043e\u0435 \u043f\u043e\u043f\u0430\u0434\u0430\u043d\u0438\u0435</span></label><label>\u0414\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u0443\u0440\u043e\u043d \u043a\u0440\u0438\u0442\u0438\u0447\u0435\u0441\u043a\u043e\u0433\u043e \u043f\u043e\u043f\u0430\u0434\u0430\u043d\u0438\u044f<input data-field="incoming-critical-damage" type="number" min="0" step="1" value="0"></label><label class="aba-check"><input type="checkbox" data-field="apply-protection"><span>\u0423\u0447\u0438\u0442\u044b\u0432\u0430\u0442\u044c \u0437\u0430\u0449\u0438\u0442\u0443</span></label><label>\u0414\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0435 \u0441\u043b\u043e\u0438 \u0437\u0430\u0449\u0438\u0442\u044b<input data-field="defense-layers" placeholder="20 + 30"></label><p class="aba-note">\u041f\u0440\u0438 \u0422\u0430\u0439\u0434\u0437\u044e\u0446\u0443 8 \u0441\u043a\u0440\u044b\u0442\u0430\u044f \u0440\u0443\u043a\u043e\u043f\u0430\u0448\u043d\u0430\u044f \u0430\u0442\u0430\u043a\u0430 \u0431\u0435\u0437 \u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0445 \u0444\u0430\u043a\u0442\u043e\u0440\u043e\u0432 \u043d\u0435 \u043d\u0430\u043d\u043e\u0441\u0438\u0442 \u0443\u0440\u043e\u043d. \u041f\u0440\u0438 \u0422\u0430\u0439\u0434\u0437\u044e\u0446\u0443 9 \u043a\u0440\u0438\u0442\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u043a\u043e\u043c\u043f\u043e\u043d\u0435\u043d\u0442 \u0440\u0443\u043a\u043e\u043f\u0430\u0448\u043d\u043e\u0439 \u0430\u0442\u0430\u043a\u0438 \u0438\u0433\u043d\u043e\u0440\u0438\u0440\u0443\u0435\u0442\u0441\u044f, \u0430 \u043e\u0431\u044b\u0447\u043d\u044b\u0435 \u0430\u0442\u0430\u043a\u0438 \u043e\u0440\u0443\u0436\u0438\u0435\u043c \u0438 \u0431\u0435\u0437 \u043e\u0440\u0443\u0436\u0438\u044f \u043d\u0430\u043d\u043e\u0441\u044f\u0442 \u043d\u0430 10% \u043c\u0435\u043d\u044c\u0448\u0435 \u0443\u0440\u043e\u043d\u0430.</p>' : '') + '<label>\u0418\u0441\u0442\u043e\u0447\u043d\u0438\u043a \u0438\u043b\u0438 \u043f\u043e\u044f\u0441\u043d\u0435\u043d\u0438\u0435<input data-field="description" type="text" placeholder="\u041a\u0442\u043e \u043b\u0435\u0447\u0438\u0442 \u0438\u043b\u0438 \u0447\u0435\u043c \u043d\u0430\u043d\u0435\u0441\u0435\u043d\u043e \u0440\u0430\u043d\u0435\u043d\u0438\u0435"></label><button class="aba-primary" type="button" data-add="' + action + '">\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c</button>';
@@ -3507,7 +3527,7 @@ function npcHtmlCode(node) {
     } else if (action === 'sacrifice') {
       editor.innerHTML = sacrificeAlreadyUsed() ? '<h4>\u0416\u0435\u0440\u0442\u0432\u0430</h4><p class="aba-error">\u0416\u0435\u0440\u0442\u0432\u0430 \u0443\u0436\u0435 \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u043d\u0430 \u0432 \u044d\u0442\u043e\u043c \u0431\u043e\u044e.</p>' : '<h4>\u0416\u0435\u0440\u0442\u0432\u0430</h4><p>\u041f\u0440\u0438 \u0424\u0443\u0438\u043d\u0434\u0437\u044e\u0446\u0443 10 \u043e\u0434\u0438\u043d \u0440\u0430\u0437 \u0437\u0430 \u0431\u043e\u0439 \u043c\u043e\u0436\u043d\u043e \u043d\u0430\u043d\u0435\u0441\u0442\u0438 \u0441\u0435\u0431\u0435 20 \u0443\u0440\u043e\u043d\u0430 \u0438 \u043f\u043e\u043b\u0443\u0447\u0438\u0442\u044c +2 \u043a \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u043e\u043c\u0443 \u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u0443.</p><label>\u041f\u0430\u0440\u0430\u043c\u0435\u0442\u0440<select data-field="sacrifice-stat">' + [['ninjutsu','\u041d\u0438\u043d\u0434\u0437\u044e\u0446\u0443'],['taijutsu','\u0422\u0430\u0439\u0434\u0437\u044e\u0446\u0443'],['genjutsu','\u0413\u0435\u043d\u0434\u0437\u044e\u0446\u0443'],['fuinjutsu','\u0424\u0443\u0438\u043d\u0434\u0437\u044e\u0446\u0443'],['strategy','\u0422\u0430\u043a\u0442\u0438\u043a\u0430'],['knowledge','\u0417\u043d\u0430\u043d\u0438\u044f'],['strength','\u0421\u0438\u043b\u0430'],['speed','\u0421\u043a\u043e\u0440\u043e\u0441\u0442\u044c'],['chakra','\u0427\u0430\u043a\u0440\u0430'],['health','\u0417\u0434\u043e\u0440\u043e\u0432\u044c\u0435']].map(function (item) { return '<option value="' + item[0] + '">' + item[1] + '</option>'; }).join('') + '</select></label><button class="aba-primary" type="button" data-add="sacrifice">\u041f\u0440\u0438\u043c\u0435\u043d\u0438\u0442\u044c \u0436\u0435\u0440\u0442\u0432\u0443</button>';
     } else if (action.indexOf('tech-') === 0) {
-      renderTechniqueEditor(editor, action.replace('tech-', ''));
+      renderTechniqueEditor(editor, action.replace('tech-', ''), selectedTechnique);
     }
     bindEditor(editor);
   }
@@ -3928,11 +3948,13 @@ function npcHtmlCode(node) {
     }));
   }
 
-  function renderSpecialTechniqueEditor(editor, kind) {
+  function renderSpecialTechniqueEditor(editor, kind, selectedTechnique) {
     var headings = { 'illusion-release': '\u0421\u043d\u044f\u0442\u0438\u0435 \u0438\u043b\u043b\u044e\u0437\u0438\u0438 \u0441 \u0441\u043e\u044e\u0437\u043d\u0438\u043a\u0430', 'chakra-transfer': '\u041f\u0435\u0440\u0435\u0434\u0430\u0447\u0430 \u0447\u0430\u043a\u0440\u044b', healing: '\u041b\u0435\u0447\u0435\u043d\u0438\u0435 \u0441\u043e\u044e\u0437\u043d\u0438\u043a\u0430' };
     var techniques = state.character.techniques || [];
     editor.innerHTML = '<h4>' + headings[kind] + '</h4><p>\u041f\u043e\u0434\u0445\u043e\u0434\u044f\u0449\u0438\u0435 \u0442\u0435\u0445\u043d\u0438\u043a\u0438 \u0438\u0449\u0443\u0442\u0441\u044f \u0432 \u043b\u0438\u0447\u043d\u043e\u043c \u0434\u0435\u043b\u0435 \u0438 \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e\u0442\u0441\u044f \u043f\u043e \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u044e \u043c\u0430\u0441\u0442\u0435\u0440-\u043f\u043e\u0441\u0442\u0430.</p><div class="aba-loading">\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u0439\u2026</div>';
+    var loading = editor.querySelector('.aba-loading');
     actorAll(techniques.map(function (item) { return loadTechniqueDetail(item).catch(function () { return null; }); })).then(function () {
+      if (!loading.isConnected) return;
       var available = techniques.filter(function (item) { return item.detail && specialTechniqueMatches(item, kind); });
       editor.innerHTML = '<h4>' + headings[kind] + '</h4><label>' + (kind === 'chakra-transfer' ? '\u041a\u043e\u043c\u0443 \u043f\u0435\u0440\u0435\u0434\u0430\u0442\u044c \u0447\u0430\u043a\u0440\u0443' : '\u041d\u0430 \u043a\u043e\u0433\u043e \u043f\u0440\u0438\u043c\u0435\u043d\u044f\u0435\u0442\u0441\u044f \u0442\u0435\u0445\u043d\u0438\u043a\u0430') + '<input data-field="special-target" type="text" placeholder="\u0418\u043c\u044f \u043f\u0435\u0440\u0441\u043e\u043d\u0430\u0436\u0430"></label>' +
         (kind === 'chakra-transfer' ? '<label>\u041f\u0435\u0440\u0435\u0434\u0430\u0432\u0430\u0435\u043c\u044b\u0439 \u043e\u0431\u044a\u0451\u043c<input data-field="transfer-amount" type="number" min="1" value="1"></label>' : '') +
@@ -3942,6 +3964,7 @@ function npcHtmlCode(node) {
         showTechniqueSummary(editor, input.value, 'support', true);
         editor.querySelector('[data-add-tech]').hidden = true;
       }); });
+      selectTechniqueChoice(editor, 'aba-special-tech', selectedTechnique);
       var add = editor.querySelector('[data-add-special]');
       if (add) on(add, 'click', function () { addSpecialTechniqueAction(kind, editor); });
     });
@@ -3977,7 +4000,114 @@ function npcHtmlCode(node) {
     else target.innerHTML = '<label>\u041f\u043e\u044f\u0441\u043d\u0435\u043d\u0438\u0435<input data-field="effect-description" type="text" placeholder="\u0418\u0441\u0442\u043e\u0447\u043d\u0438\u043a, \u0434\u043b\u0438\u0442\u0435\u043b\u044c\u043d\u043e\u0441\u0442\u044c \u0438\u043b\u0438 \u043e\u0441\u043e\u0431\u0435\u043d\u043d\u043e\u0441\u0442\u0438 \u044d\u0444\u0444\u0435\u043a\u0442\u0430"></label>';
   }
 
-  function renderTechniqueEditor(editor, mode) {
+  function selectTechniqueChoice(editor, inputName, technique) {
+    if (!technique) return;
+    var input = Array.prototype.find.call(editor.querySelectorAll('input[name="' + inputName + '"]'), function (choice) {
+      return choice.value === String(technique.postId);
+    });
+    if (!input) return;
+    input.checked = true;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    input.closest('.aba-tech-option').scrollIntoView({ block: 'nearest' });
+  }
+
+  function techniqueDestinations(item) {
+    var routes = [];
+    function add(type, action, label) {
+      routes.push({ type: type, action: action, label: label, technique: item });
+    }
+    if (state.actorScope && state.actorScope.noTechniques) return routes;
+    if (item.detail) {
+      [['attack', '\u0410\u0442\u0430\u043a\u0430'], ['defense', '\u0417\u0430\u0449\u0438\u0442\u0430'], ['support', '\u041f\u043e\u0434\u0433\u043e\u0442\u043e\u0432\u043a\u0430']].forEach(function (mode) {
+        if (techniqueAllowed(item.detail, mode[0], item)) add(mode[0], 'tech-' + mode[0], mode[1]);
+      });
+      [['healing', '\u041b\u0435\u0447\u0435\u043d\u0438\u0435 \u0441\u043e\u044e\u0437\u043d\u0438\u043a\u0430'], ['illusion-release', '\u0421\u043d\u044f\u0442\u0438\u0435 \u0438\u043b\u043b\u044e\u0437\u0438\u0438'], ['chakra-transfer', '\u041f\u0435\u0440\u0435\u0434\u0430\u0447\u0430 \u0447\u0430\u043a\u0440\u044b']].forEach(function (mode) {
+        if (specialTechniqueMatches(item, mode[0])) add('special', mode[0], mode[1]);
+      });
+    }
+    if (item === findCharacterTechnique(SUMMON_TECHNIQUE)) add('support', 'summon', '\u041f\u043e\u0434\u0433\u043e\u0442\u043e\u0432\u043a\u0430 \u00b7 \u041f\u0440\u0438\u0437\u044b\u0432');
+    if (item === findCharacterTechnique(SUBSTITUTION_TECHNIQUE)) add('defense', 'substitution', '\u0417\u0430\u0449\u0438\u0442\u0430 \u00b7 \u0417\u0430\u043c\u0435\u043d\u0430');
+    if (item === findCharacterTechnique(BODY_FLICKER_TECHNIQUE)) add('move', 'body-flicker', '\u0414\u0432\u0438\u0436\u0435\u043d\u0438\u0435 \u00b7 \u041c\u0435\u0440\u0446\u0430\u043d\u0438\u0435');
+    return routes;
+  }
+
+  function renderTechniqueDirectory(panel) {
+    var techniques = state.character.techniques || [];
+    panel.innerHTML = '<div class="aba-action-editor aba-action-editor-direct"><h4>\u0422\u0435\u0445\u043d\u0438\u043a\u0438 \u043f\u0435\u0440\u0441\u043e\u043d\u0430\u0436\u0430</h4><label>\u041f\u043e\u0438\u0441\u043a \u043f\u043e \u0432\u0441\u0435\u043c \u0440\u0430\u043d\u0433\u0430\u043c<input type="search" data-technique-directory-search placeholder="\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0442\u0435\u0445\u043d\u0438\u043a\u0438"></label><p>\u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u043d\u0430 \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0438\u043b\u0438 \u0432\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0440\u0430\u0437\u0434\u0435\u043b, \u0447\u0442\u043e\u0431\u044b \u043e\u0442\u043a\u0440\u044b\u0442\u044c \u0442\u0435\u0445\u043d\u0438\u043a\u0443 \u0432 \u0444\u043e\u0440\u043c\u0435 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f.</p><div data-technique-directory-list></div><p class="aba-empty" data-technique-directory-empty hidden></p></div>';
+    var search = panel.querySelector('[data-technique-directory-search]');
+    var list = panel.querySelector('[data-technique-directory-list]');
+    var empty = panel.querySelector('[data-technique-directory-empty]');
+    var groups = [];
+    RANKS.forEach(function (rank) {
+      var items = techniques.filter(function (item) { return item.rank === rank; });
+      if (!items.length) return;
+      var group = document.createElement('section');
+      group.innerHTML = '<h4>\u0420\u0430\u043d\u0433 ' + rank + '</h4>';
+      list.appendChild(group);
+      var rows = items.map(function (item) {
+        var row = document.createElement('div');
+        row.className = 'aba-directory-technique';
+        row.innerHTML = '<button type="button" data-directory-technique disabled>' + escapeHtml(item.name) + '</button><div class="aba-directory-routes"><small>\u041e\u043f\u0440\u0435\u0434\u0435\u043b\u044f\u0435\u043c \u0440\u0430\u0437\u0434\u0435\u043b\u044b\u2026</small></div>';
+        group.appendChild(row);
+        var title = row.querySelector('[data-directory-technique]');
+        var links = row.querySelector('.aba-directory-routes');
+        var routes = [];
+        function open(route) {
+          state.builderTab = 'actions';
+          renderActionMenu(route);
+        }
+        on(title, 'click', function () { if (routes.length) open(routes[0]); });
+        function showRoutes(failed) {
+          if (!row.isConnected) return;
+          routes = techniqueDestinations(item);
+          links.textContent = '';
+          title.disabled = !routes.length;
+          routes.forEach(function (route) {
+            var button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = route.label;
+            links.appendChild(button);
+            on(button, 'click', function () { open(route); });
+          });
+          if (failed) {
+            var retry = document.createElement('button');
+            retry.type = 'button';
+            retry.textContent = '\u041f\u043e\u0432\u0442\u043e\u0440\u0438\u0442\u044c \u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0443 \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u044f';
+            links.appendChild(retry);
+            on(retry, 'click', function () {
+              retry.disabled = true;
+              load();
+            });
+          } else if (!routes.length) links.textContent = '\u041d\u0435\u0442 \u0434\u043e\u0441\u0442\u0443\u043f\u043d\u043e\u0433\u043e \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f';
+        }
+        function load() {
+          loadTechniqueDetail(item).then(function () { showRoutes(false); }).catch(function () { showRoutes(true); });
+        }
+        load();
+        return { node: row, name: normalizeText(item.name) };
+      });
+      groups.push({ node: group, rows: rows });
+    });
+    function filter() {
+      var query = normalizeText(search.value);
+      var count = 0;
+      groups.forEach(function (group) {
+        var matches = 0;
+        group.rows.forEach(function (row) {
+          row.node.hidden = row.name.indexOf(query) === -1;
+          if (!row.node.hidden) matches++;
+        });
+        group.node.hidden = !matches;
+        count += matches;
+      });
+      empty.hidden = count > 0;
+      empty.textContent = techniques.length ? '\u041f\u043e \u044d\u0442\u043e\u043c\u0443 \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u044e \u043d\u0438\u0447\u0435\u0433\u043e \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e.' : '\u0412 \u043b\u0438\u0447\u043d\u043e\u043c \u0434\u0435\u043b\u0435 \u043d\u0435\u0442 \u0442\u0435\u0445\u043d\u0438\u043a.';
+    }
+    on(search, 'input', filter);
+    filter();
+  }
+
+  function renderTechniqueEditor(editor, mode, selectedTechnique) {
     var ranks = RANKS.filter(function (rank) { return state.character.techniques.some(function (item) { return item.rank === rank; }); });
     var rankOptions = mode === 'attack' ? '' : ranks.map(function (rank) { return '<option value="' + rank + '">' + rank + ' \u00b7 ' + RANK_COSTS[rank] + ' \u041e\u0422</option>'; }).join('');
     editor.innerHTML = '<h4>' + (mode === 'attack' ? '\u0410\u0442\u0430\u043a\u0430 \u0442\u0435\u0445\u043d\u0438\u043a\u043e\u0439' : mode === 'defense' ? '\u0417\u0430\u0449\u0438\u0442\u0430 \u0442\u0435\u0445\u043d\u0438\u043a\u043e\u0439' : '\u0418\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u043d\u0438\u0435 \u0442\u0435\u0445\u043d\u0438\u043a\u0438') + '</h4><p>' + (mode === 'attack' ? '\u041f\u043e\u043a\u0430\u0437\u044b\u0432\u0430\u044e\u0442\u0441\u044f \u0442\u0435\u0445\u043d\u0438\u043a\u0438, \u0443 \u043a\u043e\u0442\u043e\u0440\u044b\u0445 \u0442\u0438\u043f \u044d\u0444\u0444\u0435\u043a\u0442\u0430 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442 \u00ab\u0410\u0442\u0430\u043a\u0430\u00bb.' : mode === 'defense' ? '\u041f\u043e\u043a\u0430\u0437\u044b\u0432\u0430\u044e\u0442\u0441\u044f \u0442\u043e\u043b\u044c\u043a\u043e \u0442\u0435\u0445\u043d\u0438\u043a\u0438, \u0443 \u043a\u043e\u0442\u043e\u0440\u044b\u0445 \u0442\u0438\u043f \u044d\u0444\u0444\u0435\u043a\u0442\u0430 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442 \u00ab\u0417\u0430\u0449\u0438\u0442\u0430\u00bb.' : '\u041d\u0435 \u043f\u043e\u043a\u0430\u0437\u044b\u0432\u0430\u044e\u0442\u0441\u044f \u0447\u0438\u0441\u0442\u0430\u044f \u0430\u0442\u0430\u043a\u0430, \u0441\u043e\u0447\u0435\u0442\u0430\u043d\u0438\u0435 \u0442\u043e\u043b\u044c\u043a\u043e \u00ab\u0410\u0442\u0430\u043a\u0430/\u0417\u0430\u0449\u0438\u0442\u0430\u00bb \u0438 \u0422\u0435\u0445\u043d\u0438\u043a\u0430 \u043f\u0440\u0438\u0437\u044b\u0432\u0430.') + '</p><div class="aba-inline"><label>\u0420\u0430\u043d\u0433<select data-field="rank"' + (mode === 'attack' ? ' disabled' : '') + '><option value="">' + (mode === 'attack' ? '\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0434\u043e\u0441\u0442\u0443\u043f\u043d\u044b\u0445 \u0440\u0430\u043d\u0433\u043e\u0432\u2026' : '\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0440\u0430\u043d\u0433') + '</option>' + rankOptions + '</select></label><label>\u041f\u043e\u0438\u0441\u043a<input data-field="tech-search" type="search" placeholder="\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0442\u0435\u0445\u043d\u0438\u043a\u0438"></label></div>' + (mode === 'attack' ? modifierBlock(attackContextFields(true)) : '') + '<div class="aba-tech-list"><div class="aba-empty">' + (mode === 'attack' ? '\u041f\u0440\u043e\u0432\u0435\u0440\u044f\u0435\u043c \u0430\u0442\u0430\u043a\u0443\u044e\u0449\u0438\u0435 \u0442\u0435\u0445\u043d\u0438\u043a\u0438\u2026' : '\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0440\u0430\u043d\u0433.') + '</div></div><div class="aba-tech-detail"></div>';
@@ -3985,17 +4115,24 @@ function npcHtmlCode(node) {
     var search = editor.querySelector('[data-field="tech-search"]');
     on(rank, 'change', function () { loadTechniqueChoices(editor, mode); });
     on(search, 'input', function () { filterTechniqueChoices(editor); });
+    function selectInitialRank() {
+      if (!selectedTechnique) return;
+      rank.value = selectedTechnique.rank;
+      loadTechniqueChoices(editor, mode, selectedTechnique);
+    }
     if (mode === 'attack') {
       actorAll(state.character.techniques.map(function (item) { return loadTechniqueDetail(item).catch(function () { return null; }); })).then(function () {
+        if (!rank.isConnected) return;
         var availableRanks = techniqueRanksForMode('attack');
         rank.innerHTML = '<option value="">\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0440\u0430\u043d\u0433</option>' + availableRanks.map(function (itemRank) { return '<option value="' + itemRank + '">' + itemRank + ' \u00b7 ' + RANK_COSTS[itemRank] + ' \u041e\u0422</option>'; }).join('');
         rank.disabled = false;
         editor.querySelector('.aba-tech-list').innerHTML = availableRanks.length ? '<div class="aba-empty">\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0440\u0430\u043d\u0433.</div>' : '<div class="aba-empty">\u0412 \u043b\u0438\u0447\u043d\u043e\u043c \u0434\u0435\u043b\u0435 \u043d\u0435\u0442 \u0430\u0442\u0430\u043a\u0443\u044e\u0449\u0438\u0445 \u0442\u0435\u0445\u043d\u0438\u043a.</div>';
+        selectInitialRank();
       });
-    }
+    } else selectInitialRank();
   }
 
-  function loadTechniqueChoices(editor, mode) {
+  function loadTechniqueChoices(editor, mode, selectedTechnique) {
     var rank = editor.querySelector('[data-field="rank"]').value;
     var list = editor.querySelector('.aba-tech-list');
     var detail = editor.querySelector('.aba-tech-detail');
@@ -4006,6 +4143,7 @@ function npcHtmlCode(node) {
     actorAll(techniques.map(function (item) {
       return loadTechniqueDetail(item).then(function (detail) { item.loadError = ''; return detail; }).catch(function (error) { item.loadError = error.message; return null; });
     })).then(function () {
+      if (!list.isConnected || editor.querySelector('[data-field="rank"]').value !== rank) return;
       var available = techniques.filter(function (item) { return item.detail && techniqueAllowed(item.detail, mode, item); });
       list.innerHTML = available.length ? available.map(function (item) {
         return '<label class="aba-tech-option" data-search="' + escapeHtml(item.name.toLocaleLowerCase('ru')) + '"><input type="radio" name="aba-technique" value="' + item.postId + '"><span><strong>' + escapeHtml(item.name) + '</strong><small>' + escapeHtml(item.detail.effect) + (item.detail.discount ? ' \u00b7 \u0441\u0442\u043e\u0438\u043c\u043e\u0441\u0442\u044c \u0440\u0430\u043d\u0433\u0430 \u22121 \u041e\u0422' : '') + '</small></span><button type="button" data-preview="' + item.postId + '" title="\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u0435">i</button></label>';
@@ -4014,6 +4152,7 @@ function npcHtmlCode(node) {
       if (failed.length) list.innerHTML += '<p class="aba-error">\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c: ' + failed.map(function (item) { return escapeHtml(item.name + ': ' + item.loadError); }).join('; ') + '. \u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0440\u0430\u043d\u0433 \u0435\u0449\u0451 \u0440\u0430\u0437 \u0434\u043b\u044f \u043f\u043e\u0432\u0442\u043e\u0440\u043d\u043e\u0439 \u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0438.</p>';
       bindTechniqueChoices(editor, mode);
       filterTechniqueChoices(editor);
+      selectTechniqueChoice(editor, 'aba-technique', selectedTechnique);
     });
   }
 
@@ -5302,6 +5441,7 @@ function npcHtmlCode(node) {
       '.aba-head-actions{display:flex;align-items:center;gap:10px}',
       '.aba-help{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid rgba(255,255,255,.7);border-radius:50%;background:transparent;color:inherit;font:700 18px/1 Arial;cursor:pointer}',
       '.aba-close{border:0;background:transparent;color:inherit;font:30px/1 Arial;cursor:pointer;transition:transform .25s}.aba-close:hover{transform:rotate(90deg)}',
+      '.aba-directory-technique{padding:9px;margin:5px 0;border-radius:9px;background:var(--aba-soft)}.aba-directory-technique[hidden],.aba-tech-option[hidden]{display:none!important}.aba-directory-routes{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}.aba-directory-technique button{max-width:100%;border:1px solid var(--aba-accent);border-radius:8px;padding:5px 9px;background:var(--aba-panel);color:var(--aba-text);cursor:pointer;text-align:left}.aba-directory-technique button:disabled{cursor:default;opacity:.7}.aba-directory-technique [data-directory-technique]{font-weight:800}',
       '.aba-builder-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;padding:4px;border:1px solid var(--aba-soft);border-radius:12px;background:var(--aba-soft)}.aba-builder-tabs button{flex:1 1 180px;min-height:42px;border:1px solid transparent;border-radius:10px 20px 10px 10px;background:transparent;color:var(--aba-text);cursor:pointer;font-weight:800}.aba-builder-tabs button.is-active{border-color:var(--aba-accent);background:var(--aba-panel);color:var(--aba-accent)}',
       '.aba-instruction{position:fixed;z-index:100110;left:24px;right:24px;top:24px;bottom:24px;width:auto;height:calc(100vh - 48px);max-width:none;max-height:none;border:1px solid var(--aba-accent);border-radius:18px 30px 18px 18px;background:var(--aba-surface);box-shadow:-7px 8px 22px rgba(0,0,0,.35);overflow:hidden}',
       '.aba-instruction-shell{display:flex;flex-direction:column;max-height:100%}',
