@@ -4,7 +4,6 @@ export const forumConfig = Object.freeze({
     apiUrl: 'https://akatsukigood.forum.cool/api.php',
     topicId: 86,
     limit: 5,
-    maxCharacters: 600,
     timeout: 12_000,
     cacheDuration: 10 * 60 * 1000,
   },

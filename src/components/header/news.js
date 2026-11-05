@@ -1,7 +1,7 @@
 import { forumConfig } from '../../config/forum.js'
 import { t } from '../../i18n/index.js'
 
-const NEWS_CACHE_PREFIX = 'forum-news-v1'
+const NEWS_CACHE_PREFIX = 'forum-news-v2'
 const API_MAX_RESULTS = 100
 
 export function initHeaderNews(root = document) {
@@ -19,20 +19,18 @@ export function initHeaderNews(root = document) {
     getPositiveInteger(container.dataset.limit) ?? forumConfig.news.limit,
     API_MAX_RESULTS,
   )
-  const maxCharacters =
-    getPositiveInteger(container.dataset.maxCharacters) ?? forumConfig.news.maxCharacters
 
   container.dataset.forumNewsReady = 'loading'
   setStatus(container, 'header.news.loading')
 
-  loadNews({ container, topicId, limit, maxCharacters }).catch((error) => {
+  loadNews({ container, topicId, limit }).catch((error) => {
     container.dataset.forumNewsReady = 'error'
     setStatus(container, 'header.news.unavailable')
     console.error('Не удалось загрузить новости форума', error)
   })
 }
 
-async function loadNews({ container, topicId, limit, maxCharacters }) {
+async function loadNews({ container, topicId, limit }) {
   const cacheKey = getNewsCacheKey(container, topicId, limit)
   let posts = readNewsCache(cacheKey)
 
@@ -53,9 +51,9 @@ async function loadNews({ container, topicId, limit, maxCharacters }) {
     .sort((first, second) => Number(second.posted) - Number(first.posted))
     .slice(0, limit)
     .forEach((post) => {
-      const content = extractNewsContent(post.message, maxCharacters)
-      if (!content.textContent?.trim()) return
-      fragment.append(createNewsItem(post, content))
+      const id = getPositiveInteger(post.id ?? post.post_id)
+      const title = extractNewsTitle(post.message)
+      if (id && title) fragment.append(createNewsItem(post, id, title))
     })
 
   container.replaceChildren(fragment)
@@ -73,7 +71,7 @@ function requestTopicPosts(container, topicId, limit) {
 
     apiUrl.searchParams.set('method', 'post.get')
     apiUrl.searchParams.set('topic_id', String(topicId))
-    apiUrl.searchParams.set('fields', 'message,posted')
+    apiUrl.searchParams.set('fields', 'id,message,posted')
     apiUrl.searchParams.set('limit', String(limit))
     apiUrl.searchParams.set('sort_by', 'posted')
     apiUrl.searchParams.set('sort_dir', 'desc')
@@ -105,6 +103,7 @@ function requestTopicPosts(container, topicId, limit) {
       })
     }
 
+    script.charset = 'utf-8'
     script.src = apiUrl.href
     script.async = true
     script.addEventListener('error', () => {
@@ -155,174 +154,45 @@ function writeNewsCache(cacheKey, posts) {
   }
 }
 
-function extractNewsContent(message = '', maxCharacters) {
+function extractNewsTitle(message = '') {
   const template = document.createElement('template')
   template.innerHTML = String(message)
-    .replace(/\[quote[\s\S]*?\[\/quote\]/gi, '')
-    .replace(/\[spoiler[\s\S]*?\[\/spoiler\]/gi, '')
-    .replace(/\[hide[\s\S]*?\[\/hide\]/gi, '')
-    .replace(/\[hr\]/gi, '\n')
+    .replace(/\[(quote|spoiler|hide)\b[^\]]*\][\s\S]*?\[\/\1\]/gi, '')
+    .replace(/\[img\b[^\]]*\][\s\S]*?\[\/img\]/gi, '')
+    .replace(/\[(?:\/?(?:b|i|u|s|color|size|font|align|url)(?:=[^\]]*)?|hr)\]/gi, '')
 
   template.content
     .querySelectorAll('.quote-box, .spoiler-box, .hide-box, blockquote, script, style')
     .forEach((element) => element.remove())
 
-  const content = document.createDocumentFragment()
+  template.content.querySelectorAll('br, hr, p, div, li, h1, h2, h3, h4, h5, h6')
+    .forEach((element) => element.after('\n'))
 
-  appendSafeNewsNodes(template.content, content)
-  normalizeNewsWhitespace(content)
-
-  return truncateNewsContent(content, maxCharacters)
+  return (template.content.textContent || '')
+    .split(/\r?\n/)
+    .map((line) => line.replace(/\s+/g, ' ').trim())
+    .find(Boolean) || ''
 }
 
-function appendSafeNewsNodes(source, target) {
-  Array.from(source.childNodes).forEach((node) => {
-    if (node.nodeType === Node.TEXT_NODE) {
-      target.append(document.createTextNode(node.data))
-      return
-    }
-
-    if (!(node instanceof Element)) return
-
-    const tagName = node.tagName.toLowerCase()
-
-    if (tagName === 'a') {
-      const link = createSafeNewsLink(node)
-
-      if (link) {
-        appendSafeNewsNodes(node, link)
-        if (link.textContent) target.append(link)
-      } else {
-        appendSafeNewsNodes(node, target)
-      }
-      return
-    }
-
-    if (tagName === 'strong' || tagName === 'b') {
-      const strong = document.createElement('strong')
-
-      appendSafeNewsNodes(node, strong)
-      if (strong.textContent) target.append(strong)
-      return
-    }
-
-    if (tagName === 'br' || tagName === 'hr') {
-      target.append(document.createTextNode('\n'))
-      return
-    }
-
-    appendSafeNewsNodes(node, target)
-
-    if (tagName === 'p' || tagName === 'div') {
-      target.append(document.createTextNode('\n\n'))
-    } else if (tagName === 'li') {
-      target.append(document.createTextNode('\n'))
-    }
-  })
-}
-
-function createSafeNewsLink(source) {
-  const href = source.getAttribute('href')?.trim()
-  if (!href) return null
-
-  let url
-
-  try {
-    url = new URL(href, window.location.origin)
-  } catch {
-    return null
-  }
-
-  if (!['http:', 'https:', 'mailto:'].includes(url.protocol)) return null
-
-  const link = document.createElement('a')
-
-  link.href = url.href
-  link.rel = 'nofollow noopener noreferrer'
-
-  if (source.getAttribute('target') === '_blank') link.target = '_blank'
-  if (source.title) link.title = source.title
-
-  return link
-}
-
-function normalizeNewsWhitespace(content) {
-  const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT)
-  const textNodes = []
-
-  while (walker.nextNode()) textNodes.push(walker.currentNode)
-
-  textNodes.forEach((node) => {
-    node.data = node.data
-      .replace(/\u00a0/g, ' ')
-      .replace(/\r/g, '')
-      .replace(/[\t ]+/g, ' ')
-      .replace(/ *\n */g, '\n')
-      .replace(/\n{3,}/g, '\n\n')
-  })
-
-  const first = textNodes.find((node) => node.data)
-  const last = [...textNodes].reverse().find((node) => node.data)
-
-  if (first) first.data = first.data.replace(/^\s+/, '')
-  if (last) last.data = last.data.replace(/\s+$/, '')
-}
-
-function truncateNewsContent(content, maxCharacters) {
-  const text = content.textContent || ''
-  if (text.length <= maxCharacters) return content
-
-  const shortenedText = text.slice(0, maxCharacters)
-  const lastSpace = Math.max(
-    shortenedText.lastIndexOf(' '),
-    shortenedText.lastIndexOf('\n'),
-  )
-  const limit = lastSpace > 0 ? lastSpace : maxCharacters
-  const truncated = document.createDocumentFragment()
-  const state = { remaining: limit, done: false }
-
-  cloneNewsNodesWithinLimit(content, truncated, state)
-  truncated.append(document.createTextNode('…'))
-
-  return truncated
-}
-
-function cloneNewsNodesWithinLimit(source, target, state) {
-  for (const node of source.childNodes) {
-    if (state.done) break
-
-    if (node.nodeType === Node.TEXT_NODE) {
-      const text = node.data.slice(0, state.remaining)
-
-      if (text) target.append(document.createTextNode(text))
-      state.remaining -= text.length
-      if (state.remaining === 0) state.done = true
-      continue
-    }
-
-    if (!(node instanceof Element)) continue
-
-    const clone = node.cloneNode(false)
-
-    cloneNewsNodesWithinLimit(node, clone, state)
-    if (clone.childNodes.length) target.append(clone)
-  }
-}
-
-function createNewsItem(post, newsContent) {
-  const item = document.createElement('article')
+function createNewsItem(post, id, title) {
+  const item = document.createElement('a')
   const time = document.createElement('time')
-  const content = document.createElement('div')
+  const heading = document.createElement('span')
   const date = new Date(Number(post.posted) * 1000)
 
   item.className = 'news-item'
+  item.href = '/viewtopic.php?pid=' + id + '#p' + id
+  item.title = title
   time.className = 'news-item__date'
-  time.dateTime = Number.isNaN(date.getTime()) ? '' : date.toISOString()
-  time.textContent = Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString()
-  content.className = 'news-item__text'
-  content.append(newsContent)
-
-  item.append(time, content)
+  if (Number.isFinite(date.getTime())) {
+    time.dateTime = date.toISOString()
+    time.textContent = new Intl.DateTimeFormat('ru-RU', {
+      day: '2-digit', month: '2-digit', timeZone: 'Europe/Moscow',
+    }).format(date)
+  }
+  heading.className = 'news-item__title'
+  heading.textContent = title
+  item.append(time, heading)
   return item
 }
 
