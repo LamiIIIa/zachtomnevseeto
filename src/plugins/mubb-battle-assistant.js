@@ -1,4 +1,4 @@
-// mubb-battle-assistant ver 73
+// mubb-battle-assistant ver 74
 (function () {
   'use strict';
 /* CHARACTER_TEMPLATE_START */
@@ -1781,6 +1781,10 @@ function npcHtmlCode(node) {
     collect(baseSource, /(?:^|[^a-z\u0430-\u044f0-9])\u0447\u0430\u043a\u0440[\u0430\u044b]\s*:?[ ]*([+-])\s*(\d+)(?:\s*\u043f\u0440\u0438\s*\u0447\u0430\u043a\u0440[\u0430-\u044f]*\s*(\d+)\s*(?:\u0438\s*)?\u0432\u044b\u0448\u0435)?/gi, ['chakra', 'ninjutsuAttack', 'genjutsuAttack'], 'chakra');
     collect(baseSource, /(?:^|[^a-z\u0430-\u044f0-9])\u0444\u0443\u0438\u043d\u0434\u0437\u044e(?:\u0446|\u0442\u0441)\u0443\s*:?[ ]*([+-])\s*(\d+)(?:\s*\u043f\u0440\u0438\s*\u0444\u0443\u0438\u043d\u0434\u0437\u044e\u0446[\u0430-\u044f]*\s*(\d+)\s*(?:\u0438\s*)?\u0432\u044b\u0448\u0435)?/gi, 'fuinjutsu', 'fuinjutsu');
 
+    collect(source, /\u0437\u0430\u0449\u0438\u0442\u0430\s+\u043e\u0442\s+\u0433\u0435\u043d\u0434[\u0437\u0436]?(?:\u044e|\u0443)(?:\u0442)?(?:\u0441\u0443|\u0446\u0443)\s*([+-])\s*(\d+)/gi, 'genjutsuDefense', 'genjutsu');
+    collect(source, /(\+)\s*(\d+)\s*\u043e\u0434(?![\u0430-\u044fa-z0-9])/gi, 'ordinaryPoints', 'taijutsu');
+    collect(source, /(\+)\s*(\d+)\s*\u043e\u0442(?![\u0430-\u044fa-z0-9])/gi, 'techniquePoints', 'ninjutsu');
+
     requiredAbilitiesFor(normalizedDetail).forEach(function (requiredAbility) {
       var requiredDetail = requiredAbility && requiredAbility.detail ? requiredAbility.detail : (
         requiredAbility && requiredAbility.postId && state.detailCache && state.detailCache['ability-' + requiredAbility.postId]
@@ -1945,7 +1949,7 @@ function npcHtmlCode(node) {
     var base = type === 'ordinary' ? ordinaryActionFormula(baseT) : techniqueActionFormula(baseT, baseN);
     var current = type === 'ordinary' ? ordinaryActionFormula(statValue('taijutsu')) : techniqueActionFormula(statValue('taijutsu'), statValue('ninjutsu'));
     var imported = type === 'ordinary' ? state.character.ordinaryTotal : state.character.techniqueTotal;
-    return Math.max(0, (imported === undefined ? base : imported) + current - base);
+    return Math.max(0, (imported === undefined ? base : imported) + current - base + statValue(type === 'ordinary' ? 'ordinaryPoints' : 'techniquePoints'));
   }
 
   function remaining() {
@@ -2286,6 +2290,8 @@ function npcHtmlCode(node) {
   }
 
   function statLabel(key) {
+    if (key === 'ordinaryPoints') return '\u041e\u0414';
+    if (key === 'techniquePoints') return '\u041e\u0422';
     return {
       chakra: '\u0427\u0430\u043a\u0440\u0430',
       fuinjutsu: '\u0424\u0443\u0438\u043d\u0434\u0437\u044e\u0446\u0443',
@@ -2852,7 +2858,7 @@ function npcHtmlCode(node) {
     } else {
       var single = text.match(/\d+(?:\.\d+)?/);
       var singleValue = single ? (parseFloat(single[0]) || 0) : 0;
-      if (/\u0441\u043a\u043e\u043d\u0446\u0435\u043d\u0442\u0440\u0438\u0440\u043e\u0432\u0430\u043d/.test(text)) result.focused = singleValue;
+      if (/\u043a\u043e\u043d\u0446\u0435\u043d\u0442\u0440\u0438\u0440\u043e\u0432\u0430\u043d/.test(text)) result.focused = singleValue;
       else result.general = singleValue;
     }
     result.activation = creation ? (parseFloat(creation[1]) || 0) : result.focused;
@@ -3816,15 +3822,39 @@ function npcHtmlCode(node) {
     return !!ability && String(ability.postId || '') === '2173';
   }
 
-  function activationSpend(detail, ability) {
+  function abilityLevels(detail) {
+    var text = clean(detail.text).split(/\u041f\u0440\u0438\u043c\u0435\u0447\u0430\u043d\u0438[\u0435\u044f]\s*:|\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0438\s*:/i)[0];
+    var numbers = { I: 1, II: 2, III: 3, IV: 4, V: 5 };
+    var headings = Array.from(text.matchAll(/(?:^|\s)(?:(IV|III|II|I|V|[1-9])\s*(?:-?\u0439\s+)?\u0443\u0440\u043e\u0432\u0435\u043d\u044c|\u0443\u0440\u043e\u0432\u0435\u043d\u044c\s+(IV|III|II|I|V|[1-9]))(?=\s*[\u25cf:\u2013\u2014]|\s)/gi));
+    var levels = [];
+    headings.forEach(function (heading) {
+      var token = (heading[1] || heading[2]).toUpperCase();
+      var level = numbers[token] || Number(token);
+      if (level === levels.length + 1) levels.push({ level: level, index: heading.index });
+    });
+    return levels.length > 1 ? levels.map(function (entry, index) {
+      return { level: entry.level, detail: Object.assign({}, detail, { text: text.slice(0, levels[index + 1] ? levels[index + 1].index : text.length) }) };
+    }) : [];
+  }
+
+  function abilityReserveBonus(detail) {
+    var percent = 0;
+    var text = clean(detail.text).replace(/<[^>]*>|\[\/?(?:b|i|u)\]|\*/gi, '');
+    var matches = text.matchAll(/\+\s*(\d+(?:[.,]\d+)?)\s*%\s*\u043e\u0431\u0449\u0435\u0433\u043e\s+\u0437\u0430\u043f\u0430\u0441\u0430\s+\u0447\u0430\u043a\u0440\u044b\s+\u043f\u0440\u0438\s+\u0430\u043a\u0442\u0438\u0432\u0430\u0446\u0438\u0438/gi);
+    for (var match of matches) percent += Number(match[1].replace(',', '.'));
+    return { percent: percent, amount: combatRound(statValue('chakraTotal') * percent / 100) };
+  }
+
+  function activationSpend(detail, ability, level) {
     var cost = techniqueChakraCost(detail.chakra);
     var support = supportChakraCost(detail) || cost.support;
     var permanentFocusedDebuff = isInnatelyActiveAbility(ability) && hasPermanentFocusedChakraDebuff();
     if (permanentFocusedDebuff && support > 0) {
       return { focused: 0, general: support, label: '\u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430 \u0443\u0436\u0435 \u0430\u043a\u0442\u0438\u0432\u043d\u043e\u0439 \u0441\u043f\u043e\u0441\u043e\u0431\u043d\u043e\u0441\u0442\u0438' };
     }
-    if (cost.activation > 0) return { focused: cost.activation, general: 0, label: '\u0430\u043a\u0442\u0438\u0432\u0430\u0446\u0438\u044f \u0441\u043f\u043e\u0441\u043e\u0431\u043d\u043e\u0441\u0442\u0438' };
-    return { focused: cost.focused, general: cost.general, label: '\u0430\u043a\u0442\u0438\u0432\u0430\u0446\u0438\u044f \u0441\u043f\u043e\u0441\u043e\u0431\u043d\u043e\u0441\u0442\u0438' };
+    var multiplier = /\u0437\u0430\s+\u043a\u0430\u0436\u0434\u044b\u0439\s+\u0443\u0440\u043e\u0432\u0435\u043d\u044c/i.test(clean(detail.chakra)) ? level || 1 : 1;
+    if (cost.activation > 0) return { focused: cost.activation * multiplier, general: 0, label: '\u0430\u043a\u0442\u0438\u0432\u0430\u0446\u0438\u044f \u0441\u043f\u043e\u0441\u043e\u0431\u043d\u043e\u0441\u0442\u0438' };
+    return { focused: cost.focused * multiplier, general: cost.general * multiplier, label: '\u0430\u043a\u0442\u0438\u0432\u0430\u0446\u0438\u044f \u0441\u043f\u043e\u0441\u043e\u0431\u043d\u043e\u0441\u0442\u0438' };
   }
 
   function renderAbilityActivationEditor(editor) {
@@ -3847,12 +3877,33 @@ function npcHtmlCode(node) {
         var ability = available.find(function (item) { return item.postId === select.value; });
         var detail = editor.querySelector('.aba-active-detail');
         if (!ability) { detail.innerHTML = ''; return; }
-        var spend = activationSpend(ability.detail, ability);
-        detail.innerHTML = '<div class="aba-summary"><strong>' + escapeHtml(ability.name) + '</strong><span>\u0427\u0430\u043a\u0440\u0430: ' + escapeHtml(ability.detail.chakra) + '</span><span>\u0421\u0435\u0439\u0447\u0430\u0441: ' + escapeHtml(spend.label) + '; \u043a\u043e\u043d\u0446\u0435\u043d\u0442\u0440\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u0430\u044f \u2212' + spend.focused + ', \u043e\u0431\u0449\u0430\u044f \u2212' + spend.general + '</span><button class="aba-primary" type="button">\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0430\u043a\u0442\u0438\u0432\u0430\u0446\u0438\u044e</button></div>';
-        on(detail.querySelector('button'), 'click', function () {
-          var abilityModifiers = enhancementModifierSummary(ability.detail);
-          addAction({ label: '\u0410\u043a\u0442\u0438\u0432\u0430\u0446\u0438\u044f \u0441\u043f\u043e\u0441\u043e\u0431\u043d\u043e\u0441\u0442\u0438', od: 0, ot: 0, summary: ability.name + (abilityModifiers ? ' \u00b7 ' + abilityModifiers : ''), code: '[url=' + ability.url + ']' + ability.name + '[/url] \u2014 ' + spend.label + (abilityModifiers ? '; ' + abilityModifiers : ''), link: ability.url, focusedChakraSpend: spend.focused, chakraSpend: spend.general, statModifiers: abilityStatModifiers(ability.detail), damageModifiers: techniqueCategory(ability.detail).enhancement ? enhancementDamageModifiers(ability.detail) : null, modifierSourceKey: 'ability:' + ability.postId, oncePerTurnKey: 'ability:' + ability.postId });
-        });
+        var levels = abilityLevels(ability.detail);
+        detail.innerHTML = (levels.length ? '<label>\u0423\u0440\u043e\u0432\u0435\u043d\u044c<select data-ability-level>' + levels.map(function (entry) {
+          return '<option value="' + entry.level + '">' + entry.level + '</option>';
+        }).join('') + '</select></label>' : '') + '<div class="aba-summary"></div>';
+        var levelSelect = detail.querySelector('[data-ability-level]');
+        var summary = detail.querySelector('.aba-summary');
+        function update() {
+          var level = levelSelect ? Number(levelSelect.value) : null;
+          var selected = level ? levels[level - 1].detail : ability.detail;
+          var spend = activationSpend(ability.detail, ability, level);
+          var reserve = abilityReserveBonus(selected);
+          var abilityModifiers = enhancementModifierSummary(selected);
+          var reserveNote = reserve.percent ? '\u041e\u0431\u0449\u0438\u0439 \u0437\u0430\u043f\u0430\u0441 \u0447\u0430\u043a\u0440\u044b +' + reserve.percent + '% (+' + reserve.amount + ')' : '';
+          var notes = [abilityModifiers, reserveNote].filter(Boolean).join('; ');
+          summary.innerHTML = '<strong>' + escapeHtml(ability.name) + '</strong><span>\u0427\u0430\u043a\u0440\u0430: ' + escapeHtml(ability.detail.chakra) + '</span><span>\u0421\u0435\u0439\u0447\u0430\u0441: ' + escapeHtml(spend.label) + '; \u043a\u043e\u043d\u0446\u0435\u043d\u0442\u0440\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u0430\u044f \u2212' + spend.focused + ', \u043e\u0431\u0449\u0430\u044f \u2212' + spend.general + '</span>' +
+            (notes ? '<span>' + escapeHtml(notes) + '</span>' : '') + '<button class="aba-primary" type="button">\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0430\u043a\u0442\u0438\u0432\u0430\u0446\u0438\u044e</button>';
+          on(summary.querySelector('button'), 'click', function () {
+            addAction({ label: '\u0410\u043a\u0442\u0438\u0432\u0430\u0446\u0438\u044f \u0441\u043f\u043e\u0441\u043e\u0431\u043d\u043e\u0441\u0442\u0438', od: 0, ot: 0, summary: ability.name + (notes ? ' \u00b7 ' + notes : ''),
+              code: '[url=' + ability.url + ']' + ability.name + '[/url] \u2014 ' + spend.label + (level ? '; \u0423\u0440\u043e\u0432\u0435\u043d\u044c \u0441\u043f\u043e\u0441\u043e\u0431\u043d\u043e\u0441\u0442\u0438 #' + ability.postId + ': ' + level : '') + (notes ? '; ' + notes : ''),
+              link: ability.url, focusedChakraSpend: spend.focused, chakraSpend: spend.general, chakraGain: reserve.amount,
+              abilityReserveBonus: reserve.amount, abilityLevel: level, statModifiers: abilityStatModifiers(selected),
+              damageModifiers: techniqueCategory(selected).enhancement ? enhancementDamageModifiers(selected) : null,
+              modifierSourceKey: 'ability:' + ability.postId, oncePerTurnKey: 'ability:' + ability.postId });
+          });
+        }
+        if (levelSelect) on(levelSelect, 'change', update);
+        update();
       });
       if (!available.length) editor.querySelector('.aba-active-detail').innerHTML = '<div class="aba-empty">\u0421\u043f\u043e\u0441\u043e\u0431\u043d\u043e\u0441\u0442\u0435\u0439 \u0441 \u0440\u0430\u0441\u0445\u043e\u0434\u043e\u043c \u0447\u0430\u043a\u0440\u044b \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e.</div>';
     });
@@ -3909,26 +3960,32 @@ function npcHtmlCode(node) {
   function activeEffectAction(entry, stopping, imported) {
     var calculation = entry.kind === 'technique' ? techniqueCalculation(entry.item, 'support', entry.effectiveRank || entry.item.rank) : null;
     var support = calculation ? calculation.support : supportChakraCost(entry.item.detail);
-    var category = techniqueCategory(entry.item.detail);
+    var levels = entry.kind === 'ability' ? abilityLevels(entry.item.detail) : [];
+    var selectedLevel = levels.find(function (item) { return item.level === entry.abilityLevel; });
+    var effectDetail = selectedLevel ? selectedLevel.detail : entry.item.detail;
+    var reserve = !stopping && entry.kind === 'ability' ? abilityReserveBonus(effectDetail).amount : 0;
+    var category = techniqueCategory(effectDetail);
     var shurado = /Shurad[o\u014d]|\u0428\u0443\u0440\u0430\u0434\u043e|\u041f\u0443\u0442\u044c \u0410\u0441\u0443\u0440\u044b/i.test(entry.item.name);
     var appliesModifiers = !stopping && (entry.kind === 'ability' || category.enhancement || shurado);
-    var modifierSummary = appliesModifiers ? enhancementModifierSummary(entry.item.detail) : '';
+    var modifierSummary = appliesModifiers ? enhancementModifierSummary(effectDetail) : '';
     var modifierSourceKey = appliesModifiers ? entry.kind + ':' + entry.item.postId : '';
     return {
       label: stopping ? '\u041f\u0440\u0435\u043a\u0440\u0430\u0449\u0435\u043d\u0438\u0435 \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0438' : '\u041f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430 \u0430\u043a\u0442\u0438\u0432\u043d\u043e\u0433\u043e \u044d\u0444\u0444\u0435\u043a\u0442\u0430',
       od: 0,
       ot: 0,
       summary: entry.item.name + (modifierSummary ? ' \u00b7 ' + modifierSummary : ''),
-      code: '[url=' + entry.item.url + ']' + entry.item.name + '[/url] \u2014 ' + (stopping ? '\u043c\u043e\u0434\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u044f \u043f\u0440\u0435\u043a\u0440\u0430\u0449\u0435\u043d\u0430' : shurado ? '\u043c\u043e\u0434\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u044f \u0430\u043a\u0442\u0438\u0432\u043d\u0430; \u043f\u043e\u0441\u0442\u043e\u044f\u043d\u043d\u044b\u0439 \u0431\u0430\u0444 \u0434\u0435\u0439\u0441\u0442\u0432\u0443\u0435\u0442' : '\u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430 \u043f\u0440\u043e\u0434\u043e\u043b\u0436\u0435\u043d\u0430') + (modifierSummary ? '; ' + modifierSummary : '') + (!stopping && calculation && support ? '; \u041f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430 \u0442\u0435\u0445\u043d\u0438\u043a\u0438 #' + entry.item.postId + ': \u0440\u0430\u043d\u0433 ' + calculation.rank + '; \u0440\u0430\u0441\u0445\u043e\u0434 ' + support : ''),
+      code: '[url=' + entry.item.url + ']' + entry.item.name + '[/url] \u2014 ' + (stopping ? '\u043c\u043e\u0434\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u044f \u043f\u0440\u0435\u043a\u0440\u0430\u0449\u0435\u043d\u0430' : shurado ? '\u043c\u043e\u0434\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u044f \u0430\u043a\u0442\u0438\u0432\u043d\u0430; \u043f\u043e\u0441\u0442\u043e\u044f\u043d\u043d\u044b\u0439 \u0431\u0430\u0444 \u0434\u0435\u0439\u0441\u0442\u0432\u0443\u0435\u0442' : '\u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430 \u043f\u0440\u043e\u0434\u043e\u043b\u0436\u0435\u043d\u0430') + (selectedLevel ? '; \u0423\u0440\u043e\u0432\u0435\u043d\u044c \u0441\u043f\u043e\u0441\u043e\u0431\u043d\u043e\u0441\u0442\u0438 #' + entry.item.postId + ': ' + selectedLevel.level : '') + (modifierSummary ? '; ' + modifierSummary : '') + (!stopping && calculation && support ? '; \u041f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430 \u0442\u0435\u0445\u043d\u0438\u043a\u0438 #' + entry.item.postId + ': \u0440\u0430\u043d\u0433 ' + calculation.rank + '; \u0440\u0430\u0441\u0445\u043e\u0434 ' + support : ''),
       link: entry.item.url,
+      abilityLevel: entry.abilityLevel,
+      abilityReserveBonus: reserve,
       chakraSpend: stopping ? 0 : support,
       effectiveRank: entry.effectiveRank || entry.item.rank,
       techniqueCalculation: calculation,
       activeEffectKey: activeEffectKey(entry),
       startActiveEffect: !stopping,
       autoImported: !!imported,
-      statModifiers: appliesModifiers ? abilityStatModifiers(entry.item.detail) : null,
-      damageModifiers: appliesModifiers && category.enhancement ? enhancementDamageModifiers(entry.item.detail) : null,
+      statModifiers: appliesModifiers ? abilityStatModifiers(effectDetail) : null,
+      damageModifiers: appliesModifiers && category.enhancement ? enhancementDamageModifiers(effectDetail) : null,
       modifierSourceKey: modifierSourceKey
     };
   }
@@ -5020,10 +5077,14 @@ function npcHtmlCode(node) {
           var illusion = new RegExp('\u041f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430 \u0438\u043b\u043b\u044e\u0437\u043e\u0440\u043d\u044b\u0445 \u043a\u043b\u043e\u043d\u043e\u0432 #' + entry.item.postId + ': \u043a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e (\\d+)').exec(rootText);
           return illusion ? cloneImportAction(entry.item, { count: Number(illusion[1]), mode: 'illusion', autoImported: true }) : null;
         }
+        if (entry.kind === 'ability') {
+          var levelMatches = Array.from(rootText.matchAll(new RegExp('\u0423\u0440\u043e\u0432\u0435\u043d\u044c \u0441\u043f\u043e\u0441\u043e\u0431\u043d\u043e\u0441\u0442\u0438 #' + entry.item.postId + ': (\\d+)', 'g')));
+          if (levelMatches.length) entry.abilityLevel = Number(levelMatches[levelMatches.length - 1][1]);
+        }
         var stopped = false;
         rootText.split('\n').forEach(function (line) {
           if (normalize(line).indexOf(normalize(linkedNames[entry.item.postId] || entry.item.name)) !== -1) {
-            if (/\u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430 \u043f\u0440\u0435\u043a\u0440\u0430\u0449\u0435\u043d\u0430/i.test(line)) stopped = true;
+            if (/\u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430 \u043f\u0440\u0435\u043a\u0440\u0430\u0449\u0435\u043d\u0430|\u043c\u043e\u0434\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u044f \u043f\u0440\u0435\u043a\u0440\u0430\u0449\u0435\u043d\u0430/i.test(line)) stopped = true;
             else if (/\u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430 \u043f\u0440\u043e\u0434\u043e\u043b\u0436\u0435\u043d\u0430|\u043f\u0440\u043e\u0434\u043e\u043b\u0436\u0435\u043d\u0438\u0435 \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0438|\u0430\u043a\u0442\u0438\u0432\u0430\u0446\u0438\u044f/i.test(line)) stopped = false;
           }
         });
@@ -5558,7 +5619,7 @@ function npcHtmlCode(node) {
     (state.character.artifacts || []).filter(function (item) { return item.passiveEnabled !== false && item.passive && Object.keys(item.passive).length; }).forEach(function (item) { lines.push('[b]\u0410\u043a\u0442\u0438\u0432\u0435\u043d \u044d\u0444\u0444\u0435\u043a\u0442 \u0430\u0440\u0442\u0435\u0444\u0430\u043a\u0442\u0430:[/b] ' + item.name); });
     lines.push('[b]HP \u043d\u0430 \u043a\u043e\u043d\u0435\u0446 \u0445\u043e\u0434\u0430:[/b] ' + health.current + '/' + health.max);
     if (health.unconscious) lines.push('[color=#c62828][b]\u0412\u044b \u043f\u043e\u0442\u0435\u0440\u044f\u043b\u0438 \u0441\u043e\u0437\u043d\u0430\u043d\u0438\u0435 \u043f\u0440\u0438 ' + health.current + ' HP.[/b][/color]');
-    lines.push('[b]\u0427\u0430\u043a\u0440\u0430 \u043d\u0430 \u043a\u043e\u043d\u0435\u0446 \u0445\u043e\u0434\u0430:[/b] \u043e\u0431\u0449\u0430\u044f ' + chakra.general + '/' + statValue('chakraTotal') + '; \u043a\u043e\u043d\u0446\u0435\u043d\u0442\u0440\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u0430\u044f ' + chakra.focused + '/' + chakra.limit);
+    lines.push('[b]\u0427\u0430\u043a\u0440\u0430 \u043d\u0430 \u043a\u043e\u043d\u0435\u0446 \u0445\u043e\u0434\u0430:[/b] \u043e\u0431\u0449\u0430\u044f ' + chakra.general + '/' + (statValue('chakraTotal') + state.actions.reduce(function (total, action) { return total + (action.abilityReserveBonus || 0); }, 0)) + '; \u043a\u043e\u043d\u0446\u0435\u043d\u0442\u0440\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u0430\u044f ' + chakra.focused + '/' + chakra.limit);
     if (!combat.firstTurn) {
       ['speed', 'strength', 'defense', 'critical'].forEach(function (type) {
         var labels = { speed: '\u0423\u0441\u043a\u043e\u0440\u0435\u043d\u0438\u0435', strength: '\u0423\u0432\u0435\u043b\u0438\u0447\u0435\u043d\u0438\u0435 \u0441\u0438\u043b\u044b', defense: '\u0423\u0432\u0435\u043b\u0438\u0447\u0435\u043d\u0438\u0435 \u0437\u0430\u0449\u0438\u0442\u044b', critical: '\u0423\u0441\u0438\u043b\u0435\u043d\u0438\u0435 \u043a\u0440\u0438\u0442\u0438\u0447\u0435\u0441\u043a\u043e\u0433\u043e \u0448\u0430\u043d\u0441\u0430' };
