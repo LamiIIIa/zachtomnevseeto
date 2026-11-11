@@ -236,7 +236,11 @@ function generateSection(className, content) {
   function mount(editor) {
     var form = editor.form;
     if (!form) return null;
-    var preview = document.getElementById('post-preview');
+    // Personal messages can mount their native preview after this controller.
+    // Keep a single target for both renderers and reuse it across form changes.
+    var previews = Array.from(document.querySelectorAll('#post-preview'));
+    var preview = previews.find(function (node) { return form.contains(node); }) || previews[0];
+    previews.forEach(function (node) { if (node !== preview) node.remove(); });
     if (!preview) {
       preview = document.createElement('fieldset'); preview.id = 'post-preview';
       preview.innerHTML = '<legend><span>Предварительный просмотр сообщения</span></legend><div class="fs-box"><div class="post-box"><div class="post-content"></div></div></div>';
@@ -292,7 +296,7 @@ function generateSection(className, content) {
   $(document).on('pun_preedit.forumPreview pun_edit.forumPreview pun_post.forumPreview',function () { schedule(); });
   new MutationObserver(function (mutations) {
     if (mutations.some(function (mutation) { return Array.from(mutation.addedNodes).some(function (node) {
-      return node.nodeType === 1 && (isEditor(node) || node.querySelector(selector));
+      return node.nodeType === 1 && (isEditor(node) || node.matches('#post-preview') || node.querySelector(selector + ',#post-preview'));
     }) })) schedule();
   }).observe(document.body,{childList:true,subtree:true});
   document.head.insertAdjacentHTML('beforeend','<style>#post-preview .code-box pre{max-height:13em}</style>');
