@@ -155,26 +155,45 @@ window.AkatsukiBingoIcons={"konoha":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iN
       (icon ? '<span class="bingo-symbol" aria-hidden="true" style="--bingo-symbol:url('+icon+')"></span>' : '<span aria-hidden="true">◇</span>')+
       '<span>'+esc(M.affiliations[id]||'')+'</span></span>';
   }
-  const snapshotKey='akatsuki-bingo-public-v1';
+  const snapshotKey='akatsuki-bingo-public-v2';
+  function validData(data,{initialized=false}={}) {
+    if(!data?.saved||!Number.isSafeInteger(data.saved.revision)||data.saved.revision<0||!Array.isArray(data.saved.records))throw Error('Некорректный ответ Книги Бинго');
+    if(initialized&&data.saved.revision===0&&data.saved.records.length===0)throw Error('Книга Бинго ещё не получена с сервера. Нажмите «Обновить».');
+    M.validateBoard(data.saved.records);
+    return data;
+  }
   function readSnapshot() {
-    try {
-      const cached=JSON.parse(localStorage.getItem(snapshotKey)||'null');
-      if (!cached||Date.now()-cached.cachedAt>7*86400000||!Array.isArray(cached.data?.saved?.records)) return null;
-      M.validateBoard(cached.data.saved.records);
-      return cached;
-    } catch {return null;}
+    for(const key of [snapshotKey,'akatsuki-bingo-public-v1']) {
+      try {
+        const cached=JSON.parse(localStorage.getItem(key)||'null');
+        if(!cached||!Number.isFinite(cached.cachedAt)||Date.now()-cached.cachedAt>7*86400000)continue;
+        validData(cached.data,{initialized:true});
+        if(!cached.data.saved.records.length){localStorage.removeItem(key);continue;}
+        return cached;
+      }catch{try{localStorage.removeItem(key);}catch{}}
+    }
+    return null;
   }
   function remember(data) {
-    try {localStorage.setItem(snapshotKey,JSON.stringify({cachedAt:Date.now(),data}));} catch {}
+    try {
+      validData(data);
+      const old=readSnapshot();
+      if(old&&old.data.saved.revision>data.saved.revision)return;
+      if(data.saved.records.length)localStorage.setItem(snapshotKey,JSON.stringify({cachedAt:Date.now(),data}));
+      else localStorage.removeItem(snapshotKey);
+      localStorage.removeItem('akatsuki-bingo-public-v1');
+    }catch{}
   }
+  let latestRevision=0;
   async function request(options={}) {
     const read=!options.method||options.method==='GET';
-    if(read&&window.AkatsukiPublicAPI)return window.AkatsukiPublicAPI.read('/api/v1/bingo');
+    if(read&&window.AkatsukiPublicAPI)return window.AkatsukiPublicAPI.read('/api/v1/bingo',{minRevision:Math.max(latestRevision,readSnapshot()?.data.saved.revision||0),requireInitialized:!admin()});
     for (let attempt=0;attempt<(read?3:1);attempt++) {
       try {
         const response=await fetch(endpoint,{cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(read?15000:20000),...options});
         const result=await response.json();
         if (!response.ok) throw Object.assign(Error(result.error||'Сервер временно недоступен'),{status:response.status});
+        if(!read&&result.saved){validData(result);latestRevision=Math.max(latestRevision,result.saved.revision);remember(result);}
         return result;
       } catch(error) {
         if (!read||error.status&&error.status<500&&error.status!==429) throw error;
@@ -185,7 +204,7 @@ window.AkatsukiBingoIcons={"konoha":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iN
   }
   let sharedRequest;
   function load() {
-    if (!sharedRequest) sharedRequest=request().then(data=>{remember(data);return data;}).finally(()=>{sharedRequest=null;});
+    if (!sharedRequest) sharedRequest=request().then(data=>{validData(data,{initialized:!admin()});const cached=readSnapshot();if(data.saved.revision<Math.max(latestRevision,cached?.data.saved.revision||0))throw Error('Сервер вернул устаревшую версию книги. Повторите обновление.');latestRevision=Math.max(latestRevision,data.saved.revision);remember(data);return data;}).finally(()=>{sharedRequest=null;});
     return sharedRequest;
   }
   function selectOptions(values,value,empty='') {
@@ -225,9 +244,10 @@ window.AkatsukiBingoIcons={"konoha":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iN
   function publicWidget(root) {
     root.classList.add('bingo');
     root.innerHTML='<header class="bingo-heading"><small>ШИНОБИ · ДОСЬЕ</small><h2>Книга Бинго</h2></header><div class="bingo-filters"><label>Поиск<input type="search" data-bingo-search placeholder="Имя и описание"></label><label>Ранг<select data-bingo-rank>'+selectOptions(Object.fromEntries(Object.keys(M.ranks).map(rank=>[rank,'Ранг '+rank])),'','Все ранги')+'</select></label><label>Статус<select data-bingo-status>'+selectOptions(statusNames,'','Все статусы')+'</select></label><label>Сортировка<select data-bingo-sort><option value="default">Обычный порядок</option><option value="village">По деревне принадлежности · А–Я</option></select></label><button type="button" data-bingo-refresh>Обновить</button></div><p data-bingo-notice role="status">Загрузка Книги Бинго…</p><div class="bingo-grid"></div><nav class="bingo-pagination" aria-label="Страницы Книги Бинго" hidden></nav>';
-    let records=[],asOf,page=1,busy=false,hasData=false;
+    let records=[],asOf,page=1,busy=false,hasData=false,loadError='';
     const notice=root.querySelector('[data-bingo-notice]');
     function render() {
+      if(!hasData){notice.textContent=loadError||'Книга Бинго загружается…';root.querySelector('.bingo-pagination').hidden=true;return;}
       const query=root.querySelector('[data-bingo-search]').value.toLocaleLowerCase('ru').replace(/ё/g,'е').trim();
       const rank=root.querySelector('[data-bingo-rank]').value;
       const status=root.querySelector('[data-bingo-status]').value;
@@ -246,7 +266,7 @@ window.AkatsukiBingoIcons={"konoha":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iN
       const pagination=root.querySelector('.bingo-pagination');
       pagination.hidden=pages<=1;
       pagination.innerHTML='<button type="button" data-bingo-page="'+(page-1)+'"'+(page===1?' disabled':'')+'>← Назад</button><span aria-live="polite">Страница '+page+' из '+pages+'</span><button type="button" data-bingo-page="'+(page+1)+'"'+(page===pages?' disabled':'')+'>Далее →</button>';
-      notice.textContent=visible.length?'Найдено записей — '+visible.length:records.length?'По этим фильтрам записей нет.':'В Книге Бинго пока нет записей.';
+      notice.textContent=(visible.length?'Найдено записей — '+visible.length:records.length?'По этим фильтрам записей нет.':'В Книге Бинго пока нет записей.')+(loadError?' '+loadError+' Показана последняя успешно загруженная копия.':'');
     }
     const refreshButton=root.querySelector('[data-bingo-refresh]');
     const cached=readSnapshot();
@@ -255,14 +275,16 @@ window.AkatsukiBingoIcons={"konoha":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iN
     }
     async function refresh() {
       if (busy) return;
-      busy=true;refreshButton.disabled=true;
+      busy=true;loadError='';refreshButton.disabled=true;
       notice.textContent=hasData?'Показана сохранённая копия. Обновляем данные…':'Загрузка Книги Бинго… При сбое повторим запрос автоматически.';
       try {const data=await load();records=data.saved.records;asOf=data.asOf;hasData=true;render();}
-      catch(error) {notice.textContent=error.message+(hasData?' Показана последняя успешно загруженная копия.':' Нажмите «Обновить» для повторной попытки.');}
+      catch(error) {loadError=error.message;notice.textContent=error.message+(hasData?' Показана последняя успешно загруженная копия.':' Нажмите «Обновить» для повторной попытки.');}
       finally {busy=false;refreshButton.disabled=false;}
     }
     root.querySelectorAll('input,select').forEach(input=>input.addEventListener(input.tagName==='INPUT'?'input':'change',()=>{page=1;render();}));
     refreshButton.addEventListener('click',refresh);
+    window.addEventListener('pageshow',event=>{if(event.persisted&&root.isConnected)refresh();});
+    window.addEventListener('online',()=>{if(root.isConnected)refresh();});
     root.querySelector('.bingo-pagination').addEventListener('click',event=>{
       const button=event.target.closest('[data-bingo-page]');
       if (!button||button.disabled) return;
