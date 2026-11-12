@@ -116,7 +116,7 @@ export async function publish() {
     await loginForm.locator('input[type="submit"], button[type="submit"]').first().click()
     await login.waitForLoadState('domcontentloaded')
     const files = await context.newPage(), style = await context.newPage(), forms = await context.newPage(), pluginEditor = await context.newPage()
-    await Promise.all([files.goto(`${origin}/admin_files.php`), style.goto(`${origin}/admin_style.php`), forms.goto(`${origin}/admin_forms.php`)])
+    await Promise.all([files.goto(`${origin}/admin_files.php`, { waitUntil: 'domcontentloaded', timeout: 60000 }), style.goto(`${origin}/admin_style.php`, { waitUntil: 'domcontentloaded', timeout: 60000 }), forms.goto(`${origin}/admin_forms.php`, { waitUntil: 'domcontentloaded', timeout: 60000 })])
     const originalStyle = await readEditor(style, 'form[content1]')
     const originalHeader = await readEditor(forms, 'form[o_html_header]')
     const originalFooter = await readEditor(forms, 'form[o_html_footer]')
@@ -182,7 +182,7 @@ export async function publish() {
       if (await check.locator('script[data-forum-plugin-loaded="technique-search"],script[data-forum-plugin-loaded="battle-assistant"]').count()) throw new Error('Editor tools loaded on index without reply form')
       if (await check.locator('script[src*="/11008.js"]').count() || await check.locator('script[data-forum-plugin-loaded="shop"]').count()) throw new Error('Shop loaded outside its topic')
       if (await check.locator('script[src*="/24002.js"]:not([data-forum-plugin-loaded]),script[src*="/28054.js"]:not([data-forum-plugin-loaded]),script[src*="/80230.js"]:not([data-forum-plugin-loaded])').count()) throw new Error('Old blocking plugin reference remains')
-      await check.goto(`${origin}/viewtopic.php?id=448&fd_verify=${verification}`)
+      await check.goto(`${origin}/viewtopic.php?id=448&fd_verify=${verification}`, { waitUntil: 'domcontentloaded', timeout: 60000 })
       await check.locator('form .ats-launcher-button').waitFor({ timeout: 45000 })
       await check.locator('form .aba-launcher-button').waitFor({ timeout: 45000 })
       const topicErrors = await check.evaluate(() => window.forumDeferredExtras.errors)
@@ -190,16 +190,17 @@ export async function publish() {
       if (topicErrors.length) throw new Error('Topic enhancements failed')
       if (await check.locator('#forum-tools').count()) throw new Error('Unexpected global tools on topic')
     } catch (error) {
+      console.error('Publication verification failed before rollback:', error.message)
       if (styleChanged) {
-        await style.goto(`${origin}/admin_style.php`)
+        await style.goto(`${origin}/admin_style.php`, { waitUntil: 'domcontentloaded', timeout: 60000 })
         await saveEditor(style, 'form[content1]', originalStyle)
       }
       if (headerChanged) {
-        await forms.goto(`${origin}/admin_forms.php`)
+        await forms.goto(`${origin}/admin_forms.php`, { waitUntil: 'domcontentloaded', timeout: 60000 })
         await saveEditor(forms, 'form[o_html_header]', originalHeader)
       }
       if (footerChanged) {
-        await forms.goto(`${origin}/admin_forms.php`)
+        await forms.goto(`${origin}/admin_forms.php`, { waitUntil: 'domcontentloaded', timeout: 60000 })
         await saveEditor(forms, 'form[o_html_footer]', originalFooter)
       }
       await restoreManagedPlugins(pluginEditor, pluginBackups, saveEditor)
