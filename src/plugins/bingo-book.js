@@ -202,20 +202,19 @@ window.AkatsukiBingoIcons={"konoha":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iN
   }
   function publicWidget(root) {
     root.classList.add('bingo');
-    root.innerHTML='<header class="bingo-heading"><small>ШИНОБИ · ДОСЬЕ</small><h2>Книга Бинго</h2></header><div class="bingo-filters"><label>Поиск<input type="search" data-bingo-search placeholder="Имя и описание"></label><label>Книга<select data-bingo-book>'+selectOptions(M.selectableBooks,'','Все книги')+'</select></label><label>Статус<select data-bingo-status>'+selectOptions(statusNames,'','Все статусы')+'</select></label><button type="button" data-bingo-refresh>Обновить</button></div><p data-bingo-notice role="status">Загрузка Книги Бинго…</p><div class="bingo-grid"></div>';
+    root.innerHTML='<header class="bingo-heading"><small>ШИНОБИ · ДОСЬЕ</small><h2>Книга Бинго</h2></header><div class="bingo-filters"><label>Поиск<input type="search" data-bingo-search placeholder="Имя и описание"></label><label>Ранг<select data-bingo-rank>'+selectOptions(Object.fromEntries(Object.keys(M.ranks).map(rank=>[rank,'Ранг '+rank])),'','Все ранги')+'</select></label><label>Статус<select data-bingo-status>'+selectOptions(statusNames,'','Все статусы')+'</select></label><button type="button" data-bingo-refresh>Обновить</button></div><p data-bingo-notice role="status">Загрузка Книги Бинго…</p><div class="bingo-grid"></div>';
     let records=[],asOf;
     const notice=root.querySelector('[data-bingo-notice]');
     function render() {
       const query=root.querySelector('[data-bingo-search]').value.toLocaleLowerCase('ru').replace(/ё/g,'е').trim();
-      const book=root.querySelector('[data-bingo-book]').value;
+      const rank=root.querySelector('[data-bingo-rank]').value;
       const status=root.querySelector('[data-bingo-status]').value;
       const visible=records.filter(record=>{
-        const listing=record.listings.find(item=>item.book===book);
-        const removed=record.status==='dead'||record.status==='inactive'||(book?listing?.status==='inactive':record.listings.some(item=>item.status==='inactive'));
-        const matchesStatus=!status||(status==='inactive'?removed:status==='active'?['active','market_only'].includes(record.status)&&(!book||listing?.status==='active'):record.status===status);
-        return (!query||(record.name+' '+record.description).toLocaleLowerCase('ru').replace(/ё/g,'е').includes(query))&&(!book||listing)&&matchesStatus;
+        const removed=record.status==='dead'||record.status==='inactive'||record.listings.some(item=>item.status==='inactive');
+        const matchesStatus=!status||(status==='inactive'?removed:status==='active'?['active','market_only'].includes(record.status):record.status===status);
+        return (!query||(record.name+' '+record.description).toLocaleLowerCase('ru').replace(/ё/g,'е').includes(query))&&(!rank||record.rank===rank)&&matchesStatus;
       });
-      root.querySelector('.bingo-grid').innerHTML=visible.map(record=>card(book?{...record,listings:record.listings.filter(item=>item.book===book)}:record,asOf)).join('');
+      root.querySelector('.bingo-grid').innerHTML=visible.map(record=>card(record,asOf)).join('');
       notice.textContent=visible.length?'Найдено записей — '+visible.length:records.length?'По этим фильтрам записей нет.':'В Книге Бинго пока нет записей.';
     }
     async function refresh() {
