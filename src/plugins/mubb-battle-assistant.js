@@ -1,4 +1,4 @@
-// mubb-battle-assistant ver 74
+// mubb-battle-assistant ver 75
 (function () {
   'use strict';
 /* CHARACTER_TEMPLATE_START */
@@ -3066,7 +3066,7 @@ function npcHtmlCode(node) {
     var isClonesTab = state.builderTab === 'clones';
     var isSituationsTab = state.builderTab === 'situations';
     var isEnvironmentTab = state.builderTab === 'environment';
-    state.nodes.builder.innerHTML = '<section class="aba-action-editor aba-action-editor-direct" data-continued-techniques hidden></section><div class="aba-builder-tabs">' +
+    state.nodes.builder.innerHTML = '<section class="aba-continued-panel" data-continued-techniques hidden></section><div class="aba-builder-tabs">' +
       '<button type="button" data-builder-tab="actions" class="' + (isActionsTab ? 'is-active' : '') + '">\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u044f</button>' +
       '<button type="button" data-builder-tab="techniques" class="' + (isTechniquesTab ? 'is-active' : '') + '">\u0422\u0435\u0445\u043d\u0438\u043a\u0438 \u043f\u0435\u0440\u0441\u043e\u043d\u0430\u0436\u0430</button>' +
       '<button type="button" data-builder-tab="situations" class="' + (isSituationsTab ? 'is-active' : '') + '">\u0411\u043e\u0435\u0432\u044b\u0435 \u0441\u0438\u0442\u0443\u0430\u0446\u0438\u0438</button>' +
@@ -4056,7 +4056,7 @@ function npcHtmlCode(node) {
     if (panel.dataset.signature === signature) return;
     panel.dataset.signature = signature;
     panel.hidden = !entries.length;
-    panel.innerHTML = entries.length ? '<h4>\u0410\u043a\u0442\u0438\u0432\u043d\u044b\u0435 \u0442\u0435\u0445\u043d\u0438\u043a\u0438</h4><div class="aba-option-grid"></div><div data-continued-editor></div>' : '';
+    panel.innerHTML = entries.length ? '<h4>\u0410\u043a\u0442\u0438\u0432\u043d\u044b\u0435 \u0442\u0435\u0445\u043d\u0438\u043a\u0438</h4><div class="aba-continued-cards"></div><div data-continued-editor></div>' : '';
     entries.forEach(function (original) {
       var key = 'technique:' + original.postId;
       var category = techniqueCategory(original.detail);
@@ -4064,14 +4064,29 @@ function npcHtmlCode(node) {
       if (category.attack) modes.push(['attack', '\u0410\u0442\u0430\u043a\u0430']);
       if (category.defense) modes.push(['defense', '\u0417\u0430\u0449\u0438\u0442\u0430']);
       if (category.support || category.enhancement || !modes.length) modes.push(['support', '\u042d\u0444\u0444\u0435\u043a\u0442']);
+      var card = document.createElement('article');
+      card.className = 'aba-continued-card';
+      var heading = document.createElement('strong');
+      heading.textContent = original.name;
+      var meta = document.createElement('small');
+      var currentRank = continued.get(key).effectiveRank || original.rank;
+      meta.textContent = ['\u0420\u0430\u043d\u0433 ' + currentRank, original.detail.element].filter(Boolean).join(' \u00b7 ');
+      var actions = document.createElement('div');
+      actions.className = 'aba-continued-buttons';
+      card.append(heading, meta, actions);
+      panel.querySelector('.aba-continued-cards').appendChild(card);
       modes.forEach(function (mode) {
         var button = document.createElement('button');
         button.type = 'button';
-        button.textContent = mode[1] + ' \u00b7 ' + original.name;
-        panel.querySelector('.aba-option-grid').appendChild(button);
+        button.textContent = mode[1];
+        button.setAttribute('aria-label', mode[1] + ' \u00b7 ' + original.name);
+        button.setAttribute('aria-pressed', 'false');
+        actions.appendChild(button);
         on(button, 'click', function () {
           var support = continuedTechniques().get(key);
           if (!support) return;
+          panel.querySelectorAll('.aba-continued-card').forEach(function (node) { node.classList.toggle('is-selected', node === card); });
+          panel.querySelectorAll('.aba-continued-buttons button').forEach(function (node) { node.setAttribute('aria-pressed', String(node === button)); });
           var item = Object.assign({}, original);
           var editor = panel.querySelector('[data-continued-editor]');
           var rank = support.effectiveRank || original.rank;
@@ -4082,7 +4097,7 @@ function npcHtmlCode(node) {
           try { calculation = techniqueCalculation(item, mode[0], rank); }
           catch (error) { setBuilderMessage(error.message, 'error'); return; }
           editor.className = 'aba-action-editor';
-          editor.innerHTML = '<h4>' + escapeHtml(button.textContent) + '</h4><p>' + escapeHtml(calculation.powerLabel + ': ' + calculation.powerText) + '</p>' +
+          editor.innerHTML = '<h4>' + escapeHtml(mode[1] + ' \u00b7 ' + original.name) + '</h4><p>' + escapeHtml(calculation.powerLabel + ': ' + calculation.powerText) + '</p>' +
             (mode[0] === 'support' ? '' : techniqueChakraBoostFields(Object.assign({}, item, { rank: rank }), mode[0])) +
             (mode[0] === 'attack' ? modifierBlock(attackContextFields(false)) : '') +
             (pair || weaponCompatible ? '<label>\u041a\u043e\u043c\u0431\u0438\u043d\u0430\u0446\u0438\u044f<select data-continued-combination><option value="">\u0411\u0435\u0437 \u043a\u043e\u043c\u0431\u0438\u043d\u0430\u0446\u0438\u0438</option></select></label>' : '') +
@@ -5711,6 +5726,7 @@ function npcHtmlCode(node) {
       '.aba-head-actions{display:flex;align-items:center;gap:10px}',
       '.aba-help{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid rgba(255,255,255,.7);border-radius:50%;background:transparent;color:inherit;font:700 18px/1 Arial;cursor:pointer}',
       '.aba-close{border:0;background:transparent;color:inherit;font:30px/1 Arial;cursor:pointer;transition:transform .25s}.aba-close:hover{transform:rotate(90deg)}',
+      '.aba-continued-panel{margin:0 0 18px;padding:16px;border:1px solid var(--aba-soft);border-radius:12px 30px 12px 12px;background:var(--aba-panel)}.aba-continued-panel[hidden]{display:none!important}.aba-continued-panel>h4{margin:0 0 12px;color:var(--aba-accent);font-size:17px}.aba-continued-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:10px}.aba-continued-card{min-width:0;padding:12px;border:1px solid transparent;border-radius:10px 22px 10px 10px;background:var(--aba-soft)}.aba-continued-card.is-selected{border-color:var(--aba-accent)}.aba-continued-card>strong{display:block;line-height:1.4;overflow-wrap:anywhere}.aba-continued-card>small{display:block;margin:4px 0 10px;color:var(--aba-muted)}.aba-continued-buttons{display:flex;flex-wrap:wrap;gap:7px}.aba-continued-buttons button{min-height:36px;padding:6px 14px;border:1px solid var(--aba-accent);border-radius:7px 14px 7px 7px;background:var(--aba-panel);color:var(--aba-accent);cursor:pointer}.aba-continued-buttons button[aria-pressed=true]{background:var(--aba-accent);color:var(--color-txt3,#fff)}.aba-continued-buttons button:focus-visible{outline:2px solid var(--aba-accent);outline-offset:3px}',
       '.aba-directory-technique{padding:9px;margin:5px 0;border-radius:9px;background:var(--aba-soft)}.aba-directory-technique[hidden],.aba-tech-option[hidden]{display:none!important}.aba-directory-routes{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}.aba-directory-technique button{max-width:100%;border:1px solid var(--aba-accent);border-radius:8px;padding:5px 9px;background:var(--aba-panel);color:var(--aba-text);cursor:pointer;text-align:left}.aba-directory-technique button:disabled{cursor:default;opacity:.7}.aba-directory-technique [data-directory-technique]{font-weight:800}',
       '.aba-builder-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;padding:4px;border:1px solid var(--aba-soft);border-radius:12px;background:var(--aba-soft)}.aba-builder-tabs button{flex:1 1 180px;min-height:42px;border:1px solid transparent;border-radius:10px 20px 10px 10px;background:transparent;color:var(--aba-text);cursor:pointer;font-weight:800}.aba-builder-tabs button.is-active{border-color:var(--aba-accent);background:var(--aba-panel);color:var(--aba-accent)}',
       '.aba-instruction{position:fixed;z-index:100110;left:24px;right:24px;top:24px;bottom:24px;width:auto;height:calc(100vh - 48px);max-width:none;max-height:none;border:1px solid var(--aba-accent);border-radius:18px 30px 18px 18px;background:var(--aba-surface);box-shadow:-7px 8px 22px rgba(0,0,0,.35);overflow:hidden}',
