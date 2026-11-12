@@ -1,3 +1,4 @@
+import './plugins/bingo-book.js'
 import './styles/main.css'
 
 import { initCommon } from './components/common.js'
