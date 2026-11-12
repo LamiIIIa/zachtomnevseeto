@@ -191,7 +191,12 @@ window.AkatsukiBingoModel=createBingoModel();const style=document.createElement(
   }
   async function adminKey() {
     if (!admin()) throw Error('Сохранение доступно администратору');
-    if (window.BINGO_BOOK_CONFIG?.adminToken) return window.BINGO_BOOK_CONFIG.adminToken;
+    function configured() {
+      const token=window.BINGO_BOOK_CONFIG?.adminToken||window.LOTTERY_RESULTS_CONFIG?.adminToken;
+      return typeof token==='string'&&token.trim().length>=32?token.trim():'';
+    }
+    const supplied=configured();
+    if (supplied) return supplied;
     if (window.LotteryAdminKeys) {
       const key=await window.LotteryAdminKeys.load();
       if (key) return key;
@@ -201,7 +206,7 @@ window.AkatsukiBingoModel=createBingoModel();const style=document.createElement(
     const body=new URLSearchParams({method:'storage.get',user_id:String(user),key:'akatsuki_lottery_admin_key_v1',token:window.ForumAPITicket,format:'json',charset:'utf-8'});
     const response=await fetch('/api.php',{method:'POST',body,credentials:'same-origin',signal:AbortSignal.timeout(12000)});
     const data=await response.json();
-    const key=data.response?.storage?.data?.akatsuki_lottery_admin_key_v1;
+    const key=configured()||data.response?.storage?.data?.akatsuki_lottery_admin_key_v1;
     if (typeof key!=='string'||key.length<32) throw Error('Для профиля не подключён серверный ключ администратора. Подключите ключ существующего серверного хранилища.');
     return key;
   }
