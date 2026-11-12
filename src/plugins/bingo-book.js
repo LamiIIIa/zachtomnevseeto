@@ -1,6 +1,6 @@
 (function(){function createBingoModel() {
   const ranks = {D:20000,C:50000,B:200000,A:1000000,S:5000000};
-  const books = {konoha:'Коноха',kiri:'Кири',kumo:'Кумо',iwa:'Ива',suna:'Суна',oto:'Ото',ame:'Аме',taki:'Таки',kusa:'Куса',yuki:'Юки',market:'Чёрный рынок'};
+  const books = {konoha:'Коноха',kiri:'Кири',kumo:'Кумо',iwa:'Ива',suna:'Суна',oto:'Ото',ame:'Аме',taki:'Таки',kusa:'Куса',yuki:'Юки',hot_springs:'Страна горячих источников',market:'Чёрный рынок'};
   const affiliations = {...books,akatsuki:'Акацуки',free:'Вольные шиноби'};
   delete affiliations.market;
   const factors = {
