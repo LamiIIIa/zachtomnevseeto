@@ -479,6 +479,7 @@ window.AkatsukiBingoIcons={"konoha":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iN
         event.preventDefault();event.stopImmediatePropagation();
         root.querySelectorAll('[role="tablist"]>[role="tab"]').forEach(tab=>tab.setAttribute('aria-selected',String(tab===button)));
         ['akcm-registry-view','akcm-bulk-view','akcm-events-view','akcm-postcount-view'].forEach(id=>{const node=root.querySelector('#'+id);if(node)node.hidden=true;});
+        root.querySelectorAll('[data-mission-admin]').forEach(node=>node.hidden=true);
         view.hidden=false;editor(view);
       } else if (event.target.closest('[data-action$="-tab"]')) {
         view.hidden=true;button.setAttribute('aria-selected','false');
