@@ -95,7 +95,7 @@
     if (!/^[a-zA-Z0-9-]{8,80}$/.test(input.id||'')) fail('Неверный ID записи');
     if (!ranks[input.rank]) fail('Неизвестный ранг');
     if (input.affiliation!==''&&!affiliations[input.affiliation]) fail('Неизвестная принадлежность');
-    if (!['active','dead','captured','inactive'].includes(input.status)) fail('Неизвестный статус');
+    if (!['active','dead','captured','inactive','market_only'].includes(input.status)) fail('Неизвестный статус');
     if (!['shared','perBook'].includes(input.timeMode)) fail('Неизвестная настройка срока');
     const normalized={id:input.id,name:text(input.name,160,'Имя и фамилия',true),description:text(input.description||'',2000,'Описание'),photo:text(input.photo||'',1000,'Фото'),rank:input.rank,affiliation:input.affiliation,status:input.status,timeMode:input.timeMode,wantedYears:years(input.wantedYears),wantedSince:date(input.wantedSince||''),currentDate:date(input.currentDate||''),factors:{},death:event(input.death,'Кем убит'),capture:event(input.capture,'Кем захвачен')};
     if (normalized.photo) {
@@ -117,8 +117,9 @@
       seen.add(item.book);
       if (!['active','inactive'].includes(item.status)) fail('Неизвестный статус в книге');
       if (!Array.isArray(item.sources)||!item.sources.length||item.sources.some(source=>!sources[source])) fail('Укажите источники записи');
-      return {book:item.book,status:normalized.status==='dead'?'inactive':item.status,sources:[...new Set(item.sources)],...(typeof item.ownSources==='boolean'?{ownSources:item.ownSources}:{}),wantedYears:years(item.wantedYears),wantedSince:date(item.wantedSince||''),removedOn:date(normalized.status==='dead'?normalized.death.date:item.removedOn||'')};
+      return {book:item.book,status:normalized.status==='dead'?'inactive':normalized.status==='market_only'?(item.book==='market'?'active':'inactive'):item.status,sources:[...new Set(item.sources)],...(typeof item.ownSources==='boolean'?{ownSources:item.ownSources}:{}),wantedYears:years(item.wantedYears),wantedSince:date(item.wantedSince||''),removedOn:date(normalized.status==='dead'?normalized.death.date:normalized.status==='market_only'&&item.book==='market'?'':item.removedOn||'')};
     });
+    if (normalized.status==='market_only'&&!seen.has('market')) fail('Для статуса «Только чёрный рынок» выберите книгу чёрного рынка');
     const common=input.commonSources??[...new Set(normalized.listings.flatMap(item=>item.sources))];
     if (!Array.isArray(common)||common.some(source=>!sources[source])) fail('Неизвестный источник записи');
     normalized.commonSources=[...new Set(common)];
@@ -144,7 +145,7 @@ window.AkatsukiBingoIcons={"konoha":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iN
   if (window.AkatsukiBingo) return;
   const M = window.AkatsukiBingoModel;
   const endpoint = 'https://akatski-forum-app.vercel.app/api/v1/bingo';
-  const statusNames = {active:'В розыске',dead:'Мёртв',captured:'Захвачен',inactive:'Неактуально'};
+  const statusNames = {active:'В розыске',dead:'Мёртв',captured:'Захвачен',inactive:'Неактуально',market_only:'Только чёрный рынок'};
   const money = value => new Intl.NumberFormat('ru-RU').format(value) + ' рё';
   const esc = value => String(value ?? '').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const admin = () => Number(window.GroupID || window.FORUM?.group_id) === 1;
@@ -211,7 +212,7 @@ window.AkatsukiBingoIcons={"konoha":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iN
       const visible=records.filter(record=>{
         const listing=record.listings.find(item=>item.book===book);
         const removed=record.status==='dead'||record.status==='inactive'||(book?listing?.status==='inactive':record.listings.some(item=>item.status==='inactive'));
-        const matchesStatus=!status||(status==='inactive'?removed:status==='active'?record.status==='active'&&(!book||listing?.status==='active'):record.status===status);
+        const matchesStatus=!status||(status==='inactive'?removed:status==='active'?['active','market_only'].includes(record.status)&&(!book||listing?.status==='active'):record.status===status);
         return (!query||(record.name+' '+record.description).toLocaleLowerCase('ru').replace(/ё/g,'е').includes(query))&&(!book||listing)&&matchesStatus;
       });
       root.querySelector('.bingo-grid').innerHTML=visible.map(record=>card(book?{...record,listings:record.listings.filter(item=>item.book===book)}:record,asOf)).join('');
@@ -335,11 +336,12 @@ window.AkatsukiBingoIcons={"konoha":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iN
         for (const kind of ['death','capture']) next[kind]={by:string(kind+'-by'),date:string(kind+'-date'),affiliations:data.getAll(kind+'-affiliations'),episode:string(kind+'-episode')};
         for (const book of Object.keys(M.books)) if (data.has('book-'+book)) {
           const specific=data.getAll('source-'+book);
-          next.listings.push({book,status:next.status==='dead'?'inactive':string('book-status-'+book),sources:data.has('own-source-'+book)?specific:data.getAll('sources'),ownSources:data.has('own-source-'+book),wantedYears:Number(data.get('years-'+book)),wantedSince:string('since-'+book),removedOn:string('removed-'+book)});
+          next.listings.push({book,status:next.status==='dead'?'inactive':next.status==='market_only'?(book==='market'?'active':'inactive'):string('book-status-'+book),sources:data.has('own-source-'+book)?specific:data.getAll('sources'),ownSources:data.has('own-source-'+book),wantedYears:Number(data.get('years-'+book)),wantedSince:string('since-'+book),removedOn:string('removed-'+book)});
         }
         return next;
       }
       function update() {
+        if (form.elements.status.value==='market_only') form.elements['book-market'].checked=true;
         const record=draft();
         form.querySelector('[data-shared-time]').hidden=record.timeMode!=='shared';
         const coefficientFormat=value=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:8}).format(value);
@@ -356,7 +358,12 @@ window.AkatsukiBingoIcons={"konoha":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iN
           const listing=record.listings.find(item=>item.book===section.dataset.book);
           section.querySelector('[data-own-source-options]').hidden=!form.elements['own-source-'+section.dataset.book].checked;
           const status=section.querySelector('[name="book-status-'+section.dataset.book+'"]');
-          status.disabled=record.status==='dead';
+          status.disabled=['dead','market_only'].includes(record.status);
+          if (listing&&record.status==='market_only') {
+            listing.status=section.dataset.book==='market'?'active':'inactive';
+            status.value=listing.status;
+            if (section.dataset.book==='market') section.querySelector('[name="removed-market"]').value='';
+          }
           if (listing&&record.status==='dead') {
             status.value='inactive';
             listing.status='inactive';
