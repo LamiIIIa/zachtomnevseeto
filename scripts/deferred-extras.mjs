@@ -209,7 +209,7 @@ export function patchExtras(source, section, urls = {}) {
       const src = attrs.match(/\bsrc=["']([^"']+)["']/i)?.[1]
       if (src) {
         const file = src.match(/\/files\/[\da-f/]+\/(\d+)\.js(?:[?#]|$)/i)?.[1]
-        const rule = extraRules[file]
+        const rule = extraRules[file] || (/^https:\/\/akatski-forum-app\.vercel\.app\/lottery-results\.js(?:[?#]|$)/.test(src) ? ['lottery-results', 'lottery-results'] : null)
         if (!rule) return whole
         item = { id: rule[0], rule: rule[1], src, attributes: Object.fromEntries([...attrs.matchAll(/\b(charset|addComment|data-[\w-]+)=["']([^"']*)["']/gi)].map(m => [m[1], m[2]])) }
       } else {

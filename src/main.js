@@ -1,3 +1,4 @@
+import './plugins/public-api.js'
 import './plugins/bingo-book.js'
 import './plugins/mission-board.js'
 import './styles/main.css'

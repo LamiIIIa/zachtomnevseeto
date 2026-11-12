@@ -5,6 +5,10 @@ import { patchExtras } from './deferred-extras.mjs'
 import { choosePluginFile } from './managed-plugin-files.mjs'
 import { pluginDefinitions } from './plugin-config.mjs'
 
+const mirroredLottery=patchExtras('<script src="https://akatski-forum-app.vercel.app/lottery-results.js"></script>','footer',{'lottery-results':'https://fixture.test/local-lottery.js'})
+assert.ok(mirroredLottery.includes('https://fixture.test/local-lottery.js'))
+assert.ok(!mirroredLottery.includes('https://akatski-forum-app.vercel.app/lottery-results.js'))
+
 const url = 'https://forumstatic.ru/files/001a/12/f3/'
 const critical = '<script src="https://forumstatic.ru/f/ru/bestbb/notifications.js"></script><script>notifications.load("mentions");notifications.load("subscriptions");</script><script src="'+url+'37690.js"></script><script src="https://forumstatic.ru/files/0015/c4/3f/52361.js"></script><script>HTMLinPost.groups=[1,2,5];HTMLinPost.parseHTMLinPosts();</script>'
 const optional = '<script src="'+url+'67329.js"></script><script src="'+url+'74246.js"></script><script src="https://forumstatic.ru/files/0015/c4/3f/26781.js"></script><script>PR.nick="fixture";PR.pass="not-a-real-password";PR.set();</script>'

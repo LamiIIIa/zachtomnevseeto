@@ -169,6 +169,7 @@ window.AkatsukiBingoIcons={"konoha":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iN
   }
   async function request(options={}) {
     const read=!options.method||options.method==='GET';
+    if(read&&window.AkatsukiPublicAPI)return window.AkatsukiPublicAPI.read('/api/v1/bingo');
     for (let attempt=0;attempt<(read?3:1);attempt++) {
       try {
         const response=await fetch(endpoint,{cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(read?15000:20000),...options});

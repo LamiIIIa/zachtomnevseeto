@@ -48,6 +48,7 @@ window.AkatsukiMissionModel=createMissionModel();const style=document.createElem
   }
   async function request(options={}) {
     const read=!options.method||options.method==='GET';
+    if(read&&window.AkatsukiPublicAPI)return window.AkatsukiPublicAPI.read('/api/v1/missions');
     for (let attempt=0;attempt<(read?3:1);attempt++) {
       try {
         const response=await fetch(endpoint,{cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(read?15000:20000),...options});
