@@ -1,3 +1,4 @@
+import { patchManagerScript } from './direct-manager.mjs'
 import { readFile, writeFile } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
 import path from 'node:path'
@@ -156,7 +157,7 @@ export async function publish() {
       headerChanged = true
       await saveEditor(forms, 'form[o_html_header]', patchExtras(patchHeader(stripHeaderPluginCopies(originalHeader, legacyUrls), cssUrl, jsUrl, (manifest.criticalFonts || []).map(file => mapping[file]).filter(Boolean)), 'header', extraUrls))
       footerChanged = true
-      await saveEditor(forms, 'form[o_html_footer]', patchExtras(patchPluginFooter(originalFooter, pluginUrls, { requireAll: true, legacyUrls, sourceHashes }), 'footer', extraUrls))
+      await saveEditor(forms, 'form[o_html_footer]', patchExtras(patchManagerScript(patchPluginFooter(originalFooter, pluginUrls, { requireAll: true, legacyUrls, sourceHashes }), pluginUrls['character-manager'], sourceHashes['character-manager']), 'footer', extraUrls))
       const check = await context.newPage()
       await instrument(check)
       await check.setViewportSize({ width: 390, height: 844 })

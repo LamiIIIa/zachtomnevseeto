@@ -14,6 +14,10 @@ export async function managedFileRows(page) {
   })))
 }
 export function choosePluginFile(plugin, rows, footer) {
+  if (plugin.id === 'character-manager' && /\/45688\.js(?:[?#"'])/.test(footer)) {
+    const existing = rows.find(row => row.file === '45688.js')
+    if (existing) return existing
+  }
   const canonical = rows.find(row => row.file === plugin.forumFile && row.comment === plugin.filename)
     || rows.find(row => row.comment === plugin.filename)
   if (canonical) return canonical
@@ -29,6 +33,8 @@ export function choosePluginFile(plugin, rows, footer) {
 export async function updateManagedPlugins({ files, editor, dir, manifest, footer, saveEditor, backups }) {
   const rows = await managedFileRows(files), urls = {}, published = []
   const previousHashes = Object.fromEntries([...footer.matchAll(/<script\b[^>]*data-forum-plugin="([^"]+)"[^>]*>([\s\S]*?)<\/script>/g)].map(match => [match[1], JSON.parse(match[2]).sourceHash]))
+  const managerHash = footer.match(/data-character-manager-hash=["']([^"']+)["']/i)?.[1]
+  if (managerHash) previousHashes['character-manager'] = managerHash
   // Resolve all four files and read all local payloads before changing anything.
   const plans = await Promise.all(manifest.plugins.map(async plugin => ({
     plugin, row: choosePluginFile(plugin, rows, footer),

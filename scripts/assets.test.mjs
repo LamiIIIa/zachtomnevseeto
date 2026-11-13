@@ -1,3 +1,4 @@
+import { patchManagerScript } from './direct-manager.mjs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { createServer } from 'node:http'
@@ -75,3 +76,14 @@ test('primary text fonts preload local regular/italic Latin and Cyrillic faces w
   assert.ok(html.includes('crossorigin="anonymous"'));
   assert.equal((patchHeader(html,'style.css','script.js',['https://forumstatic.ru/font.woff2']).match(/data-forum-text-font/g)||[]).length,1);
 });
+
+
+test('character manager publication keeps direct bootstrap and preserves config', () => {
+  const source = '<script>window.AKATSUKI_CHARACTER_MANAGER={storageTopicId:492}</script><script charset="utf-8" src="https://forumstatic.ru/files/001a/12/f3/45688.js?v=82"></script>'
+  const patched = patchManagerScript(source, 'https://forumstatic.ru/files/001a/12/f3/45688.js?v=83', 'testhash')
+  assert.ok(patched.includes('storageTopicId:492'))
+  assert.ok(patched.includes('data-character-manager-hash="testhash"'))
+  assert.ok(patched.includes('45688.js?v=83'))
+  assert.equal(patchManagerScript(patched, 'https://forumstatic.ru/files/001a/12/f3/45688.js?v=83', 'testhash'), patched)
+  assert.throws(() => patchManagerScript('<script>private()</script>', 'https://forumstatic.ru/new.js', 'hash'))
+})
