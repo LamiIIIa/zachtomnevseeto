@@ -35,79 +35,76 @@ async function loadArchive(chosen,index=null){
  const saved=new Map(),refs=Object.entries(entry?.months||{});let cursor=0;await Promise.all(Array.from({length:Math.min(3,refs.length)},async()=>{while(cursor<refs.length){const [month,ref]=refs[cursor++];if(!validMonth(month)||!ref?.key)throw Error('Неверный указатель месяца');const data=validateMonth(await stored(ref.key),month,chosen);saved.set(month,{...data,savedAt:ref.savedAt});}}));
  // The former monthly result is already a server save. Preserve it without rescanning.
  const legacy=await stored(KEY);if(legacy?.v===1&&Array.isArray(legacy.rows)&&Array.isArray(legacy.periods)&&selection(legacy.selection)===chosen&&legacy.timeZone===TZ){for(const month of legacy.periods){if(validMonth(month)&&!saved.has(month))saved.set(month,{...monthRecord(legacy,month,chosen),savedAt:legacy.calculatedAt,legacy:true});}}
- const coverage=entry?.coverage||null;if(coverage&&(!validMonth(coverage.from)||!validMonth(coverage.to)||!Array.isArray(coverage.topics)||!Number.isFinite(Date.parse(coverage.calculatedAt))))throw Error('Неверная отметка полного расчёта');return {index,saved,coverage};
+ return {index,saved};
 }
-async function saveMonths(chosen,records,{replace=false,excludeCurrent=false,fullCoverage=null}={}){
+async function saveMonths(chosen,records,{replace=false}={}){
  if(Number(W.GroupID)!==1||!W.ForumAPITicket)throw Error('Сохранение доступно администратору');
  const key=scopeKey(chosen),pending=[];const before=validateIndex(await stored(INDEX_KEY)),existing=before.scopes[key];if(existing&&existing.selection!==chosen)throw Error('Конфликт выбора тем в архиве');
- for(const record of records){validateMonth(record,record.month,chosen);if(excludeCurrent&&record.month===months(now)[0])continue;if(!replace&&existing?.months?.[record.month])continue;
+ for(const record of records){validateMonth(record,record.month,chosen);if(!replace&&existing?.months?.[record.month])continue;
    const payload=JSON.stringify({v:2,month:record.month,selection:record.selection,timeZone:record.timeZone,sections:record.sections,topics:record.topics,calculatedAt:record.calculatedAt,rows:record.rows});if(new TextEncoder().encode(payload).length>60000)throw Error('Месяц '+record.month+' слишком большой для хранилища');
    const dataKey='akPCM2_'+key+'_'+record.month.replace('-','')+'_'+W.crypto.randomUUID().replace(/-/g,'').slice(0,12);
    await store({method:'storage.set',key:dataKey,value:payload,token:W.ForumAPITicket});
    if(JSON.stringify(await stored(dataKey))!==payload)throw Error('Не удалось подтвердить запись месяца '+record.month);
    pending.push({month:record.month,key:dataKey,savedAt:new Date(now).toISOString()});
  }
- if(!pending.length&&!fullCoverage)return loadArchive(chosen);
+ if(!pending.length)return loadArchive(chosen);
  // Immutable month payloads become visible together when the index is committed.
  // Failure before this point leaves all previous saved results intact.
  const latest=validateIndex(await stored(INDEX_KEY)),prior=latest.scopes[key];if(prior&&prior.selection!==chosen)throw Error('Конфликт выбора тем в архиве');
  const next=JSON.parse(JSON.stringify(latest)),entry=next.scopes[key]||(next.scopes[key]={selection:chosen,months:{}});next.selection=chosen;
- for(const ref of pending){if(excludeCurrent&&ref.month===months(now)[0])continue;if(!replace&&entry.months[ref.month])continue;entry.months[ref.month]={key:ref.key,savedAt:ref.savedAt};}
- if(fullCoverage)entry.coverage=fullCoverage;else if(entry.coverage&&records.some(record=>record.month<entry.coverage.from&&record.rows.some(row=>row.total>0)))delete entry.coverage;
+ for(const ref of pending){if(!replace&&entry.months[ref.month])continue;entry.months[ref.month]={key:ref.key,savedAt:ref.savedAt};}
+ delete entry.coverage;
  const value=JSON.stringify(next);if(new TextEncoder().encode(value).length>60000)throw Error('Индекс месяцев слишком большой');
  let writeError;try{await store({method:'storage.set',key:INDEX_KEY,value,token:W.ForumAPITicket});}catch(error){writeError=error;}
  const confirmed=validateIndex(await stored(INDEX_KEY));
- if(fullCoverage&&JSON.stringify(confirmed.scopes[key]?.coverage)!==JSON.stringify(fullCoverage))throw writeError||Error('Не удалось подтвердить полный расчёт');
  for(const [month,ref]of Object.entries(entry.months))if(confirmed.scopes[key]?.months?.[month]?.key!==ref.key)throw writeError||Error('Не удалось подтвердить сохранение архива. Загрузите данные повторно.');
  return loadArchive(chosen,confirmed);
 }
 function savedTotals(saved){const users=new Map();for(const data of [...saved.values()].sort((a,b)=>String(a.savedAt).localeCompare(String(b.savedAt))))for(const row of data.rows){let user=users.get(row.id);if(!user){user={id:row.id,name:row.name,total:0};users.set(row.id,user);}user.name=row.name;user.total+=row.total;}return [...users.values()].sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name,'ru'));}
-function renderTotal(saved){const rows=savedTotals(saved);return '<details class="akpc-period"><summary>Всего постов · '+rows.reduce((sum,row)=>sum+row.total,0)+'</summary><p>Только сохранённые месяцы текущего набора тем: '+saved.size+'. Несохранённые расчёты в итог не входят.</p>'+renderRows(rows,false)+'</details>';}
+function renderTotal(saved){const rows=savedTotals(saved);return '<details class="akpc-period"><summary>Всего постов · '+rows.reduce((sum,row)=>sum+row.total,0)+'</summary><p>Сохранённых месяцев: '+saved.size+'.</p>'+renderRows(rows,false)+'</details>';}
 function renderRows(rows,weekly=true,month=''){if(!rows.length)return '<p>Подходящих постов нет.</p>';return '<div class="akpc-scroll"><table><thead><tr><th>Профиль</th><th>Постов</th>'+(weekly?'<th>По неделям (пн–вс)</th>':'')+'</tr></thead><tbody>'+rows.map(row=>'<tr><td><a href="/profile.php?id='+esc(row.id)+'">'+esc(row.name)+'</a></td><td>'+row.total+'</td>'+(weekly?'<td>'+Object.entries(row.weeks).sort().map(([date,count])=>{const end=new Date(date+'T12:00:00Z');end.setUTCDate(end.getUTCDate()+6);const last=month?new Date(Date.UTC(+month.slice(0,4),+month.slice(5,7),0)).toISOString().slice(0,10):'';return esc(month&&date<month+'-01'?month+'-01':date)+' — '+esc(last&&end.toISOString().slice(0,10)>last?last:end.toISOString().slice(0,10))+': <b>'+count+'</b>';}).join('<br>')+'</td>':'')+'</tr>').join('')+'</tbody></table></div>';}
 async function mount(root){
  if(root.dataset.ready)return;root.dataset.ready='true';
- root.innerHTML='<style>.akcm .akpc-scroll{overflow-x:auto}.akcm .akpc-scroll table{width:100%;border-collapse:collapse}.akcm .akpc-scroll th,.akcm .akpc-scroll td{padding:10px;text-align:left;border-bottom:1px solid var(--color-link,#913939)}.akcm #akpc-topics{width:100%;box-sizing:border-box;min-height:80px}.akcm .akpc-period{margin:14px 0;padding:14px;border:1px solid var(--soft,#ddd);border-radius:10px}.akcm .akpc-period summary{cursor:pointer;font-weight:600}</style><h3>Подсчёт постов</h3><p>Разделы: 141, 137, 138, 136. Первый пост темы и сообщения короче 500 символов не учитываются. Сохранённые месяцы загружаются с сервера. Общий итог включает только сохранения текущего набора тем.</p><label>ID тем через пробел или запятую<textarea id="akpc-topics" placeholder="Пусто — все темы указанных разделов"></textarea></label><label>Месяц<input type="month" id="akpc-month"></label><div class="akcm-toolbar"><button type="button" id="akpc-calculate">Рассчитать / загрузить месяц</button><button type="button" id="akpc-force-month">Принудительно пересчитать месяц</button><button type="button" id="akpc-total">Всего постов</button><button type="button" id="akpc-calculate-all">Рассчитать всё и сохранить</button><button type="button" id="akpc-recalculate-all">Принудительно пересчитать всё и сохранить</button></div><p>Полный пересчёт сохраняет все прошедшие месяцы. Для просмотра архива повторный полный пересчёт не нужен. Текущий месяц остаётся несохранённым расчётом; при необходимости его можно сохранить отдельной кнопкой.</p><p role="status" id="akpc-status"></p><div id="akpc-result"></div><div id="akpc-total-result"></div>';
- const q=selector=>root.querySelector(selector),status=q('#akpc-status'),input=q('#akpc-topics'),monthInput=q('#akpc-month');let busy=false,chosen='',saved=new Map(),drafts=new Map(),ready=false,coverage=null;
- monthInput.value=months(now)[0];
- function lock(value){busy=value;root.querySelectorAll('button,input,textarea').forEach(node=>node.disabled=value||(!ready&&node.tagName==='BUTTON')||(node.hasAttribute('data-save-month')&&!drafts.has(node.dataset.saveMonth)&&saved.has(node.dataset.saveMonth)&&!saved.get(node.dataset.saveMonth).legacy));}
+ root.innerHTML='<style>.akcm .akpc-scroll{overflow-x:auto}.akcm .akpc-scroll table{width:100%;border-collapse:collapse}.akcm .akpc-scroll th,.akcm .akpc-scroll td{padding:10px;text-align:left;border-bottom:1px solid var(--color-link,#913939)}.akcm .akpc-period{margin:14px 0;padding:14px;border:1px solid var(--soft,#ddd);border-radius:10px}.akcm .akpc-period summary{cursor:pointer;font-weight:600}.akcm .akpc-controls{display:flex;flex-wrap:wrap;align-items:end;gap:12px}.akcm .akpc-controls[hidden]{display:none}</style><h3>Подсчёт постов</h3><p>Первый пост темы и сообщения короче 500 символов не учитываются.</p><label>Раздел<select id="akpc-mode"><option value="saved">Сохранённые месяцы</option><option value="calculate">Расчёт месяцев</option></select></label><section id="akpc-saved-view"><label>Показать<select id="akpc-saved-month"><option value="">Все месяцы</option></select></label><div id="akpc-result"></div></section><section id="akpc-calculate-view" hidden><label>Период<select id="akpc-period"><option value="month">Месяц</option><option value="year">Весь период за год</option></select></label><div id="akpc-month-controls" class="akpc-controls"><label>Месяц<input type="month" id="akpc-month"></label><button type="button" id="akpc-calculate-month">Рассчитать месяц</button></div><div id="akpc-year-controls" class="akpc-controls" hidden><label>Год<input type="number" id="akpc-year" min="1970" step="1"></label><button type="button" id="akpc-calculate-year">Рассчитать и сохранить год</button></div><p>Расчёт сразу сохраняется на сервере. За текущий год — с января по текущий месяц; за прошедший — все 12 месяцев.</p></section><button type="button" id="akpc-total">Всего постов</button><p role="status" id="akpc-status"></p><div id="akpc-total-result"></div>';
+ const q=selector=>root.querySelector(selector),status=q('#akpc-status');let busy=false,chosen='',saved=new Map();
+ q('#akpc-month').value=months(now)[0];q('#akpc-year').value=day(now).slice(0,4);q('#akpc-year').max=day(now).slice(0,4);
+ function lock(value){busy=value;root.querySelectorAll('button,input,select').forEach(node=>node.disabled=value);}
  function draw(){
-   q('#akpc-result').innerHTML=[...new Set([...saved.keys(),...drafts.keys()])].sort().reverse().map(month=>{const data=drafts.get(month)||saved.get(month),isSaved=!drafts.has(month)&&saved.has(month);return '<details class="akpc-period"><summary>'+esc(month)+' · Постов: '+data.rows.reduce((sum,row)=>sum+row.total,0)+' · '+(isSaved?'Сохранено':'Не сохранено')+'</summary><p>'+(isSaved?'Сохранено: '+esc(new Date(data.savedAt).toLocaleString('ru-RU',{timeZone:TZ})):(saved.has(month)?'Этот пересчёт ещё не сохранён. В общем итоге используется прежнее сохранение месяца.':'Расчёт ещё не входит в общий итог.'))+'</p>'+renderRows(data.rows,true,month)+'<button type="button" data-save-month="'+month+'" '+(isSaved&&!data.legacy?'disabled':'')+'>Сохранить месяц</button></details>';}).join('')||'<p>Сохранённых месяцев пока нет. Выберите месяц и нажмите «Рассчитать».</p>';
+   const selected=q('#akpc-saved-month').value;
+   q('#akpc-saved-month').innerHTML='<option value="">Все месяцы</option>'+[...saved.keys()].sort().reverse().map(month=>'<option value="'+month+'">'+month+'</option>').join('');
+   if(saved.has(selected))q('#akpc-saved-month').value=selected;
+   const filter=q('#akpc-saved-month').value;
+   q('#akpc-result').innerHTML=[...saved.keys()].sort().reverse().filter(month=>!filter||filter===month).map(month=>{const data=saved.get(month);return '<details class="akpc-period"'+(filter?' open':'')+'><summary>'+month+' · Постов: '+data.rows.reduce((sum,row)=>sum+row.total,0)+'</summary><p>Сохранено: '+esc(new Date(data.savedAt).toLocaleString('ru-RU',{timeZone:TZ}))+'</p><button type="button" data-recount-month="'+month+'">Пересчитать</button>'+renderRows(data.rows,true,month)+'</details>';}).join('')||'<p>Сохранённых месяцев пока нет.</p>';
    q('#akpc-total-result').innerHTML=renderTotal(saved);
  }
- async function activate(){const value=selection(input.value);if(value!==chosen){drafts=new Map();ready=false;}const archive=await loadArchive(value);chosen=value;saved=archive.saved;coverage=archive.coverage;const requested=monthInput.value;if(validMonth(requested)&&!saved.has(requested)&&coverage&&requested<coverage.from&&requested<=coverage.to)saved.set(requested,{v:2,month:requested,selection:chosen,timeZone:TZ,sections:SECTIONS,topics:coverage.topics,calculatedAt:coverage.calculatedAt,savedAt:coverage.calculatedAt,rows:[],inferred:true});ready=true;draw();}
+ async function reload(){const archive=await loadArchive(chosen);saved=archive.saved;draw();}
  async function action(work){if(busy)return;lock(true);try{await work();}catch(error){status.textContent='Ошибка: '+error.message;}finally{lock(false);}}
  function admin(){if(Number(W.GroupID)!==1||!W.ForumAPITicket)throw Error('Расчёт и сохранение доступны администратору.');}
- async function runMonth(force=false){await activate();const month=monthInput.value;if(!validMonth(month)||month>months(now)[0])throw Error('Выберите текущий или прошедший месяц');
-   if(!force&&saved.has(month)){drafts.delete(month);draw();status.textContent=saved.get(month).inferred?'За '+month+' подходящих постов нет: это раньше начала полностью проверенной истории. Обход тем не выполнялся.':'Месяц '+month+' загружен из сохранения. Пересчёт не выполнялся.';return;}
-   const earliest=[...saved.keys()].sort()[0];if(!force&&!coverage&&earliest&&month<earliest){status.textContent='Сохранённые данные начинаются с '+earliest+'. Для '+month+' нет отметки полного расчёта старой версии. Автоматический обход тем не запущен. При необходимости нажмите «Принудительно пересчитать месяц».';return;}
-   admin();const result=await calculate(chosen,text=>status.textContent=text,false,[month]);drafts.set(month,monthRecord(result,month,chosen));draw();status.textContent='Расчёт месяца '+month+' завершён. Нажмите «Сохранить месяц».';
+ function checkMonth(month){if(!validMonth(month)||month>months(now)[0])throw Error('Выберите текущий или прошедший месяц.');}
+ async function persist(record,replace=false){const archive=await saveMonths(chosen,[record],{replace});saved=archive.saved;if(!saved.has(record.month))throw Error('Не удалось подтвердить сохранение месяца '+record.month);draw();}
+ async function runMonth(month,recount=false){
+   checkMonth(month);await reload();
+   if(saved.has(month)&&!recount){status.textContent='Месяц '+month+' уже есть в сохранённых. Ничего не пересчитывалось.';return;}
+   if(recount&&!saved.has(month))throw Error('Месяц не найден в сохранённых.');
+   admin();const result=await calculate(chosen,text=>status.textContent=text,false,[month]);
+   status.textContent='Сохраняем месяц '+month+'…';await persist(monthRecord(result,month,chosen),recount);
+   status.textContent='Месяц '+month+' рассчитан и сохранён на сервере.';
  }
- q('#akpc-calculate').onclick=()=>action(()=>runMonth(false));
- q('#akpc-force-month').onclick=()=>action(()=>runMonth(true));
- q('#akpc-total').onclick=()=>action(async()=>{await activate();status.textContent='Общий итог обновлён только по сохранённым месяцам.';});
- async function runAll(force=false){
-   admin();await activate();
-   const previous=months(now)[1];
-   if(!force&&coverage&&coverage.to>=previous){status.textContent='Все прошедшие месяцы уже сохранены. Загружен архив; обход тем не выполнялся.';return;}
-   if(!force&&!coverage&&saved.size){
-     const first=[...saved.keys()].filter(month=>month<=previous).sort()[0]||previous,missing=monthRange(first,previous).filter(month=>!saved.has(month));
-     if(!missing.length){status.textContent='Загружены ранее сохранённые месяцы без повторного обхода.';return;}
-     const result=await calculate(chosen,text=>status.textContent=text,false,missing),archive=await saveMonths(chosen,missing.map(month=>monthRecord(result,month,chosen)));
-     saved=archive.saved;coverage=archive.coverage;draw();status.textContent='Недостающие прошедшие месяцы рассчитаны и сохранены. Старые сохранения использованы без пересчёта.';return;
-   }
-   if(!force&&coverage){
-     const start=monthRange(coverage.to,previous).slice(1),missing=start.filter(month=>!saved.has(month));
-     if(!missing.length){status.textContent='Все недостающие месяцы уже сохранены. Обход тем не выполнялся.';return;}
-     const result=await calculate(chosen,text=>status.textContent=text,false,missing);
-     const archive=await saveMonths(chosen,missing.map(month=>monthRecord(result,month,chosen)),{fullCoverage:{...coverage,to:previous,calculatedAt:result.calculatedAt,topics:result.topics}});
-     saved=archive.saved;coverage=archive.coverage;draw();status.textContent='Недостающие прошедшие месяцы рассчитаны и сохранены. Старые сохранения использованы без пересчёта.';return;
-   }
-const result=await calculate(chosen,text=>status.textContent=text,true);const periods=[...new Set([...result.periods,...[...saved.keys()].filter(month=>month<months(now)[0])])].sort();const records=periods.map(month=>monthRecord(result,month,chosen));status.textContent='Сохраняем прошедшие месяцы…';const archive=await saveMonths(chosen,records,{replace:true,excludeCurrent:true,fullCoverage:{from:result.periods[0]||months(now)[0],to:months(now)[1],calculatedAt:result.calculatedAt,topics:result.topics}});saved=archive.saved;coverage=archive.coverage;drafts=new Map(records.filter(data=>data.month===months(now)[0]).map(data=>[data.month,data]));draw();status.textContent='Полный пересчёт завершён. Прошедшие месяцы сохранены; текущий месяц автоматически не сохранялся.';
- }
- q('#akpc-calculate-all').onclick=()=>action(()=>runAll(false));
- q('#akpc-recalculate-all').onclick=()=>action(()=>runAll(true));
- root.addEventListener('click',event=>{const button=event.target.closest('[data-save-month]');if(!button)return;const month=button.dataset.saveMonth;action(async()=>{admin();if(selection(input.value)!==chosen)throw Error('Набор тем изменён. Сначала загрузите или рассчитайте его.');const data=drafts.get(month)||saved.get(month);if(!data)throw Error('Сначала рассчитайте месяц');status.textContent='Сохраняем месяц '+month+'…';const archive=await saveMonths(chosen,[data],{replace:true});saved=archive.saved;coverage=archive.coverage;drafts.delete(month);draw();status.textContent='Месяц '+month+' сохранён на сервере.';});});
- lock(true);try{const rawIndex=await stored(INDEX_KEY),index=validateIndex(rawIndex),legacy=await stored(KEY);input.value=rawIndex?(index.selection||''):(legacy?.selection||'');const archive=await loadArchive(selection(input.value),index);chosen=selection(input.value);saved=archive.saved;coverage=archive.coverage;ready=true;draw();status.textContent='Сохранённые месяцы загружены.';}catch(error){status.textContent='Не удалось загрузить архив: '+error.message;ready=true;}finally{lock(false);}
+ q('#akpc-mode').addEventListener('change',()=>{const show=q('#akpc-mode').value==='saved';q('#akpc-saved-view').hidden=!show;q('#akpc-calculate-view').hidden=show;});
+ q('#akpc-period').addEventListener('change',()=>{const year=q('#akpc-period').value==='year';q('#akpc-month-controls').hidden=year;q('#akpc-year-controls').hidden=!year;});
+ q('#akpc-saved-month').addEventListener('change',draw);
+ q('#akpc-calculate-month').onclick=()=>action(()=>runMonth(q('#akpc-month').value));
+ q('#akpc-calculate-year').onclick=()=>action(async()=>{
+   admin();await reload();const year=Number(q('#akpc-year').value),current=months(now)[0],currentYear=Number(current.slice(0,4));
+   if(!Number.isInteger(year)||year<1970||year>currentYear)throw Error('Выберите текущий или прошедший год.');
+   const periods=monthRange(year+'-01',year===currentYear?current:year+'-12');
+   const result=await calculate(chosen,text=>status.textContent=text,false,periods);let done=0;
+   for(const month of periods){status.textContent='Сохраняем '+month+' · '+(done+1)+' из '+periods.length+'…';try{await persist(monthRecord(result,month,chosen),true);done++;}catch(error){throw Error('За '+year+' сохранено '+done+' из '+periods.length+' месяцев. '+month+': '+error.message);}}
+   status.textContent='Год '+year+' рассчитан. Сохранено месяцев: '+done+'.';
+ });
+ q('#akpc-total').onclick=()=>action(async()=>{await reload();q('#akpc-total-result details').open=true;status.textContent='Всего постов посчитано только по сохранённым месяцам.';});
+ root.addEventListener('click',event=>{const button=event.target.closest('[data-recount-month]');if(button)action(()=>runMonth(button.dataset.recountMonth,true));});
+ lock(true);try{const rawIndex=await stored(INDEX_KEY),index=validateIndex(rawIndex),legacy=await stored(KEY);chosen=selection(rawIndex?(index.selection||''):(legacy?.selection||''));const archive=await loadArchive(chosen,index);saved=archive.saved;draw();status.textContent='Сохранённые месяцы загружены.';}catch(error){status.textContent='Не удалось загрузить сохранённые месяцы: '+error.message;}finally{lock(false);}
 }
 W.AkatsukiPostCount={mount,calculate,aggregate,textLength,postInfo,week,months,monthRange,selection,scopeKey,monthRecord,loadArchive,saveMonths,savedTotals};
 })(window);

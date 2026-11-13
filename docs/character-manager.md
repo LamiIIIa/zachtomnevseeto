@@ -1,4 +1,4 @@
-# Character manager v89
+# Character manager v90
 
 Managed payload `src/plugins/character-manager.js` updates existing forum file `45688.js`.
 The manager keeps its direct global script connection because the bundle also contains events.
@@ -76,3 +76,14 @@ backfill leaves existing month snapshot references unchanged.
 v89 excludes the storage topic starter (the manager panel p44958) from fresh registry
 reads during service deduction, matching preview and ordinary registry loading.
 The real-adapter regression includes both the non-character panel and an actual record.
+
+## Post counts v90: saved months and calculations
+
+The post counter has exactly two modes: saved months and month/year calculations.
+Saved months can be viewed together or separately and recalculated explicitly.
+Calculating a month saves it immediately; an existing month causes no reads or writes.
+A year calculation saves each month independently, including zero counts. Past years
+include all twelve months; the current year includes January through the current month.
+Totals use saved snapshots only. Payloads and index updates are verified by server readback;
+a failed replacement preserves the previous snapshot. Old archives remain readable, and
+obsolete coverage markers no longer restrict calculation or archive access.
