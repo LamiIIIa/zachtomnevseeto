@@ -46,6 +46,7 @@ function processEditorContent(root) {
   initFlexibleToolbar(toolbars);
   initAdminAdditionMenu(collectMatchingElements(root, "#addition-area"));
   initExtraColors(collectMatchingElements(root, "#color-area"));
+  initExtraFonts(collectMatchingElements(root, "#font-area"));
   initDiceResults(collectMatchingElements(root, ".post-content"));
 }
 
@@ -363,6 +364,29 @@ function initAdminAdditionMenu(additionAreas) {
     });
 
     additionArea.append(button);
+  });
+}
+
+function initExtraFonts(fontAreas) {
+  fontAreas.forEach((area) => {
+    if (area.querySelector('[data-font-pirata-one]')) return;
+    const item = document.createElement("div");
+    item.dataset.fontPirataOne = "true";
+    item.textContent = "Pirata One";
+    item.style.fontFamily = "'Pirata One', serif";
+    item.setAttribute("role", "button");
+    item.tabIndex = 0;
+    const choose = () => {
+      window.bbcode?.("[font=Pirata One]", "[/font]");
+    };
+    item.addEventListener("mousedown", (event) => event.preventDefault());
+    item.addEventListener("click", choose);
+    item.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      choose();
+    });
+    area.append(item);
   });
 }
 
