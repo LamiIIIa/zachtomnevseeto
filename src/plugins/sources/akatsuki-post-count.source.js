@@ -89,7 +89,12 @@ async function mount(root){
    admin();await activate();
    const previous=months(now)[1];
    if(!force&&coverage&&coverage.to>=previous){status.textContent='Все прошедшие месяцы уже сохранены. Загружен архив; обход тем не выполнялся.';return;}
-   if(!force&&!coverage&&saved.size){status.textContent='Загружены ранее сохранённые месяцы без повторного обхода. Для обновления старого архива используйте отдельный принудительный пересчёт.';return;}
+   if(!force&&!coverage&&saved.size){
+     const first=[...saved.keys()].filter(month=>month<=previous).sort()[0]||previous,missing=monthRange(first,previous).filter(month=>!saved.has(month));
+     if(!missing.length){status.textContent='Загружены ранее сохранённые месяцы без повторного обхода.';return;}
+     const result=await calculate(chosen,text=>status.textContent=text,false,missing),archive=await saveMonths(chosen,missing.map(month=>monthRecord(result,month,chosen)));
+     saved=archive.saved;coverage=archive.coverage;draw();status.textContent='Недостающие прошедшие месяцы рассчитаны и сохранены. Старые сохранения использованы без пересчёта.';return;
+   }
    if(!force&&coverage){
      const start=monthRange(coverage.to,previous).slice(1),missing=start.filter(month=>!saved.has(month));
      if(!missing.length){status.textContent='Все недостающие месяцы уже сохранены. Обход тем не выполнялся.';return;}
