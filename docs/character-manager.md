@@ -1,4 +1,4 @@
-# Character manager v87
+# Character manager v88
 
 Managed payload `src/plugins/character-manager.js` updates existing forum file `45688.js`.
 The manager keeps its direct global script connection because the bundle also contains events.
@@ -63,3 +63,11 @@ first observed month of a completed full scan can be served as proven zeroes wit
 scanning topics again, including after reload. Legacy archives without this proof do not
 silently assume zero: missing earlier months require the explicit force-month command.
 Both force commands are clearly labeled. Coverage commits atomically with the archive.
+
+
+v88 splits the default “Рассчитать всё и сохранить” action from explicit force refresh.
+The default all action loads existing archives without scanning, and fills only newly closed
+missing months when coverage is known. Old archives without coverage are reused without an
+automatic full rescan. The separately labeled force-all action always rebuilds the full history.
+Regression checks repeat the default all action with zero topic reads and verifies incremental
+backfill leaves existing month snapshot references unchanged.
