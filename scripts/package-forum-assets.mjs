@@ -158,7 +158,7 @@ export async function packageAssets(dir = 'dist') {
     plugins.push({ ...plugin, file, bytes: Buffer.byteLength(source), sha256: createHash('sha256').update(source).digest('hex'), sourceHash: pluginContentHash(source) })
   }
   const extras = []
-  for (const id of ['quote-avatars', 'post-preview', 'profile-masks', 'post-font-size', 'lottery-results']) {
+  for (const id of ['quote-avatars', 'post-preview', 'profile-masks', 'post-font-size', 'lottery-results', 'lottery']) {
     const source = (await readFile(`src/plugins/compat/${id}.js`, 'utf8'))
       .replace(/[^\x00-\x7f]/g, char => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`)
     const file = `fd-extra-${id}-${createHash('sha256').update(source).digest('hex').slice(0, 20)}.js`
