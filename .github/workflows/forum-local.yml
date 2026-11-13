@@ -54,6 +54,7 @@ jobs:
         run: |
           node scripts/character-manager-service.test.cjs
           node scripts/character-manager-service.browser-test.cjs
+          node scripts/character-manager-service-signatures.test.cjs
       - name: Check personal-case element refresh and unchanged balances
         run: |
           node scripts/character-manager-elements.test.cjs

@@ -47,7 +47,7 @@ const authorLinks=Array.from(post.querySelectorAll('.pa-author a[href], .post-au
 const author=authorLinks.map(a=>{try{const u=new URL(a.getAttribute('href'),location.href);return u.pathname==='/profile.php'?u.searchParams.get('id'):null;}catch(_){return null;}}).find(Boolean);
 const uid=post.getAttribute('data-user-id')||author;
 const body=post.querySelector('.post-content');if(!body||String(uid)!==r.user)return false;
-const copy=body.cloneNode(true);copy.querySelectorAll('blockquote,.quote-box,script,style').forEach(n=>n.remove());
+const copy=body.cloneNode(true);copy.querySelectorAll('.post-sig,.signature,.post-signature,blockquote,.quote-box,script,style').forEach(n=>n.remove());
 copy.querySelectorAll('br').forEach(n=>n.replaceWith(' '));copy.querySelectorAll('p,div,pre').forEach(n=>n.appendChild(doc.createTextNode(' ')));
 return normalize(copy.textContent)===normalize(debitMessage(r));
 });

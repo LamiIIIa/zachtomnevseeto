@@ -1,4 +1,4 @@
-// character-manager ver 84
+// character-manager ver 85
 (function (root, factory) {
   'use strict';
   const api = factory();
@@ -813,7 +813,7 @@ function akatsukiNetwork() {
   }
   function serviceRequest(record,base='https://akatsukigood.forum.cool') {
     const content=record.content.cloneNode(true);
-    content.querySelectorAll('blockquote,.quote-box,script,style,pre,code').forEach(n=>n.remove());
+    content.querySelectorAll('.post-sig,.signature,.post-signature,blockquote,.quote-box,script,style,pre,code').forEach(n=>n.remove());
     content.querySelectorAll('br').forEach(n=>n.replaceWith('\n'));
     content.querySelectorAll('p,div').forEach(n=>n.appendChild(content.ownerDocument.createTextNode('\n')));
     const text=content.textContent.replace(/\u00a0/g,' ').trim();

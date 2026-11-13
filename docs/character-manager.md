@@ -1,4 +1,4 @@
-# Character manager v84
+# Character manager v85
 
 Managed payload `src/plugins/character-manager.js` updates existing forum file `45688.js`.
 The manager keeps its direct global script connection because the bundle also contains events.
@@ -26,3 +26,9 @@ The per-character `akcm-refreshElements` checkbox rereads the second post during
 and apply. When unchecked, stored elements are preserved through normal operations.
 Tests: `scripts/character-manager-elements.test.cjs` and
 `scripts/character-manager-elements.browser-test.cjs`.
+
+
+Service request parsing excludes author signatures (`.post-sig`, `.signature`,
+`.post-signature`) embedded inside `.post-content`. The lottery's publication confirmation
+uses the same exclusion. Actual message content must still match the three-line request.
+Regression: `scripts/character-manager-service-signatures.test.cjs`.
