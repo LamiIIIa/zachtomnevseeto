@@ -1,4 +1,4 @@
-# Character manager v88
+# Character manager v89
 
 Managed payload `src/plugins/character-manager.js` updates existing forum file `45688.js`.
 The manager keeps its direct global script connection because the bundle also contains events.
@@ -71,3 +71,8 @@ missing months when coverage is known. Old archives without coverage are reused 
 automatic full rescan. The separately labeled force-all action always rebuilds the full history.
 Regression checks repeat the default all action with zero topic reads and verifies incremental
 backfill leaves existing month snapshot references unchanged.
+
+
+v89 excludes the storage topic starter (the manager panel p44958) from fresh registry
+reads during service deduction, matching preview and ordinary registry loading.
+The real-adapter regression includes both the non-character panel and an actual record.

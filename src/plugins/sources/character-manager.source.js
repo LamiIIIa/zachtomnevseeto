@@ -800,7 +800,7 @@ function akatsukiNetwork() {
       return [...found.values()].sort((a,b)=>Number(a.id)-Number(b.id));
     }
     const adapter={edit,write,posts,postById,postsFrom,serviceGet,serviceSet,profile:id=>page('/profile.php?id='+playerId(id))};
-    adapter.serviceRegistryPosts=()=>posts(adapter.storageTopicId||492);return adapter;
+    adapter.serviceRegistryPosts=async()=>{const records=await posts(adapter.storageTopicId||492);return records.slice(1);};return adapter;
   }
   function readElements(raw) {
     const text=decodeNumericEntities(String(raw||''))
