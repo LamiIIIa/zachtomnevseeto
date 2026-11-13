@@ -672,7 +672,7 @@ function akatsukiNetwork() {
         const buffer=await response.arrayBuffer();
         const ascii=new TextDecoder('windows-1251').decode(buffer);
         const encoding=response.headers.get('content-type')?.match(/charset=([^;\s]+)/i)?.[1]||ascii.match(/charset\s*=\s*["']?([\w-]+)/i)?.[1]||'utf-8';
-        const doc=new DOMParser().parseFromString(new TextDecoder(encoding).decode(buffer),'text/html');doc.akcmEncoding=encoding;return doc;
+        const doc=new DOMParser().parseFromString(new TextDecoder(encoding).decode(buffer),'text/html');doc.akcmEncoding=encoding;doc.akcmUrl=response.url;return doc;
       },0);
     }
 
@@ -750,7 +750,7 @@ function akatsukiNetwork() {
         const doc=firstPageOnly ? await akatsukiNetwork().document(url(path)) : await page(path);
         for(const content of doc.querySelectorAll('.post-content')) {
           const post=content.closest('.post'), id=post?.id?.match(/^p(\d+)$/)?.[1];
-          if(id&&!result.has(id))result.set(id,{id,content});
+          if(id&&!result.has(id)){const record={id,content,topicId:String(topicId)};result.set(id,record);servicePostCache.set(id,record);}
         }
         if(firstPageOnly)break;
         for(const a of doc.querySelectorAll('.pagelink a[href],.pagination a[href]')) {
@@ -761,18 +761,58 @@ function akatsukiNetwork() {
       if(!result.size)throw Error('Сообщения темы недоступны. Проверьте адрес и права.');
       return [...result.values()].sort((a,b)=>Number(a.id)-Number(b.id));
     }
-    return {edit,write,posts,profile:id=>page('/profile.php?id='+playerId(id))};
+    const servicePostCache=new Map();
+    async function serviceApi(method,key,value){
+      const params={method,format:'json',charset:'utf-8',app_id:'16777215',key};
+      if(method==='storage.set'){if(!window.ForumAPITicket)throw Error('Нет токена для сохранения журнала.');params.token=window.ForumAPITicket;params.value=JSON.stringify(value);if(new TextEncoder().encode(params.value).length>60000)throw Error('Серверный журнал слишком большой.');}
+      return akatsukiNetwork().request('service-api:'+method+':'+key+(method==='storage.set'?':'+crypto.randomUUID():''),async()=>{
+        const response=await fetch(url('/api.php'),{method:'POST',credentials:'same-origin',cache:'no-store',body:new URLSearchParams(params),signal:AbortSignal.timeout(30000)});
+        if(!response.ok)throw Error('Ошибка сервера журнала: HTTP '+response.status);
+        const data=await response.json();if(data.error){if(method==='storage.get'&&String(data.error.code)==='404')return null;throw Error('Ошибка журнала: '+(data.error.message||data.error.code));}if(!data.response)throw Error('Неизвестный ответ сервера журнала');
+        const raw=data.response.storage?.data?.[key];return method==='storage.get'?(typeof raw==='string'?JSON.parse(raw):raw||null):data.response;
+      },0);
+    }
+    const serviceGet=key=>serviceApi('storage.get',key);
+    async function serviceSet(key,data){await serviceApi('storage.set',key,data);const actual=await serviceGet(key);if(stable(actual)!==stable(data))throw Error('Не удалось подтвердить сохранение журнала.');}
+    function servicePage(doc,topic){
+      const topicNode=doc.querySelector('[id^="topic_t"]');if(topicNode&&topicNode.id!=='topic_t'+topic)throw Error('Сообщение находится в другой теме.');
+      const resolved=new URL(doc.akcmUrl||('/viewtopic.php?id='+topic),base);if(resolved.searchParams.has('id')&&resolved.searchParams.get('id')!==String(topic))throw Error('Сообщение находится в другой теме.');
+      let number=Number(resolved.searchParams.get('p'));
+      if(!number)for(const strong of doc.querySelectorAll('.pagelink strong,.pagination .current,.pagelink .current'))if(/^\d+$/.test(strong.textContent.trim()))number=Number(strong.textContent.trim());
+      return number||1;
+    }
+    function cacheServicePosts(doc,topic){const found=[];for(const content of doc.querySelectorAll('.post-content')){const id=content.closest('.post')?.id?.match(/^p(\d+)$/)?.[1];if(id){const record={id,content,topicId:String(topic)};servicePostCache.set(id,record);found.push(record);}}return found;}
+    async function postById(id,fresh=false){
+      if(!fresh&&servicePostCache.get(String(id))?.topicId==='550')return servicePostCache.get(String(id));
+      const doc=await page('/viewtopic.php?pid='+num(id,'ID служебного поста',1));servicePage(doc,550);const found=cacheServicePosts(doc,550).find(record=>record.id===String(id));if(!found)throw Error('Служебный пост p'+id+' не найден.');return found;
+    }
+    async function postsFrom(topic,after='0'){
+      servicePostCache.clear();if(!Number(after))return posts(topic);
+      let doc;try{doc=await page('/viewtopic.php?pid='+num(after,'Последний обработанный пост',1));servicePage(doc,topic);}catch(error){if(error.status===404)return posts(topic);throw error;}
+      if(!doc.getElementById('p'+after))return posts(topic);
+      const first=servicePage(doc,topic),queue=[{number:first,doc}],visited=new Set(),found=new Map();
+      while(queue.length){const item=queue.shift();if(visited.has(item.number))continue;visited.add(item.number);if(visited.size>200)throw Error('Слишком много новых страниц служебной темы.');
+        const current=item.doc||await page('/viewtopic.php?id='+topic+'&p='+item.number);servicePage(current,topic);
+        const rows=cacheServicePosts(current,topic);if(!rows.length)throw Error('Страница служебной темы недоступна.');rows.filter(record=>Number(record.id)>Number(after)).forEach(record=>found.set(record.id,record));
+        for(const a of current.querySelectorAll('.pagelink a[href],.pagination a[href]')){const u=new URL(a.getAttribute('href'),base),number=Number(u.searchParams.get('p')||1);if(u.origin===origin&&u.pathname==='/viewtopic.php'&&u.searchParams.get('id')===String(topic)&&number>first&&!visited.has(number)&&!queue.some(item=>item.number===number))queue.push({number});}
+        queue.sort((a,b)=>a.number-b.number);
+      }
+      return [...found.values()].sort((a,b)=>Number(a.id)-Number(b.id));
+    }
+    const adapter={edit,write,posts,postById,postsFrom,serviceGet,serviceSet,profile:id=>page('/profile.php?id='+playerId(id))};
+    adapter.serviceRegistryPosts=()=>posts(adapter.storageTopicId||492);return adapter;
   }
   function readElements(raw) {
     const text=decodeNumericEntities(String(raw||''))
       .replace(/\[quote(?:=[^\]]*)?\][\s\S]*?\[\/quote\]/gi,'')
+      .replace(/\[url(?:=[^\]]*)?\]([\s\S]*?)\[\/url\]/gi,(_,label)=>/Техник[аи]\s+[Ээ]лемента/i.test(label)?'\n'+label+'\n':label)
       .replace(/\[spoiler(?:=(["']?)([^\]\n]*?)\1)?\]/gi,(_,q,title)=>'\n'+(title||'')+'\n')
       .replace(/\[\/(?:td|tr|akcmsection|akcmrankname)\]|<\/(?:h[1-6]|td|div|p)>/gi,'\n')
       .replace(/\[[^\]]*\]|<[^>]*>/g,'');
     const aliases={огня:'Огонь',воды:'Вода',земли:'Земля',ветра:'Ветер',молнии:'Молния',льда:'Лёд',дерева:'Дерево',лавы:'Лава',пыли:'Пыль',кипения:'Кипение',магнетизма:'Магнетизм',шторма:'Шторм',взрыва:'Взрыв',кристалла:'Кристалл'};
     const found=[],seen=new Set();
     for(const line of text.split(/\r?\n/)){
-      const match=/^\s*Техники\s+[Ээ]лемента\s*:?\s+(.+?)\s*[:：]?\s*$/i.exec(line);
+      const match=/^\s*(?:[-•*]\s*)?Техник[аи]\s+[Ээ]лемента\s*:?\s+(.+?)\s*[:：]?\s*$/i.exec(line);
       if(!match)continue;
       let value=match[1].replace(/\s*[:：]\s*$/,'').replace(/\s+/g,' ').trim();
       if(!value||value.length>100)throw Error('Не удалось прочитать название стихии во втором посте.');
@@ -832,7 +872,7 @@ function akatsukiNetwork() {
   }
   async function serviceRegistry(adapter,records) {
     const rows=[];
-    for(const record of records){const current=await adapter.edit(record.id),state=parse(current.raw);if(!state)throw Error('Сначала перенесите запись p'+record.id+' в актуальный формат менеджера.');rows.push({id:String(record.id),state,raw:current.raw});}
+    for(const record of records){let current={raw:null},state=null;try{if(record.content)state=parse(record.content.textContent);}catch(_){}if(!state){current=await adapter.edit(record.id);state=parse(current.raw);}if(!state)throw Error('Сначала перенесите запись p'+record.id+' в актуальный формат менеджера.');rows.push({id:String(record.id),state,raw:current.raw});}
     return rows;
   }
   async function serviceCharacter(adapter,request,registry,base='https://akatsukigood.forum.cool') {
@@ -856,30 +896,59 @@ function akatsukiNetwork() {
     if(found[0]&&(found[0].event.money!==-request.amount||found[0].event.reason!==request.reason))throw Error('Заявка изменена после списания. Требуется ручная проверка p'+request.pid+'.');
     return found[0]||null;
   }
-  async function servicePreview(adapter,records,base) {
-    const registry=await serviceRegistry(adapter,records),result=[];
-    for(const record of await adapter.posts(550)){
+  const SERVICE_CURSOR_KEY='akcmService550v1';
+  async function serviceCursor(adapter){
+    if(!adapter.serviceGet||!adapter.serviceSet)return null;
+    const data=await adapter.serviceGet(SERVICE_CURSOR_KEY)||{v:1,lastProcessedPid:'0',scannedThrough:'0',pending:[]};
+    if(data.v!==1||!/^\d+$/.test(data.lastProcessedPid)||!/^\d+$/.test(data.scannedThrough)||!Array.isArray(data.pending)||data.pending.some(id=>!/^\d+$/.test(id)))throw Error('Неверный формат серверного журнала служебной темы.');
+    return data;
+  }
+  function sameServiceReceipt(receipt,request){if(receipt.pid!==request.pid||receipt.userId!==request.userId||receipt.amount!==request.amount||receipt.reason!==request.reason)throw Error('Заявка p'+request.pid+' изменена после списания. Требуется ручная проверка.');return receipt;}
+  async function serviceReceipt(adapter,request){if(!adapter.serviceGet)return null;const receipt=await adapter.serviceGet('akcmS550p'+request.pid);if(receipt)sameServiceReceipt(receipt,request);return receipt;}
+  async function serviceDone(adapter,request,target,updateCursor=true){
+    if(!adapter.serviceSet)return;
+    const receipt={v:1,pid:request.pid,userId:request.userId,amount:request.amount,reason:request.reason,operationId:request.operationId,targetId:String(target.id),name:target.name,completedAt:new Date().toISOString()};
+    await adapter.serviceSet('akcmS550p'+request.pid,receipt);
+    if(updateCursor){const cursor=await serviceCursor(adapter);if(!cursor)return;cursor.pending=cursor.pending.filter(id=>id!==request.pid);if(Number(cursor.scannedThrough)>=Number(request.pid))cursor.lastProcessedPid=String(Math.max(Number(cursor.lastProcessedPid),Number(request.pid)));await adapter.serviceSet(SERVICE_CURSOR_KEY,cursor);}
+  }
+  async function servicePreview(adapter,records,base,full=false) {
+    const cursor=await serviceCursor(adapter),posts=new Map(),result=[],pending=new Set(),done=new Set();let registry,registryRequest;
+    const recent=cursor&&adapter.postsFrom?await adapter.postsFrom(550,full?'0':cursor.lastProcessedPid):await adapter.posts(550);
+    recent.forEach(record=>posts.set(String(record.id),record));
+    if(cursor&&adapter.postById)for(const id of cursor.pending){if(!posts.has(id))try{posts.set(id,await adapter.postById(id));}catch(error){pending.add(id);result.push({pid:id,error:error.message});}}
+    for(const record of [...posts.values()].sort((a,b)=>Number(a.id)-Number(b.id))){
       let request;
-      try{request=serviceRequest(record,base);if(!request)continue;const existing=serviceExisting(registry,request);const target=existing?.row||await serviceCharacter(adapter,request,registry,base);result.push({request,targetId:target.id,name:target.state.name,repeated:!!existing&&!target.state.pending,resume:!!existing&&!!target.state.pending});}
-      catch(error){result.push({request,pid:record.id,error:error.message});}
+      try{request=serviceRequest(record,base);if(!request)continue;
+        const receipt=await serviceReceipt(adapter,request);
+        if(receipt){done.add(request.pid);result.push({request,targetId:receipt.targetId,name:receipt.name,repeated:true});continue;}
+        if(!registry)registry=await (registryRequest||(registryRequest=serviceRegistry(adapter,records)));
+        const existing=serviceExisting(registry,request),target=existing?.row||await serviceCharacter(adapter,request,registry,base);
+        const repeated=!!existing&&!target.state.pending;
+        result.push({request,targetId:target.id,name:target.state.name,repeated,resume:!!existing&&!!target.state.pending});
+        if(repeated){await serviceDone(adapter,request,{id:target.id,name:target.state.name},false);done.add(request.pid);}else pending.add(request.pid);
+      }catch(error){pending.add(String(record.id));result.push({request,pid:record.id,error:error.message});}
     }
+    if(cursor){const latest=await serviceCursor(adapter);latest.pending=[...new Set([...latest.pending,...pending])].filter(id=>!done.has(id));latest.scannedThrough=String(Math.max(Number(latest.scannedThrough),...recent.map(row=>Number(row.id)),0));latest.lastProcessedPid=String(Math.max(Number(latest.lastProcessedPid),...Array.from(done,Number),0));await adapter.serviceSet(SERVICE_CURSOR_KEY,latest);result.cursor=latest.lastProcessedPid;result.pendingCount=latest.pending.length;}
     return result;
   }
   async function serviceDebit(adapter,records,request,actor,base,expectedTargetId) {
     // Reread source and persistent history before every write, including retries.
-    const source=(await adapter.posts(550)).find(p=>String(p.id)===request.pid);
+    const source=adapter.postById?await adapter.postById(request.pid,true):(await adapter.posts(550)).find(p=>String(p.id)===request.pid);
     if(!source)throw Error('Исходное сообщение удалено.');
     const latest=serviceRequest(source,base);
     if(!latest||latest.userId!==request.userId||latest.amount!==request.amount||latest.reason!==request.reason)throw Error('Заявка изменилась. Выполните разбор заново.');
-    const registry=await serviceRegistry(adapter,records),existing=serviceExisting(registry,request);
-    if(existing){if(existing.row.state.pending){if(existing.row.state.pending.id!==request.operationId)throw Error('Есть другая незавершённая операция.');await synchronize(adapter,existing.row.id,existing.row.raw,existing.row.state);}return {repeated:true,name:existing.row.state.name};}
-    const target=await serviceCharacter(adapter,latest,registry,base),old=target.state;
+    const receipt=await serviceReceipt(adapter,request);if(receipt){await serviceDone(adapter,request,{id:receipt.targetId,name:receipt.name});return {repeated:true,name:receipt.name};}
+    const freshRecords=adapter.serviceRegistryPosts?await adapter.serviceRegistryPosts():records;
+    const registry=await serviceRegistry(adapter,freshRecords),existing=serviceExisting(registry,request);
+    if(existing){const current=await adapter.edit(existing.row.id),state=parse(current.raw);if(!state||!serviceExisting([{id:existing.row.id,state}],request))throw Error('Запись истории изменилась. Повторите разбор.');if(state.pending){if(state.pending.id!==request.operationId)throw Error('Есть другая незавершённая операция.');await synchronize(adapter,existing.row.id,current.raw,state);}await serviceDone(adapter,request,{id:existing.row.id,name:state.name});return {repeated:true,name:state.name};}
+    const target=await serviceCharacter(adapter,latest,registry,base),current=await adapter.edit(target.id),old=parse(current.raw);if(!old)throw Error('Данные персонажа недоступны.');target.raw=current.raw;if(old.currentPlayerId&&old.currentPlayerId!==request.userId)throw Error('Привязка игрока изменилась. Повторите разбор.');
     if(expectedTargetId&&target.id!==String(expectedTargetId))throw Error('Привязка персонажа изменилась. Выполните разбор заново.');
     if(old.pending)throw Error('Сначала завершите синхронизацию персонажа.');
     const next=transition(old,old,{id:request.operationId,actor,reason:request.reason,url:request.url,money:-request.amount,xp:0,slots:RANKS.map(()=>0),levelSlots:false});
     let firstWrite=true;
     const guarded={...adapter,write:async function(id,before,after,...args){if(String(id)===target.id&&firstWrite){const current=await adapter.edit(id);if(!equivalentPost(current.raw,target.raw))throw Error('Запись персонажа изменилась. Повторите разбор.');firstWrite=false;}return adapter.write(id,before,after,...args);}};
     await commit(guarded,target.id,target.raw,old,next);
+    await serviceDone(adapter,request,{id:target.id,name:old.name});
     return {repeated:false,name:old.name};
   }
 
@@ -1032,9 +1101,10 @@ function akatsukiNetwork() {
     const forumBase=config.baseUrl||'https://akatsukigood.forum.cool';
     const categories=config.inventoryCategories||['Личные вещи','Набор шиноби','Медицинский набор','Косметический набор куноичи','Набор Акацуки','Артефакты','Броня и защита','Оружие','Метательное','Расходники'];
     const adapter=providedAdapter||forumAdapter();let selected=null,raw='',state=null,busy=false,records=[],draftOp=null,lists={},historyEdits=[],purchase=null,firstAge=null,jobs=[],artifactReads=new Map(),operationQueue=[],serviceRows=[],kits=normalizeKitNames(clone(config.inventoryKits||DEFAULT_KITS)),shopCatalog={items:[],loaded:false,promise:null},specializationCatalog={types:[],allTechniques:[],techniques:[],mastersLoaded:false,loaded:false};
+    adapter.storageTopicId=config.storageTopicId||492;
     root.innerHTML='<header><small>АДМИНИСТРАТОРСКАЯ · РЕЕСТР ПЕРСОНАЖЕЙ</small><h2>Управление личными делами</h2><p>Все изменения сохраняются по кнопке «Применить».</p></header><div class="akcm-toolbar" role="tablist"><button type="button" role="tab" aria-selected="false" data-action="bulk-tab">Массовые операции</button><button type="button" role="tab" aria-selected="true" data-action="registry-tab">Реестр персонажей</button><button type="button" role="tab" aria-selected="false" data-action="events-tab">Ивенты и внимание</button><button type="button" role="tab" aria-selected="false" data-action="updates-tab">Обновление личных дел</button><button type="button" role="tab" aria-selected="false" data-action="service-tab">Менеджер служебной темы</button><button type="button" role="tab" aria-selected="false" data-action="postcount-tab">Подсчёт постов</button></div><div id="akcm-registry-view"><div class="akcm-registry-controls"><div class="akcm-registry-filters"><label class="akcm-registry-search-label">Поиск персонажа<input type="search" id="akcm-registry-search" placeholder="Введите имя персонажа" autocomplete="off"></label><label class="akcm-registry-active"><input type="checkbox" id="akcm-active-only" checked><span>Только активные</span></label><button class="akcm-registry-refresh" type="button" data-action="list">Обновить список</button></div><div class="akcm-registry-picker"><label>Персонаж<select aria-label="Персонаж" id="akcm-character"><option value="">Выберите персонажа</option></select></label><button class="akcm-primary" type="button" data-action="load">Загрузить данные</button></div></div><p role="status" id="akcm-status">Один персонаж — один пост в теме хранилища.</p><p id="akcm-registry-filter-status" role="status"></p><div id="akcm-editor"></div></div><div id="akcm-bulk-view" hidden><h3>Начислить опыт</h3><p>Одна сумма и один комментарий будут записаны каждому выбранному персонажу.</p><label class="akcm-bulk-search">Поиск персонажа<input id="akcm-bulk-search" type="search" placeholder="Начните вводить имя" autocomplete="off"></label><p id="akcm-bulk-selection" role="status" aria-live="polite"></p><div id="akcm-bulk-characters"></div><p id="akcm-bulk-empty" hidden>Персонажи не найдены.</p><label>Сумма опыта<input id="akcm-bulk-amount" type="number" min="1" step="1"></label><label>Комментарий<textarea id="akcm-bulk-comment"></textarea></label><div class="akcm-toolbar"><button type="button" data-action="bulk-apply">Начислить опыт выбранным</button><button type="button" data-action="bulk-new">Новая массовая операция</button></div><p id="akcm-bulk-status" role="status"></p><div id="akcm-bulk-results"></div></div><div id="akcm-events-view" hidden><div data-ak-events-admin></div></div><div id="akcm-postcount-view" hidden></div>';
-    root.insertAdjacentHTML('beforeend','<div id="akcm-service-view" hidden><h3>Менеджер служебной темы №550</h3><p>Разберите сообщения, проверьте персонажей и выберите списания. Уже записанные операции будут пропущены.</p><button type="button" data-action="service-scan">Разобрать тему 550</button><div id="akcm-service-rows"></div><button type="button" data-action="service-apply">Применить выбранные списания</button><p id="akcm-service-status" role="status"></p></div>');
-    root.insertAdjacentHTML('beforeend','<div id="akcm-updates-view" hidden><h3>Обновление личных дел</h3><h4>Обновить стихии</h4><p>Стихии читаются из заголовков «Техники Элемента …» второго поста ЛД. Обновляется запись менеджера и блок «Стихии» после специализаций в третьем посте.</p><button type="button" data-action="updates-list">Обновить список</button><button type="button" data-action="updates-all">Выбрать всех доступных</button><div id="akcm-updates-characters"></div><button type="button" data-action="updates-elements">Обновить стихии выбранных персонажей</button><p id="akcm-updates-status" role="status"></p><div id="akcm-updates-results"></div></div>');
+    root.insertAdjacentHTML('beforeend','<div id="akcm-service-view" hidden><h3>Менеджер служебной темы №550</h3><p>Разберите сообщения, проверьте персонажей и выберите списания. Уже записанные операции будут пропущены.</p><button type="button" data-action="service-scan">Разобрать новые заявки</button><button type="button" data-action="service-scan-all">Просмотреть всю тему</button><div id="akcm-service-rows"></div><button type="button" data-action="service-apply">Применить выбранные списания</button><p id="akcm-service-status" role="status"></p></div>');
+    root.insertAdjacentHTML('beforeend','<div id="akcm-updates-view" hidden><h3>Обновление личных дел</h3><h4>Обновить стихии</h4><p>Стихии читаются из ссылок и заголовков «Техника/Техники Элемента …» второго поста ЛД. Обновляется запись менеджера и блок «Стихии» после специализаций в третьем посте.</p><button type="button" data-action="updates-list">Обновить список</button><button type="button" data-action="updates-all">Выбрать всех доступных</button><div id="akcm-updates-characters"></div><button type="button" data-action="updates-elements">Обновить стихии выбранных персонажей</button><p id="akcm-updates-status" role="status"></p><div id="akcm-updates-results"></div></div>');
     const q=sel=>root.querySelector(sel), val=id=>q('#akcm-'+id)?.value||'', message=(text,error=false)=>{q('#akcm-status').textContent=text;q('#akcm-status').classList.toggle('error',error);const local=q('#akcm-action-status');if(local){local.textContent=text;local.classList.toggle('error',error);}};
     let technicalSnapshot=null,firstSnapshot=null,levelLoaded=false,bulkBatch=null,activeTopics=null,activeRequest=null;const bulkCacheKey='akcm-bulk-xp:'+String(window.UserID||'');try{bulkBatch=JSON.parse(localStorage.getItem(bulkCacheKey)||'null');}catch(_){}
     const field=(id,label,value='',type='text')=>'<label>'+esc(label)+'<input id="akcm-'+id+'" type="'+type+'" value="'+esc(value)+'"></label>';
@@ -1336,12 +1406,12 @@ function akatsukiNetwork() {
         q('#akcm-updates-status').textContent='Готово: '+results.filter(row=>row.ok).length+' / '+results.length+'.';return;
       }
 
-      if(name==='service-scan'){
+      if(name==='service-scan'||name==='service-scan-all'){
         if(Number(window.GroupID)!==1||!window.UserID)throw Error('Разбор доступен только администратору.');
         q('#akcm-service-status').textContent='Читаем заявки и историю персонажей…';
         records=(await adapter.posts(config.storageTopicId||492)).slice(1);
-        serviceRows=await servicePreview(adapter,records,forumBase);drawService();
-        q('#akcm-service-status').textContent='Разбор завершён. Проверьте выбранные списания.';return;
+        serviceRows=await servicePreview(adapter,records,forumBase,name==='service-scan-all');drawService();
+        q('#akcm-service-status').textContent='Разбор завершён. Проверьте выбранные списания.'+(serviceRows.cursor?' Последний обработанный: p'+serviceRows.cursor+'. Не завершено: '+serviceRows.pendingCount+'.':'');return;
       }
       if(name==='service-apply'){
         if(Number(window.GroupID)!==1||!window.UserID)throw Error('Списание доступно только администратору.');
@@ -1516,7 +1586,7 @@ function akatsukiNetwork() {
   .akcm-card.akcm-card.akcm-card .akcm-specialization-items a{color:var(--accent)!important}
   :where(.custom_tag_shopcard,.shopcard,.shop-card) :is(.quote-box,.spoiler-box)>:first-child{font-family:var(--font-g,"Nunito Sans",Arial,sans-serif)!important;font-style:normal!important;font-weight:600!important;letter-spacing:normal!important;text-transform:none!important}
 `;
-  return {readElements,sourceElements,updateElements,playerId,serviceRequest,serviceRegistry,serviceCharacter,serviceExisting,servicePreview,serviceDebit,RANKS,SLOT_PRICES,topicIdFromLink,fresh,totals,validate,parse,serialize,transition,transitionBatch,patchSecond,readAge,patchAge,firstPostDesign,artifactTitle,livingRate,purchaseReceipt,artifactLink,normalizeItemLink,card,forumAdapter,readLevel,activePersonalTopics,sourceLevel,bulkExperience,commit,refreshCard,synchronize,migrate,boot,panel,CSS};
+  return {serviceCursor,serviceReceipt,readElements,sourceElements,updateElements,playerId,serviceRequest,serviceRegistry,serviceCharacter,serviceExisting,servicePreview,serviceDebit,RANKS,SLOT_PRICES,topicIdFromLink,fresh,totals,validate,parse,serialize,transition,transitionBatch,patchSecond,readAge,patchAge,firstPostDesign,artifactTitle,livingRate,purchaseReceipt,artifactLink,normalizeItemLink,card,forumAdapter,readLevel,activePersonalTopics,sourceLevel,bulkExperience,commit,refreshCard,synchronize,migrate,boot,panel,CSS};
 });
 
 

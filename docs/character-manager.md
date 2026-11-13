@@ -1,4 +1,4 @@
-# Character manager v85
+# Character manager v86
 
 Managed payload `src/plugins/character-manager.js` updates existing forum file `45688.js`.
 The manager keeps its direct global script connection because the bundle also contains events.
@@ -32,3 +32,27 @@ Service request parsing excludes author signatures (`.post-sig`, `.signature`,
 `.post-signature`) embedded inside `.post-content`. The lottery's publication confirmation
 uses the same exclusion. Actual message content must still match the three-line request.
 Regression: `scripts/character-manager-service-signatures.test.cjs`.
+
+
+## Service cursor and receipt journal
+
+Forum storage (app 16777215): `akcmService550v1` stores the last processed ID, scan frontier
+and pending IDs. `akcmS550p<ID>` stores each completed receipt. The initial scan backfills
+receipts from persistent character histories. Subsequent scans start at the cursor's page,
+follow only forward pages and fetch older pending requests individually. Preview uses the
+registry's rendered JSON instead of opening every edit form. Deductions reread their source
+post and target record. Receipt/cursor failures can be retried without charging again.
+“Просмотреть всю тему” explicitly performs a complete scan.
+
+## Monthly post archive
+
+`akPostCountIndex2` indexes immutable per-month server snapshots `akPCM2_*`, separated by
+canonical topic selection, timezone and counting rules. Explicit save publishes one month;
+new calculations are drafts and do not affect totals. Full recalculate overwrites closed months,
+including zeroed old months, and leaves the current month unsaved. A manual current-month save
+is supported. “Всего постов” reads saved snapshots only and does not scan topics.
+The old `akPostCount1` monthly save remains readable; `akPostCountAll1` is not added to totals.
+New payloads are verified before one index commit, so a failed scan or save keeps old snapshots.
+
+Element parsing accepts both “Техники Элемента” and linked “Техника Элемента”, including
+Вода, Огонь, Земля, Ветер, Молния, Кипение, Лава.

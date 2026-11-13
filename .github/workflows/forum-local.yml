@@ -55,12 +55,16 @@ jobs:
           node scripts/character-manager-service.test.cjs
           node scripts/character-manager-service.browser-test.cjs
           node scripts/character-manager-service-signatures.test.cjs
+          node scripts/character-manager-service-cursor.test.cjs
+          node scripts/character-manager-service-window.test.cjs
       - name: Check personal-case element refresh and unchanged balances
         run: |
           node scripts/character-manager-elements.test.cjs
           node scripts/character-manager-elements.browser-test.cjs
       - name: Check lottery wallet balance before any posting
         run: node scripts/lottery-wallet.test.cjs
+      - name: Check saved monthly post archive and atomic save failures
+        run: node scripts/post-count-archive.browser-test.cjs
       - name: Publish and verify forum
         run: npm run publish:forum
         env:
