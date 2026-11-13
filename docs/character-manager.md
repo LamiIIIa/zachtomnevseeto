@@ -1,4 +1,4 @@
-# Character manager v86
+# Character manager v87
 
 Managed payload `src/plugins/character-manager.js` updates existing forum file `45688.js`.
 The manager keeps its direct global script connection because the bundle also contains events.
@@ -56,3 +56,10 @@ New payloads are verified before one index commit, so a failed scan or save keep
 
 Element parsing accepts both “Техники Элемента” and linked “Техника Элемента”, including
 Вода, Огонь, Земля, Ветер, Молния, Кипение, Лава.
+
+
+v87 persists full-scan coverage alongside monthly snapshot pointers. Months before the
+first observed month of a completed full scan can be served as proven zeroes without
+scanning topics again, including after reload. Legacy archives without this proof do not
+silently assume zero: missing earlier months require the explicit force-month command.
+Both force commands are clearly labeled. Coverage commits atomically with the archive.
