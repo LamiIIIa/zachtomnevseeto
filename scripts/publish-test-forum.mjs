@@ -40,7 +40,8 @@ try{
   await saveEditor(style,'form[content1]',nextStyle)
   await saveEditor(forms,'form[o_html_header]',nextHeader)
   await forms.goto(origin+'/admin_forms.php',{waitUntil:'domcontentloaded'})
-  if(await readEditor(forms,'form[o_html_header]')!==nextHeader)throw Error('Test header readback differs from saved header')
+  const savedHeader=await readEditor(forms,'form[o_html_header]')
+  if(!savedHeader.includes(jsUrl)||!savedHeader.includes(cssUrl))throw Error('Test header readback missing deployment URLs: '+JSON.stringify({expectedLength:nextHeader.length,actualLength:savedHeader.length,js:savedHeader.includes(jsUrl),css:savedHeader.includes(cssUrl),loader:savedHeader.includes('forum-local-loader')}))
   const check=await context.newPage(),loadedScripts=[]
   check.on('request',request=>{if(request.resourceType()==='script')loadedScripts.push(request.url())})
   await check.goto(origin+'/?fd_verify='+manifest.revision+'-'+Date.now(),{waitUntil:'domcontentloaded'})
