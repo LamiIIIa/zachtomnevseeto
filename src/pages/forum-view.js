@@ -37,7 +37,7 @@ const PREVIEW_FORMATTING_BBCODE_PATTERN =
 
 const PREVIEW_LINK_BBCODE_PATTERN = /\[url(?:=[^\]]*)?\]([\s\S]*?)\[\/url\]/gi;
 
-const PREVIEW_CODE_BBCODE_PATTERN = /\[(?:html|code)\b[^\]]*\]/i;
+const PREVIEW_CODE_BBCODE_PATTERN = /\[(?:html|code|widepost)\b[^\]]*\]/i;
 
 const PREVIEW_REMAINING_BBCODE_PATTERN = /\[\/?[a-z][\w-]*(?:=[^\]\r\n]*)?\]/i;
 
