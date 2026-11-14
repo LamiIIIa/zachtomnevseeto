@@ -28,14 +28,19 @@ try{
  const pattern=/https:\/\/forumstatic\.ru\/files\/001a\/12\/f3\/84381\.js(?:\?[^"'<>\s]*)?/g
  const matches=oldFooter.match(pattern)
  if(!matches?.length)throw Error('Existing builder footer connection not found')
- const nextFooter=oldFooter.replace(pattern,'https://forumstatic.ru/files/001a/12/f3/84381.js?v=16-'+hash(source).slice(0,10))
+ let nextFooter
  try{
   if(normalize(previous)!==normalize(source))await saveEditor(editor,'content',source)
   await editor.goto(origin+'/admin_files.php?edit&file='+file+'&verify='+Date.now())
   if(hash(await readEditor(editor,'content'))!==hash(source))throw Error('Builders file verification failed')
+  const files=await context.newPage();await files.goto(origin+'/admin_files.php',{waitUntil:'domcontentloaded'})
+  const version=Number(await files.locator('tr[id="84381.js"] .ft-version span').textContent())
+  if(!Number.isInteger(version)||version<1)throw Error('Builder file version is missing')
+  nextFooter=oldFooter.replace(pattern,'https://forumstatic.ru/files/001a/12/f3/84381.js?v='+version)
+  await files.close()
   await saveEditor(forms,'form[o_html_footer]',nextFooter)
   await forms.goto(origin+'/admin_forms.php')
-  if(!(await readEditor(forms,'form[o_html_footer]')).includes('84381.js?v=16-'+hash(source).slice(0,10)))throw Error('Builder footer verification failed')
+  if(!(await readEditor(forms,'form[o_html_footer]')).includes('84381.js?v='+version))throw Error('Builder footer verification failed')
   const check=await context.newPage();await check.goto(origin+'/viewtopic.php?id=71&builders_verify='+Date.now(),{waitUntil:'domcontentloaded'})
   await check.locator('.atb-parameter-output').waitFor({state:'attached',timeout:45000});await check.locator('.aab-parameter-output').waitFor({state:'attached',timeout:45000})
   console.log('Verified builders v16: existing file '+file+'; separate colored parameter links; no generated widepost')
