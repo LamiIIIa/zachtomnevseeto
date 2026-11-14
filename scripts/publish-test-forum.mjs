@@ -39,10 +39,13 @@ try{
  try{
   await saveEditor(style,'form[content1]',nextStyle)
   await saveEditor(forms,'form[o_html_header]',nextHeader)
-  const check=await context.newPage()
-  await check.goto(origin+'/?fd_verify='+manifest.revision,{waitUntil:'domcontentloaded'})
+  await forms.goto(origin+'/admin_forms.php',{waitUntil:'domcontentloaded'})
+  if(await readEditor(forms,'form[o_html_header]')!==nextHeader)throw Error('Test header readback differs from saved header')
+  const check=await context.newPage(),loadedScripts=[]
+  check.on('request',request=>{if(request.resourceType()==='script')loadedScripts.push(request.url())})
+  await check.goto(origin+'/?fd_verify='+manifest.revision+'-'+Date.now(),{waitUntil:'domcontentloaded'})
   await check.locator('.punbb.forum-design--ready').waitFor({timeout:60000})
-  if(await check.locator('script#forum-local-loader').getAttribute('src')!==jsUrl)throw Error('Wrong test JS loader')
+  if(!loadedScripts.includes(jsUrl))throw Error('Published test JS was not requested; observed CDN scripts: '+loadedScripts.filter(url=>url.includes('forumstatic.ru')).join(', '))
   for(const width of [390,1280]){await check.setViewportSize({width,height:844});await check.waitForTimeout(300);if(!await check.locator('#pun-main').isVisible())throw Error('Test forum content is hidden');await check.screenshot({path:path.join(dir,`test-forum-${width}.png`)})}
  }catch(error){await style.goto(origin+'/admin_style.php');await saveEditor(style,'form[content1]',originalStyle);await forms.goto(origin+'/admin_forms.php');await saveEditor(forms,'form[o_html_header]',originalHeader);throw error}
  await writeFile(path.join(dir,'test-deployment.json'),JSON.stringify({origin,revision:manifest.revision,cssUrl,jsUrl,verified:true},null,2))
