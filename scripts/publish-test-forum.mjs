@@ -1,3 +1,4 @@
+import { patchTestStyle } from './test-forum-style.mjs'
 import { chromium } from 'playwright'
 import { readFile, writeFile } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
@@ -31,9 +32,7 @@ try{
  await writeFile(path.join(dir,cssName),css);await writeFile(path.join(dir,jsName),js)
  mapping=await upload(page,[path.join(dir,cssName),path.join(dir,jsName)],mapping)
  const cssUrl=mapping[cssName],jsUrl=mapping[jsName]
- const marker=/\/\* forum-local:start \*\/[\s\S]*?\/\* forum-local:end \*\//
- const block=`/* forum-local:start */\n@import url("${cssUrl}");\n/* forum-local:end */`
- const nextStyle=marker.test(originalStyle)?originalStyle.replace(marker,block):originalStyle+'\n'+block
+ const nextStyle=patchTestStyle(originalStyle,cssUrl)
  const baseHeader=originalHeader.includes('id="forum-local-loader"')?originalHeader:originalHeader+'\n<script id="forum-local-loader"></script>'
  const nextHeader=patchHeader(baseHeader,cssUrl,jsUrl,(manifest.criticalFonts||[]).map(f=>mapping[f]).filter(Boolean))
  try{
@@ -47,6 +46,13 @@ try{
   await check.goto(origin+'/?fd_verify='+manifest.revision+'-'+Date.now(),{waitUntil:'domcontentloaded'})
   await check.locator('.punbb.forum-design--ready').waitFor({timeout:60000})
   if(!loadedScripts.some(url=>new URL(url).origin===new URL(jsUrl).origin&&new URL(url).pathname===new URL(jsUrl).pathname))throw Error('Published test JS was not requested; observed CDN scripts: '+loadedScripts.filter(url=>url.includes('forumstatic.ru')).join(', '))
+  const adminCheck=await context.newPage()
+  const localStyleLoaded=adminCheck.waitForResponse(response=>{const url=new URL(response.url());return url.origin===new URL(cssUrl).origin&&url.pathname===new URL(cssUrl).pathname&&response.ok()},{timeout:45000})
+  await adminCheck.goto(origin+'/admin_files.php?fd_verify='+Date.now(),{waitUntil:'domcontentloaded'})
+  await localStyleLoaded
+  if(!await adminCheck.locator('#filetable').count())throw Error('Test admin file table is missing')
+  console.log('Verified local CSS response on admin_files.php: '+cssUrl)
+  await adminCheck.close()
   for(const width of [390,1280]){await check.setViewportSize({width,height:844});await check.waitForTimeout(300);if(!await check.locator('#pun-main').isVisible())throw Error('Test forum content is hidden');await check.screenshot({path:path.join(dir,`test-forum-${width}.png`)})}
  }catch(error){await style.goto(origin+'/admin_style.php');await saveEditor(style,'form[content1]',originalStyle);await forms.goto(origin+'/admin_forms.php');await saveEditor(forms,'form[o_html_header]',originalHeader);throw error}
  await writeFile(path.join(dir,'test-deployment.json'),JSON.stringify({origin,revision:manifest.revision,cssUrl,jsUrl,verified:true},null,2))

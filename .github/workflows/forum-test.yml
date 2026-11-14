@@ -26,6 +26,7 @@ jobs:
       - run: npm ci
       - run: npm run build:local
       - run: npm run test:assets
+      - run: node --test scripts/test-forum-style.test.mjs
       - run: npx playwright install --with-deps chromium
       - name: Publish test forum
         run: node scripts/publish-test-forum.mjs
