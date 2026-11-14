@@ -42,7 +42,8 @@ async function saveMonths(chosen,records,{replace=false}={}){
  const key=scopeKey(chosen),pending=[];const before=validateIndex(await stored(INDEX_KEY)),existing=before.scopes[key];if(existing&&existing.selection!==chosen)throw Error('Конфликт выбора тем в архиве');
  for(const record of records){validateMonth(record,record.month,chosen);if(!replace&&existing?.months?.[record.month])continue;
    const payload=JSON.stringify({v:2,month:record.month,selection:record.selection,timeZone:record.timeZone,sections:record.sections,topics:record.topics,calculatedAt:record.calculatedAt,rows:record.rows});if(new TextEncoder().encode(payload).length>60000)throw Error('Месяц '+record.month+' слишком большой для хранилища');
-   const dataKey='akPCM2_'+key+'_'+record.month.replace('-','')+'_'+W.crypto.randomUUID().replace(/-/g,'').slice(0,12);
+   // Forum storage silently truncates keys to 24 characters. Keep the entire random suffix.
+   let dataKey;do{dataKey='pc2'+key+W.crypto.randomUUID().replace(/-/g,'').slice(0,13);}while(await stored(dataKey));
    await store({method:'storage.set',key:dataKey,value:payload,token:W.ForumAPITicket});
    if(JSON.stringify(await stored(dataKey))!==payload)throw Error('Не удалось подтвердить запись месяца '+record.month);
    pending.push({month:record.month,key:dataKey,savedAt:new Date(now).toISOString()});
@@ -59,6 +60,20 @@ async function saveMonths(chosen,records,{replace=false}={}){
  const confirmed=validateIndex(await stored(INDEX_KEY));
  for(const [month,ref]of Object.entries(entry.months))if(confirmed.scopes[key]?.months?.[month]?.key!==ref.key)throw writeError||Error('Не удалось подтвердить сохранение архива. Загрузите данные повторно.');
  return loadArchive(chosen,confirmed);
+}
+// v86-v90 wrote long keys: the API kept only their first 24 characters.
+// Recover complete, validated payloads only when no published month exists.
+async function recoverTruncatedMonths(chosen,archive){
+ if(Number(W.GroupID)!==1||!W.ForumAPITicket)return archive;
+ const response=await store({method:'storage.keys'}),prefix='akPCM2_'+scopeKey(chosen)+'_',records=new Map();
+ for(const key of response?.storage?.keys||[]){
+   if(key.length!==24||!key.startsWith(prefix))continue;
+   const month=key.slice(prefix.length,prefix.length+6).replace(/^(\d{4})(\d{2})$/,'$1-$2');
+   if(!validMonth(month)||archive.saved.has(month))continue;
+   let record;try{record=validateMonth(await stored(key),month,chosen);}catch(_){continue;}
+   if(!records.has(month)||record.calculatedAt>records.get(month).calculatedAt)records.set(month,record);
+ }
+ return records.size?saveMonths(chosen,[...records.values()]):archive;
 }
 function savedTotals(saved){const users=new Map();for(const data of [...saved.values()].sort((a,b)=>String(a.savedAt).localeCompare(String(b.savedAt))))for(const row of data.rows){let user=users.get(row.id);if(!user){user={id:row.id,name:row.name,total:0};users.set(row.id,user);}user.name=row.name;user.total+=row.total;}return [...users.values()].sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name,'ru'));}
 function renderTotal(saved){const rows=savedTotals(saved);return '<details class="akpc-period"><summary>Всего постов · '+rows.reduce((sum,row)=>sum+row.total,0)+'</summary><p>Сохранённых месяцев: '+saved.size+'.</p>'+renderRows(rows,false)+'</details>';}
@@ -104,7 +119,7 @@ async function mount(root){
  });
  q('#akpc-total').onclick=()=>action(async()=>{await reload();q('#akpc-total-result details').open=true;status.textContent='Всего постов посчитано только по сохранённым месяцам.';});
  root.addEventListener('click',event=>{const button=event.target.closest('[data-recount-month]');if(button)action(()=>runMonth(button.dataset.recountMonth,true));});
- lock(true);try{const rawIndex=await stored(INDEX_KEY),index=validateIndex(rawIndex),legacy=await stored(KEY);chosen=selection(rawIndex?(index.selection||''):(legacy?.selection||''));const archive=await loadArchive(chosen,index);saved=archive.saved;draw();status.textContent='Сохранённые месяцы загружены.';}catch(error){status.textContent='Не удалось загрузить сохранённые месяцы: '+error.message;}finally{lock(false);}
+ lock(true);try{const rawIndex=await stored(INDEX_KEY),index=validateIndex(rawIndex),legacy=await stored(KEY);chosen=selection(rawIndex?(index.selection||''):(legacy?.selection||''));const archive=await recoverTruncatedMonths(chosen,await loadArchive(chosen,index));saved=archive.saved;draw();status.textContent='Сохранённые месяцы загружены.';}catch(error){status.textContent='Не удалось загрузить сохранённые месяцы: '+error.message;}finally{lock(false);}
 }
 W.AkatsukiPostCount={mount,calculate,aggregate,textLength,postInfo,week,months,monthRange,selection,scopeKey,monthRecord,loadArchive,saveMonths,savedTotals};
 })(window);

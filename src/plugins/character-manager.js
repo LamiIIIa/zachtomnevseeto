@@ -1,4 +1,4 @@
-// character-manager ver 90
+// character-manager ver 91
 (function (root, factory) {
   'use strict';
   const api = factory();
@@ -1695,7 +1695,8 @@ async function saveMonths(chosen,records,{replace=false}={}){
  const key=scopeKey(chosen),pending=[];const before=validateIndex(await stored(INDEX_KEY)),existing=before.scopes[key];if(existing&&existing.selection!==chosen)throw Error('\u041a\u043e\u043d\u0444\u043b\u0438\u043a\u0442 \u0432\u044b\u0431\u043e\u0440\u0430 \u0442\u0435\u043c \u0432 \u0430\u0440\u0445\u0438\u0432\u0435');
  for(const record of records){validateMonth(record,record.month,chosen);if(!replace&&existing?.months?.[record.month])continue;
    const payload=JSON.stringify({v:2,month:record.month,selection:record.selection,timeZone:record.timeZone,sections:record.sections,topics:record.topics,calculatedAt:record.calculatedAt,rows:record.rows});if(new TextEncoder().encode(payload).length>60000)throw Error('\u041c\u0435\u0441\u044f\u0446 '+record.month+' \u0441\u043b\u0438\u0448\u043a\u043e\u043c \u0431\u043e\u043b\u044c\u0448\u043e\u0439 \u0434\u043b\u044f \u0445\u0440\u0430\u043d\u0438\u043b\u0438\u0449\u0430');
-   const dataKey='akPCM2_'+key+'_'+record.month.replace('-','')+'_'+W.crypto.randomUUID().replace(/-/g,'').slice(0,12);
+   // Forum storage silently truncates keys to 24 characters. Keep the entire random suffix.
+   let dataKey;do{dataKey='pc2'+key+W.crypto.randomUUID().replace(/-/g,'').slice(0,13);}while(await stored(dataKey));
    await store({method:'storage.set',key:dataKey,value:payload,token:W.ForumAPITicket});
    if(JSON.stringify(await stored(dataKey))!==payload)throw Error('\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u044c \u0437\u0430\u043f\u0438\u0441\u044c \u043c\u0435\u0441\u044f\u0446\u0430 '+record.month);
    pending.push({month:record.month,key:dataKey,savedAt:new Date(now).toISOString()});
@@ -1712,6 +1713,20 @@ async function saveMonths(chosen,records,{replace=false}={}){
  const confirmed=validateIndex(await stored(INDEX_KEY));
  for(const [month,ref]of Object.entries(entry.months))if(confirmed.scopes[key]?.months?.[month]?.key!==ref.key)throw writeError||Error('\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u044c \u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0438\u0435 \u0430\u0440\u0445\u0438\u0432\u0430. \u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u0435 \u0434\u0430\u043d\u043d\u044b\u0435 \u043f\u043e\u0432\u0442\u043e\u0440\u043d\u043e.');
  return loadArchive(chosen,confirmed);
+}
+// v86-v90 wrote long keys: the API kept only their first 24 characters.
+// Recover complete, validated payloads only when no published month exists.
+async function recoverTruncatedMonths(chosen,archive){
+ if(Number(W.GroupID)!==1||!W.ForumAPITicket)return archive;
+ const response=await store({method:'storage.keys'}),prefix='akPCM2_'+scopeKey(chosen)+'_',records=new Map();
+ for(const key of response?.storage?.keys||[]){
+   if(key.length!==24||!key.startsWith(prefix))continue;
+   const month=key.slice(prefix.length,prefix.length+6).replace(/^(\d{4})(\d{2})$/,'$1-$2');
+   if(!validMonth(month)||archive.saved.has(month))continue;
+   let record;try{record=validateMonth(await stored(key),month,chosen);}catch(_){continue;}
+   if(!records.has(month)||record.calculatedAt>records.get(month).calculatedAt)records.set(month,record);
+ }
+ return records.size?saveMonths(chosen,[...records.values()]):archive;
 }
 function savedTotals(saved){const users=new Map();for(const data of [...saved.values()].sort((a,b)=>String(a.savedAt).localeCompare(String(b.savedAt))))for(const row of data.rows){let user=users.get(row.id);if(!user){user={id:row.id,name:row.name,total:0};users.set(row.id,user);}user.name=row.name;user.total+=row.total;}return [...users.values()].sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name,'ru'));}
 function renderTotal(saved){const rows=savedTotals(saved);return '<details class="akpc-period"><summary>\u0412\u0441\u0435\u0433\u043e \u043f\u043e\u0441\u0442\u043e\u0432 \u00b7 '+rows.reduce((sum,row)=>sum+row.total,0)+'</summary><p>\u0421\u043e\u0445\u0440\u0430\u043d\u0451\u043d\u043d\u044b\u0445 \u043c\u0435\u0441\u044f\u0446\u0435\u0432: '+saved.size+'.</p>'+renderRows(rows,false)+'</details>';}
@@ -1757,7 +1772,7 @@ async function mount(root){
  });
  q('#akpc-total').onclick=()=>action(async()=>{await reload();q('#akpc-total-result details').open=true;status.textContent='\u0412\u0441\u0435\u0433\u043e \u043f\u043e\u0441\u0442\u043e\u0432 \u043f\u043e\u0441\u0447\u0438\u0442\u0430\u043d\u043e \u0442\u043e\u043b\u044c\u043a\u043e \u043f\u043e \u0441\u043e\u0445\u0440\u0430\u043d\u0451\u043d\u043d\u044b\u043c \u043c\u0435\u0441\u044f\u0446\u0430\u043c.';});
  root.addEventListener('click',event=>{const button=event.target.closest('[data-recount-month]');if(button)action(()=>runMonth(button.dataset.recountMonth,true));});
- lock(true);try{const rawIndex=await stored(INDEX_KEY),index=validateIndex(rawIndex),legacy=await stored(KEY);chosen=selection(rawIndex?(index.selection||''):(legacy?.selection||''));const archive=await loadArchive(chosen,index);saved=archive.saved;draw();status.textContent='\u0421\u043e\u0445\u0440\u0430\u043d\u0451\u043d\u043d\u044b\u0435 \u043c\u0435\u0441\u044f\u0446\u044b \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043d\u044b.';}catch(error){status.textContent='\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u0441\u043e\u0445\u0440\u0430\u043d\u0451\u043d\u043d\u044b\u0435 \u043c\u0435\u0441\u044f\u0446\u044b: '+error.message;}finally{lock(false);}
+ lock(true);try{const rawIndex=await stored(INDEX_KEY),index=validateIndex(rawIndex),legacy=await stored(KEY);chosen=selection(rawIndex?(index.selection||''):(legacy?.selection||''));const archive=await recoverTruncatedMonths(chosen,await loadArchive(chosen,index));saved=archive.saved;draw();status.textContent='\u0421\u043e\u0445\u0440\u0430\u043d\u0451\u043d\u043d\u044b\u0435 \u043c\u0435\u0441\u044f\u0446\u044b \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043d\u044b.';}catch(error){status.textContent='\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u0441\u043e\u0445\u0440\u0430\u043d\u0451\u043d\u043d\u044b\u0435 \u043c\u0435\u0441\u044f\u0446\u044b: '+error.message;}finally{lock(false);}
 }
 W.AkatsukiPostCount={mount,calculate,aggregate,textLength,postInfo,week,months,monthRange,selection,scopeKey,monthRecord,loadArchive,saveMonths,savedTotals};
 })(window);

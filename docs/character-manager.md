@@ -1,4 +1,4 @@
-# Character manager v90
+# Character manager v91
 
 Managed payload `src/plugins/character-manager.js` updates existing forum file `45688.js`.
 The manager keeps its direct global script connection because the bundle also contains events.
@@ -87,3 +87,12 @@ include all twelve months; the current year includes January through the current
 Totals use saved snapshots only. Payloads and index updates are verified by server readback;
 a failed replacement preserves the previous snapshot. Old archives remain readable, and
 obsolete coverage markers no longer restrict calculation or archive access.
+
+## Storage key limit fix v91
+
+The live forum API silently truncates storage keys to 24 characters. Snapshot keys
+now fit that limit and are checked for collisions before writing. On opening the
+counter, administrators recover validated, unindexed snapshots from the former
+truncated keys into the verified archive without scanning topics. Existing saved
+months take priority; recovery is idempotent. The browser fixture enforces the
+24-character limit and tests recovery plus reload.
