@@ -1,0 +1,42 @@
+name: Deploy test forum
+on:
+  push:
+    branches: [test]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: forum-test
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/test'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/cache@v4
+        with:
+          path: .forum-asset-cache
+          key: forum-test-assets-${{ runner.os }}-${{ hashFiles('src/styles/settings/fonts.css', 'scripts/package-forum-assets.mjs') }}
+      - run: npm ci
+      - run: npm run build:local
+      - run: npm run test:assets
+      - run: npx playwright install --with-deps chromium
+      - name: Publish test forum
+        run: node scripts/publish-test-forum.mjs
+        env:
+          FORUM_USERNAME_TEST: ${{ secrets.FORUM_USERNAME_TEST }}
+          FORUM_PASSWORD_TEST: ${{ secrets.FORUM_PASSWORD_TEST }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-forum-deployment-${{ github.sha }}
+          path: |
+            dist/forum-local/test-deployment.json
+            dist/forum-local/test-forum-*.png
+          if-no-files-found: ignore

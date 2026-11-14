@@ -1,7 +1,7 @@
 export const forumConfig = Object.freeze({
-  primaryOrigin: 'https://akatsukigood.forum.cool',
+  primaryOrigin: 'https://zachtomnewseeto.mybb.ru',
   news: {
-    apiUrl: 'https://akatsukigood.forum.cool/api.php',
+    apiUrl: 'https://zachtomnewseeto.mybb.ru/api.php',
     topicId: 86,
     limit: 5,
     timeout: 12_000,

@@ -38,11 +38,11 @@ export function rewriteAssets(css, mapping) {
   })
 }
 
-async function readEditor(page, name) {
+export async function readEditor(page, name) {
   return page.locator(`textarea[name="${name}"]`).inputValue()
 }
 
-async function saveEditor(page, name, content) {
+export async function saveEditor(page, name, content) {
   await page.evaluate(({ name, content }) => {
     const field = document.querySelector(`textarea[name="${name}"]`)
     if (!field) throw new Error('Expected editor is missing')
@@ -63,7 +63,7 @@ async function saveEditor(page, name, content) {
   }
 }
 
-async function fileMapping(page) {
+export async function fileMapping(page) {
   return page.locator('#filetable tr').evaluateAll(rows => Object.fromEntries(rows.map(row => {
     const name = row.querySelector('input[type="text"]')?.value
     const url = row.querySelector('a[href*="forumstatic.ru/files/"]')?.href
@@ -71,7 +71,7 @@ async function fileMapping(page) {
   }).filter(([name, url]) => name && url)))
 }
 
-async function upload(page, files, mapping) {
+export async function upload(page, files, mapping) {
   const missing = files.filter(file => !mapping[path.basename(file)])
   if (!missing.length) return mapping
   await page.locator('input[type="file"]').setInputFiles(missing)
