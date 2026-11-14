@@ -42,6 +42,7 @@ class MobileNavigation {
     this.bindEvents();
     this.root.append(this.elements.menu, this.elements.dock);
     this.initMessagesBadge();
+    this.initNotificationsBadge();
     this.root.classList.add("mobile-navigation-ready");
 
     return this;
@@ -156,9 +157,7 @@ class MobileNavigation {
 
     const updateBadge = () => {
       const separateBadge = source.querySelector(".num_msg");
-      const sourceLabel = source.querySelector(
-        "a span[data-last-unread]"
-      );
+      const sourceLabel = source.querySelector("a span[data-last-unread]");
       const separateCount = separateBadge?.textContent.match(/\d+/)?.[0];
       const inlineCount = sourceLabel?.textContent.match(/\((\d+)\)\s*$/)?.[1];
       const count = separateCount || inlineCount || "";
@@ -195,6 +194,80 @@ class MobileNavigation {
       attributes: true,
       attributeFilter: ["data-last-unread"],
     });
+  }
+
+  initNotificationsBadge() {
+    const source = this.root.querySelector("#notify-link");
+    const menuLink = this.root.querySelector(
+      ".mobile-menu__link--notifications"
+    );
+    const moreButton = this.elements.moreButton;
+
+    if (!source || !menuLink || !moreButton) return;
+
+    const menuLabel = menuLink.textContent.trim();
+    const moreLabel = this.labels.more;
+
+    const updateBadge = () => {
+      const sourceBadge = source.querySelector(".unreads");
+      const count = sourceBadge?.textContent.match(/\d+/)?.[0] || "";
+
+      const hasUnread = Boolean(sourceBadge) && (!count || Number(count) > 0);
+
+      this.updateNotificationTarget({
+        target: menuLink,
+        hasUnread,
+        count,
+        label: menuLabel,
+        badgeClass: "mobile-menu__notification-badge",
+      });
+
+      this.updateNotificationTarget({
+        target: moreButton,
+        hasUnread,
+        count,
+        label: moreLabel,
+        badgeClass: "mobile-dock__notification-badge",
+      });
+    };
+
+    updateBadge();
+
+    const observer = new MutationObserver(updateBadge);
+
+    observer.observe(source, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+  }
+
+  updateNotificationTarget({ target, hasUnread, count, label, badgeClass }) {
+    let badge = target.querySelector(`.${badgeClass}`);
+
+    if (!hasUnread) {
+      badge?.remove();
+      target.setAttribute("aria-label", label);
+      return;
+    }
+
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.className = badgeClass;
+      badge.setAttribute("aria-hidden", "true");
+      target.append(badge);
+    }
+
+    badge.textContent = count;
+
+    if (count) {
+      target.setAttribute(
+        "aria-label",
+        `${label}, новых уведомлений: ${count}`
+      );
+    } else {
+      target.setAttribute("aria-label", `${label}, есть новые уведомления`);
+    }
   }
 
   createMenu() {
@@ -302,6 +375,10 @@ class MobileNavigation {
       className: "mobile-menu__link",
       text: this.getSourceLinkLabel(sourceLink),
     });
+
+    if (sourceLink.closest("#notify-link")) {
+      link.classList.add("mobile-menu__link--notifications");
+    }
 
     link.href = sourceLink.href;
 
