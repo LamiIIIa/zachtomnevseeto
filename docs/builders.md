@@ -8,7 +8,7 @@ its footer version. Sources are in `src/plugins/sources/akatsuki-*-builder.sourc
 Version 16 provides separate read-only parameter-link outputs and copy buttons.
 The output is exactly `[url=post][color=rank]Russian name[/color][/url]`.
 Full-card code contains the same link in its code block; generated full cards strip
-widepost markers. The publication script checks the previous source hash and rolls
+widepost markers. The publication script applies exact, bounded replacements to preserve other forum edits and rolls
 back the file/footer on verification failure. It never edits published techniques.
 
 Test: `node scripts/builders-output.browser-test.cjs`.

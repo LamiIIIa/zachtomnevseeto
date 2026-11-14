@@ -19,7 +19,7 @@ try{
  const previous=await readEditor(editor,'content')
  source=previous
  if(!source.includes('// akatsuki-builders version 16')){
-  for(const [before,after]of patches){if(source.split(before).length!==2)throw Error('Builder patch context differs; refusing unrelated changes');source=source.replace(before,after)}
+  for(const [before,after]of patches){if(source.split(before).length!==2)throw Error('Builder patch context differs at '+patches.findIndex(pair=>pair[0]===before)+'; refusing unrelated changes');source=source.replace(before,after)}
   source='// akatsuki-builders version 16\n'+source
  }
  source=source.replace(/[^\x00-\x7f]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'))
