@@ -5,7 +5,8 @@ import { readEditor, saveEditor } from './publish-forum-assets.mjs'
 const origin='https://akatsukigood.forum.cool',file='84381.js'
 if(process.env.GITHUB_REF!=='refs/heads/main')throw Error('Builders publication requires main')
 if(!process.env.FORUM_USERNAME||!process.env.FORUM_PASSWORD)throw Error('Missing forum credentials')
-const source=await readFile('src/plugins/akatsuki-builders.js','utf8')
+const patches=JSON.parse(await readFile('scripts/builders-patch.json','utf8'))
+let source
 const normalize=x=>x.replace(/^\uFEFF/,'').replace(/\r/g,'').trim(),hash=x=>createHash('sha256').update(normalize(x)).digest('hex')
 const browser=await chromium.launch({headless:true})
 try{
@@ -16,7 +17,12 @@ try{
  await login.locator('input[type=submit],button[type=submit]').first().click();await editor.waitForLoadState('domcontentloaded')
  await editor.goto(origin+'/admin_files.php?edit&file='+file,{waitUntil:'domcontentloaded'})
  const previous=await readEditor(editor,'content')
- if(!['be9946b5a41ec8ae33a0b8cf2def4bdb1cc6250cb7ed688a363d57e19295a76b',hash(source)].includes(hash(previous)))throw Error('Manual builder edit detected; import forum source before publication')
+ source=previous
+ if(!source.includes('// akatsuki-builders version 16')){
+  for(const [before,after]of patches){if(source.split(before).length!==2)throw Error('Builder patch context differs; refusing unrelated changes');source=source.replace(before,after)}
+  source='// akatsuki-builders version 16\n'+source
+ }
+ source=source.replace(/[^\x00-\x7f]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'))
  await forms.goto(origin+'/admin_forms.php',{waitUntil:'domcontentloaded'})
  const oldFooter=await readEditor(forms,'form[o_html_footer]')
  const pattern=/https:\/\/forumstatic\.ru\/files\/001a\/12\/f3\/84381\.js(?:\?[^"'<>\s]*)?/g
