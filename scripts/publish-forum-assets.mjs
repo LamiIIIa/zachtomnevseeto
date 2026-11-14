@@ -38,11 +38,11 @@ export function rewriteAssets(css, mapping) {
   })
 }
 
-async function readEditor(page, name) {
+export async function readEditor(page, name) {
   return page.locator(`textarea[name="${name}"]`).inputValue()
 }
 
-async function saveEditor(page, name, content) {
+export async function saveEditor(page, name, content) {
   await page.evaluate(({ name, content }) => {
     const field = document.querySelector(`textarea[name="${name}"]`)
     if (!field) throw new Error('Expected editor is missing')

@@ -65,8 +65,15 @@ jobs:
         run: node scripts/lottery-wallet.test.cjs
       - name: Check saved monthly post archive and atomic save failures
         run: node scripts/post-count-archive.browser-test.cjs
+      - name: Check technique and artifact parameter links
+        run: node scripts/builders-output.browser-test.cjs
       - name: Publish and verify forum
         run: npm run publish:forum
+        env:
+          FORUM_USERNAME: ${{ secrets.FORUM_USERNAME }}
+          FORUM_PASSWORD: ${{ secrets.FORUM_PASSWORD }}
+      - name: Publish technique and artifact builders
+        run: node scripts/publish-builders.mjs
         env:
           FORUM_USERNAME: ${{ secrets.FORUM_USERNAME }}
           FORUM_PASSWORD: ${{ secrets.FORUM_PASSWORD }}
