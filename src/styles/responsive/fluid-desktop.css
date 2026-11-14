@@ -1,0 +1,360 @@
+/*
+ * Плавная версия форума для планшетов и десктопов.
+ *
+ * Эталонная композиция была собрана при ширине окна 1375px:
+ * тело форума 1100px (80vw), шапка 1300px (118.18% тела),
+ * высота шапки 456px и смещение влево на 80px (7.27% тела).
+ * Здесь меняются реальные CSS-размеры, поэтому браузер не масштабирует
+ * готовый растр и текст остаётся чётким при собственном browser zoom.
+ */
+@media screen and (min-width: 701px) {
+  /* Админка не содержит #pun-announcement и в эту схему не попадает. */
+  #pun:has(#pun-announcement) {
+    --main-w: min(80vw, 2200px);
+    --title-h: min(33.163636vw, 912px);
+    --main-p: clamp(20px, 1.454545vw, 40px);
+    --usav: clamp(30px, 2.181818vw, 60px);
+    --intd-gap: clamp(15px, 1.090909vw, 30px);
+    --icon-w: clamp(20px, 1.454545vw, 40px);
+    --icon-h: var(--icon-w);
+    --main-icon-w: var(--icon-w);
+    --main-icon-h: var(--icon-w);
+    --topic-icon-size: clamp(48px, 3.490909vw, 96px);
+    --font-k: normal 700 clamp(18px, 1.818182vw, 50px) "Russo One";
+    --font-kb: normal 700 clamp(10px, 0.727273vw, 20px) "Oswald";
+    --fluid-frame-inset: clamp(10px, 0.727273vw, 20px);
+    --fluid-space-5: clamp(5px, 0.363636vw, 10px);
+    --fluid-space-10: clamp(10px, 0.727273vw, 20px);
+    --fluid-space-15: clamp(15px, 1.090909vw, 30px);
+    --fluid-space-20: clamp(20px, 1.454545vw, 40px);
+    --fluid-space-40: clamp(28px, 2.909091vw, 80px);
+    width: var(--main-w);
+    margin-top: var(--title-h);
+  }
+
+  /* Внутреннее светлое тело всегда заполняет рамку с равными полями. */
+  #pun:has(#pun-announcement) > .punbb {
+    width: auto;
+    margin: var(--fluid-frame-inset);
+    padding: var(--main-p);
+    font-family: var(--font-g);
+    font-size: clamp(12px, 0.872727vw, 24px);
+  }
+
+  /*
+   * Шапка остаётся привязанной к телу, а не центрируется отдельно.
+   * Так сохраняется исходное намеренное смещение макета.
+   */
+  #pun:has(#pun-announcement) #pun-announcement {
+    box-sizing: border-box;
+    width: 118.181818%;
+    height: auto;
+    aspect-ratio: 1300 / 456;
+    top: auto;
+    bottom: 100%;
+    left: -7.272727%;
+    container-type: inline-size;
+    background-position: center;
+  }
+
+  #pun-announcement .table,
+  #pun-announcement .leftparp,
+  #pun-announcement .rightpart {
+    height: 100%;
+  }
+
+  /* Внутренняя геометрия шапки считается от её собственной ширины. */
+  #pun-announcement .lptop {
+    height: 5.384615cqw;
+    margin-left: 3.076923cqw;
+    padding-top: 0.923077cqw;
+  }
+
+  #pun-announcement .lpbottom {
+    height: 26.923077cqw;
+    padding-left: 5.384615cqw;
+    padding-top: 11.538462cqw;
+  }
+
+  #pun-announcement :is(.navbar1, .navbar2, .navbar3) {
+    flex-basis: clamp(30px, 3.076923cqw, 80px);
+    width: clamp(100px, 11.538462cqw, 300px);
+    height: clamp(30px, 3.076923cqw, 80px);
+    min-height: clamp(30px, 3.076923cqw, 80px);
+    margin: clamp(6px, 0.769231cqw, 20px);
+  }
+
+  #pun-announcement :is(.navd1, .navd2, .navd3) {
+    width: clamp(180px, 19.615385cqw, 510px);
+  }
+
+  #pun-announcement :is(.navd1, .navd2, .navd3) > ul {
+    margin: clamp(3px, 0.384615cqw, 10px);
+    padding: clamp(3px, 0.384615cqw, 10px);
+  }
+
+  #pun-announcement :is(.navd1, .navd2, .navd3) > ul > li {
+    padding-inline: clamp(3px, 0.384615cqw, 10px);
+  }
+
+  #pun-announcement .rightpart {
+    font-family: var(--font);
+  }
+
+  #pun-announcement .riptop {
+    height: 23.076923cqw;
+  }
+
+  #pun-announcement .admins {
+    width: 3.846154cqw;
+    height: 5.384615cqw;
+    left: 25.384615cqw;
+  }
+
+  #pun-announcement .admimg {
+    width: clamp(28px, 3.076923cqw, 80px);
+    height: clamp(28px, 3.076923cqw, 80px);
+    margin: clamp(6px, 0.769231cqw, 20px);
+    box-shadow: calc(0px - clamp(3px, 0.384615cqw, 10px))
+      clamp(3px, 0.384615cqw, 10px) clamp(3px, 0.384615cqw, 10px) black;
+  }
+
+  #pun-announcement .newsbox {
+    padding-left: 1.538462cqw;
+  }
+
+  #pun-announcement .nh1 {
+    left: 1cqw;
+    font-size: clamp(18px, 1.923077cqw, 50px);
+  }
+
+  #pun-announcement .nvsscroll {
+    width: clamp(220px, 28.076923cqw, 730px);
+    height: 11.538462cqw;
+    margin-left: 11.538462cqw;
+    margin-top: 0.769231cqw;
+    padding-left: 0.384615cqw;
+    font-size: clamp(10px, 1.076923cqw, 28px);
+  }
+
+  #pun-announcement .nvsscroll:has(.news-item) {
+    height: auto;
+    max-height: 13.384615cqw;
+    gap: clamp(2px, 0.307692cqw, 8px);
+    padding: 0.153846cqw 0.307692cqw;
+  }
+
+  #pun-announcement .nvsscroll a.news-item {
+    gap: clamp(5px, 0.692308cqw, 18px);
+    min-height: clamp(24px, 2.307692cqw, 60px);
+    padding: 0.230769cqw 0.692308cqw;
+    font-size: clamp(10px, 1cqw, 26px);
+  }
+
+  #pun-announcement .nvsscroll a.news-item::after {
+    font-size: clamp(13px, 1.307692cqw, 34px);
+  }
+
+  #pun-announcement .news-item__date {
+    padding: 0.153846cqw 0.461538cqw;
+  }
+
+  #pun-announcement .ripbottom {
+    width: 26.923077cqw;
+    height: 10.769231cqw;
+    top: 0.538462cqw;
+    left: 14.461538cqw;
+  }
+
+  #pun-announcement .ripbottom p {
+    margin-top: 6.153846cqw;
+    padding-inline: 0.769231cqw;
+    font-family: var(--font);
+    font-size: clamp(12px, 1.230769cqw, 32px);
+  }
+
+  #pun-announcement #theme_switcher li {
+    padding: clamp(3px, 0.384615cqw, 10px);
+  }
+
+  #pun-announcement #theme_switcher li input::before {
+    margin-right: 0.307692cqw;
+    font-size: clamp(12px, 1.230769cqw, 32px);
+  }
+
+  #pun-announcement .viewport-mode-toggle {
+    width: clamp(18px, 1.538462cqw, 40px);
+    min-width: clamp(16px, 1.230769cqw, 32px);
+    height: clamp(18px, 1.538462cqw, 40px);
+    margin-right: 0.384615cqw;
+    left: -3.846154cqw;
+  }
+
+  #pun-announcement .viewport-mode-toggle::before {
+    font-size: clamp(12px, 1.230769cqw, 32px);
+  }
+
+  /* Основная и пользовательская навигация растут вместе с телом форума. */
+  #pun:has(#pun-announcement) #pun-navlinks .container {
+    padding-block: var(--fluid-space-15);
+    font-size: clamp(18px, 1.454545vw, 40px);
+  }
+
+  #pun:has(#pun-announcement) #pun-navlinks li,
+  #pun:has(#pun-announcement) #pun-ulinks li {
+    margin-inline: var(--fluid-space-5);
+  }
+
+  #pun:has(#pun-announcement) #pun-ulinks {
+    top: clamp(42px, 3.054545vw, 84px);
+  }
+
+  #pun:has(#pun-announcement) #pun-ulinks .container {
+    padding-bottom: var(--fluid-space-15);
+    margin-bottom: calc(0px - var(--fluid-space-10));
+    font-size: clamp(11px, 0.872727vw, 24px);
+  }
+
+  /* Статус пользователя сохраняет место в композиции на главной. */
+  #pun-index #pun-status .container {
+    top: clamp(76px, 9.818182vw, 270px);
+    font-size: clamp(9px, 0.654545vw, 18px);
+  }
+
+  #pun-index #pun-status .status-layout {
+    min-height: clamp(46px, 3.345455vw, 92px);
+    gap: var(--fluid-space-20);
+    padding-inline: clamp(20px, 2.181818vw, 60px);
+  }
+
+  #pun-index #pun-status .status-user {
+    gap: var(--fluid-space-10);
+  }
+
+  #pun-index #pun-status .status-user__avatar {
+    flex-basis: clamp(36px, 3.345455vw, 92px);
+  }
+
+  #pun-index #pun-status :is(
+      .status-user__avatar,
+      .status-user__avatar a,
+      .status-user__avatar-image
+    ) {
+    width: clamp(36px, 3.345455vw, 92px);
+    height: clamp(36px, 3.345455vw, 92px);
+  }
+
+  /* Главная страница: сетка и карточки увеличиваются без растяжения растром. */
+  #pun-index .forum-list {
+    gap: var(--fluid-space-20);
+  }
+
+  #pun-index .forum-card {
+    height: auto;
+    min-height: clamp(200px, 14.545455vw, 400px);
+    aspect-ratio: 2.55 / 1;
+    padding: var(--fluid-space-20);
+  }
+
+  #pun-index .forum-card__last-post {
+    gap: var(--fluid-space-5) var(--fluid-space-20);
+    padding-right: clamp(24px, 3.636364vw, 100px);
+    padding-bottom: var(--fluid-space-5);
+  }
+
+  #pun-index :is(.category h2, #pun-stats h2) {
+    min-height: clamp(65px, 4.727273vw, 130px);
+    margin-top: clamp(36px, 4.363636vw, 120px);
+    margin-bottom: clamp(28px, 2.909091vw, 80px);
+    padding-block: var(--fluid-space-5);
+  }
+
+  #pun-index .category h2 > .category-title,
+  #pun-index #pun-stats h2 > .statistics-title {
+    height: clamp(50px, 3.636364vw, 100px);
+    margin-bottom: var(--fluid-space-15);
+    padding-inline: clamp(28px, 3.272727vw, 90px);
+    letter-spacing: clamp(2px, 0.145455vw, 4px);
+  }
+
+  #pun-index .category h2 > span.category-quote,
+  #pun-index #pun-stats h2 > span.statistics-quote {
+    width: clamp(300px, 36.363636vw, 1000px);
+    max-width: calc(100% - var(--fluid-space-40));
+    font-size: clamp(12px, 0.872727vw, 24px) !important;
+  }
+
+  #pun-index .statscon {
+    margin-inline: clamp(20px, 2.545455vw, 70px);
+  }
+
+  #pun-index .tclcon {
+    gap: var(--fluid-space-20);
+  }
+
+  #pun-index .tcl h3 {
+    padding-left: var(--fluid-space-40);
+    font-size: clamp(14px, 1.309091vw, 36px);
+  }
+
+  #pun-index .tclcon span,
+  #pun-index .subforums {
+    gap: var(--fluid-space-10);
+    padding-block: var(--fluid-space-20);
+  }
+
+  #pun-index .tclcon span a,
+  #pun-index .subforums a {
+    width: clamp(76px, 6.545455vw, 180px);
+    padding-bottom: clamp(2px, 0.145455vw, 4px);
+    font-size: clamp(9px, 0.654545vw, 18px);
+  }
+
+  #pun-index .lastpost-link {
+    font-size: clamp(10px, 0.727273vw, 20px);
+  }
+
+  #pun-index .lastpost {
+    font-size: clamp(8px, 0.581818vw, 16px);
+  }
+
+  /* Общие карточные списки внутренних страниц получают тот же ритм. */
+  #pun:has(#pun-announcement) .forum-card-list {
+    gap: var(--fluid-space-20);
+    margin-block: var(--fluid-space-20);
+  }
+
+  #pun:has(#pun-announcement) .forum-list-card {
+    gap: var(--fluid-space-10);
+    padding: var(--fluid-space-15) var(--fluid-space-10);
+    border-radius: clamp(14px, 1.018182vw, 28px);
+    font-size: clamp(11px, 0.8vw, 22px);
+  }
+
+}
+
+/*
+ * Планшет сохраняет ту же шапку, но содержимое не превращается в
+ * нечитаемую миниатюру: карточки идут в одну колонку, липкая навигация и
+ * абсолютный статус возвращаются в поток документа.
+ */
+@media screen and (min-width: 701px) and (max-width: 1099px) {
+  #pun:has(#pun-announcement) :is(#pun-navlinks, #pun-ulinks) {
+    position: relative;
+    top: auto;
+  }
+
+  #pun-index #pun-status .container {
+    position: relative;
+    inset: auto;
+    margin-block: var(--fluid-space-10);
+  }
+
+  #pun-index .forum-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #pun-index .forum-card:last-child:nth-child(odd) {
+    grid-column: auto;
+  }
+}

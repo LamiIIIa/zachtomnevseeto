@@ -72,6 +72,9 @@
 @import "./pages/messages.css";
 @import "./utilities/visibility.css";
 
+/* Плавная геометрия планшетной и десктопной версии без zoom/transform. */
+@import "./responsive/fluid-desktop.css";
+
 /* Последними перекрываем встроенный мобильный CSS MyBB. */
 @import "./responsive/mobile.css";
 @import "./responsive/mobile-header.css";
