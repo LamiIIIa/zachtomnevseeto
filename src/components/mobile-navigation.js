@@ -210,7 +210,11 @@ class MobileNavigation {
 
     const updateBadge = () => {
       const sourceBadge = source.querySelector(".unreads");
-      const count = sourceBadge?.textContent.match(/\d+/)?.[0] || "";
+      const attributeCount = source
+        .getAttribute("data-number-unread")
+        ?.match(/\d+/)?.[0];
+      const badgeCount = sourceBadge?.textContent.match(/\d+/)?.[0];
+      const count = attributeCount || badgeCount || "";
 
       const hasUnread = Boolean(sourceBadge) && (!count || Number(count) > 0);
 
@@ -239,6 +243,8 @@ class MobileNavigation {
       childList: true,
       subtree: true,
       characterData: true,
+      attributes: true,
+      attributeFilter: ["data-number-unread"],
     });
   }
 
@@ -376,7 +382,12 @@ class MobileNavigation {
       text: this.getSourceLinkLabel(sourceLink),
     });
 
-    if (sourceLink.closest("#notify-link")) {
+    const sourceHref = sourceLink.getAttribute("href") || "";
+    const isNotificationsLink =
+      Boolean(sourceLink.closest("#notify-link")) ||
+      sourceHref.includes("#notify-link");
+
+    if (isNotificationsLink) {
       link.classList.add("mobile-menu__link--notifications");
     }
 
