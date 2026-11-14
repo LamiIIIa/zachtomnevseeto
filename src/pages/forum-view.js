@@ -523,7 +523,7 @@ function prepearTopicPreviewSourse(message) {
 function createTopicPreview(messageHtml) {
   const previewSourse = prepearTopicPreviewSourse(messageHtml);
 
-  if ((previewSourse = null)) {
+  if (previewSourse === null) {
     return "Тут коды, тыкай и все увидишь =)";
   }
 
