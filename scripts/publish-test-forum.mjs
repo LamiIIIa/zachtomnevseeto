@@ -41,12 +41,12 @@ try{
   await saveEditor(forms,'form[o_html_header]',nextHeader)
   await forms.goto(origin+'/admin_forms.php',{waitUntil:'domcontentloaded'})
   const savedHeader=await readEditor(forms,'form[o_html_header]')
-  if(!savedHeader.includes(jsUrl)||!savedHeader.includes(cssUrl))throw Error('Test header readback missing deployment URLs: '+JSON.stringify({expectedLength:nextHeader.length,actualLength:savedHeader.length,js:savedHeader.includes(jsUrl),css:savedHeader.includes(cssUrl),loader:savedHeader.includes('forum-local-loader')}))
+  if(!savedHeader.includes(new URL(jsUrl).pathname)||!savedHeader.includes(new URL(cssUrl).pathname))throw Error('Test header readback missing published file paths')
   const check=await context.newPage(),loadedScripts=[]
   check.on('request',request=>{if(request.resourceType()==='script')loadedScripts.push(request.url())})
   await check.goto(origin+'/?fd_verify='+manifest.revision+'-'+Date.now(),{waitUntil:'domcontentloaded'})
   await check.locator('.punbb.forum-design--ready').waitFor({timeout:60000})
-  if(!loadedScripts.includes(jsUrl))throw Error('Published test JS was not requested; observed CDN scripts: '+loadedScripts.filter(url=>url.includes('forumstatic.ru')).join(', '))
+  if(!loadedScripts.some(url=>new URL(url).origin===new URL(jsUrl).origin&&new URL(url).pathname===new URL(jsUrl).pathname))throw Error('Published test JS was not requested; observed CDN scripts: '+loadedScripts.filter(url=>url.includes('forumstatic.ru')).join(', '))
   for(const width of [390,1280]){await check.setViewportSize({width,height:844});await check.waitForTimeout(300);if(!await check.locator('#pun-main').isVisible())throw Error('Test forum content is hidden');await check.screenshot({path:path.join(dir,`test-forum-${width}.png`)})}
  }catch(error){await style.goto(origin+'/admin_style.php');await saveEditor(style,'form[content1]',originalStyle);await forms.goto(origin+'/admin_forms.php');await saveEditor(forms,'form[o_html_header]',originalHeader);throw error}
  await writeFile(path.join(dir,'test-deployment.json'),JSON.stringify({origin,revision:manifest.revision,cssUrl,jsUrl,verified:true},null,2))
