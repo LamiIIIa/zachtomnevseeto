@@ -5,10 +5,7 @@ import {
   moveCellToBlock,
   replaceTableWithCardList,
 } from "../components/table-card-layout.js";
-import {
-  FORUM_TABLE_SELECTOR,
-  MOBILE_LAYOUT_QUERY,
-} from "../config/layout.js";
+import { FORUM_TABLE_SELECTOR, MOBILE_LAYOUT_QUERY } from "../config/layout.js";
 
 const WEEKDAY_FORMATTER = new Intl.DateTimeFormat("ru-RU", {
   weekday: "short",
@@ -28,6 +25,22 @@ const PREVIEW_EXCLUDED_SELECTOR = [
   "video",
   "audio",
 ].join(",");
+
+const PREVIEW_HIDDEN_BBCODE_PATTERN =
+  /\[(quote|spoiler|hide)\b[^\]]*\][\s\S]*?\[\/\1\]/gi;
+
+const PREVIEW_MEDIA_BBCODE_PATTERN =
+  /\[(img|video|media)\b[^\]]*\][\s\S]*?\[\/\1\]/gi;
+
+const PREVIEW_FORMATTING_BBCODE_PATTERN =
+  /\[(?:\/?(?:b|i|u|s|h|mark|sup|sub|color|size|font|align|abbr|block|widepost)(?:=[^\]]*)?|br|hr)\]/gi;
+
+const PREVIEW_LINK_BBCODE_PATTERN = /\[url(?:=[^\]]*)?\]([\s\S]*?)\[\/url\]/gi;
+
+const PREVIEW_CODE_BBCODE_PATTERN = /\[(?:html|code)\b[^\]]*\]/i;
+
+const PREVIEW_REMAINING_BBCODE_PATTERN = /\[\/?[a-z][\w-]*(?:=[^\]\r\n]*)?\]/i;
+
 const MAX_PREVIEW_POSTS = 100;
 
 const forumViewState = {
@@ -43,14 +56,12 @@ export function initForumView({ main, forumId }) {
   if (main.dataset.forumLayout === "cards") return;
 
   forumViewState.topics.clear();
-  main
-    .querySelectorAll(FORUM_TABLE_SELECTOR)
-    .forEach((table) => {
-      replaceTableWithCardList(table, {
-        listClassName: "topic-list forum-card-list",
-        renderRow: ({ row, headers }) => convertTopicRow(row, headers),
-      });
+  main.querySelectorAll(FORUM_TABLE_SELECTOR).forEach((table) => {
+    replaceTableWithCardList(table, {
+      listClassName: "topic-list forum-card-list",
+      renderRow: ({ row, headers }) => convertTopicRow(row, headers),
     });
+  });
 
   initTopicPreviews(main);
   main.dataset.forumLayout = "cards";
@@ -265,8 +276,7 @@ function formatTopicDate(value, now = new Date()) {
 
   // В пределах текущей недели выводим короткий день: «пн», «вт», «ср».
   if (date >= weekStart) {
-    return WEEKDAY_FORMATTER.format(date)
-      .replace(/\.$/, "");
+    return WEEKDAY_FORMATTER.format(date).replace(/\.$/, "");
   }
 
   // Для более старых сообщений выводим число и месяц: «12 авг».
@@ -490,7 +500,37 @@ function updateTopicPreview(topicState, topicCard) {
   topicCard.dataset.previewStatus = topicState.previewStatus;
 }
 
+function prepearTopicPreviewSourse(message) {
+  const sourse = String(message ?? "");
+
+  if (PREVIEW_CODE_BBCODE_PATTERN.test(sourse)) {
+    return null;
+  }
+
+  const cleaned = sourse
+    .replace(PREVIEW_LINK_BBCODE_PATTERN, "$1")
+    .replace(PREVIEW_HIDDEN_BBCODE_PATTERN, " ")
+    .replace(PREVIEW_MEDIA_BBCODE_PATTERN, " ")
+    .replace(PREVIEW_FORMATTING_BBCODE_PATTERN, " ");
+
+  if (PREVIEW_REMAINING_BBCODE_PATTERN.test(cleaned)) {
+    return null;
+  }
+
+  return cleaned;
+}
+
 function createTopicPreview(messageHtml) {
+  const previewSourse = prepearTopicPreviewSourse(messageHtml);
+
+  if ((previewSourse = null)) {
+    return "Тут коды, тыкай и все увидишь =)";
+  }
+
+  const tamplate = document.createElement("template");
+
+  tamplate.innerHTML = previewSourse;
+
   const template = document.createElement("template");
   template.innerHTML = messageHtml;
 
