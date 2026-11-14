@@ -24,13 +24,13 @@ html:has(#pun-admain) .punbb {
   }
   
 #pun-admain table,
-#pun-admain tr,
 #pun-admain td,
 #pun-admain th {
   display: table !important;
 }
 #pun-admain tr {
-  display: table-row !important;
+  /* File filters and native pagination must be able to hide individual rows. */
+  display: table-row;
 }
 #pun-admain td,
 #pun-admain th {
