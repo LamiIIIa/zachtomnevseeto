@@ -22,6 +22,9 @@ try{
   for(const [before,after]of patches){if(source.split(before).length!==2)throw Error('Builder patch context differs at '+patches.findIndex(pair=>pair[0]===before)+'; refusing unrelated changes');source=source.replace(before,after)}
   source='// akatsuki-builders version 16\n'+source
  }
+ // Strip legacy output markers even in previously deployed templates.
+ source=source.replace(/\[\/?widepost\]/gi,'')
+   .replace(/\\u005b(?:\\u002f)?widepost\\u005d/gi,'');
  source=source.replace(/[^\x00-\x7f]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'))
  await forms.goto(origin+'/admin_forms.php',{waitUntil:'domcontentloaded'})
  const oldFooter=await readEditor(forms,'form[o_html_footer]')
