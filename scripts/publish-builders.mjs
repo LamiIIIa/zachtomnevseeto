@@ -22,6 +22,17 @@ try{
   for(const [before,after]of patches){if(source.split(before).length!==2)throw Error('Builder patch context differs at '+patches.findIndex(pair=>pair[0]===before)+'; refusing unrelated changes');source=source.replace(before,after)}
   source='// akatsuki-builders version 16\n'+source
  }
+ if(!source.includes('// akatsuki-builders output guard 17')){
+  for(const selector of ['.atb-output','.aab-output']){
+   const needle="var out="+(selector==='.atb-output'?'root':'app')+".querySelector('"+selector+"');";
+   const replacement=needle+"out.value=out.value.replace(/\\[\\/?widepost\\]/gi,'');";
+   if(!source.includes(needle))throw Error('Builder copy handler changed');
+   source=source.replaceAll(needle,replacement);
+  }
+  source=source.replace("editor.value=root.querySelector('.atb-output').value;","editor.value=root.querySelector('.atb-output').value.replace(/\\[\\/?widepost\\]/gi,'');")
+    .replace("editor.value=app.querySelector('.aab-output').value;","editor.value=app.querySelector('.aab-output').value.replace(/\\[\\/?widepost\\]/gi,'');");
+  source='// akatsuki-builders output guard 17\n'+source;
+ }
  // Strip legacy output markers even in previously deployed templates.
  source=source.replace(/\[\/?widepost\]/gi,'')
    .replace(/\\u005b(?:\\u002f)?widepost\\u005d/gi,'');
