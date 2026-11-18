@@ -5080,21 +5080,36 @@ function npcHtmlCode(node) {
 
   function previousTechnicalRegion(content) {
     var clone = content.cloneNode(true);
-    var spoiler = Array.prototype.find.call(clone.querySelectorAll('.quote-box,.spoiler-box,[class*="spoiler"]'), function (box) {
+    var spoilers = Array.prototype.filter.call(clone.querySelectorAll('.quote-box,.spoiler-box,[class*="spoiler"],details'), function (box) {
       var heading = box.querySelector('.quote-box-head,.spoiler-head,.spoiler-title,summary') || box.firstElementChild;
       var title = clean((box.getAttribute('data-title') || box.getAttribute('title') || '') + ' ' + (heading ? heading.textContent : ''));
       return /(?:^|\s)(?:\u0442\u0447|\u0442\u0435\u0445\u0447\u0430\u0441\u0442\u044c)(?:\s|$|[.:\u2014\u2013-])/i.test(title);
     });
-    if (spoiler) return spoiler.querySelector('.quote-box-content,.spoiler-content,blockquote') || spoiler;
+    // Broad spoiler class selectors also find inner containers.
+    spoilers = spoilers.filter(function (box) {
+      return !spoilers.some(function (other) { return other !== box && other.contains(box); });
+    });
+    function characterName(region) {
+      var text = postLines(region).join('\n').replace(/\[\/?(?:b|strong)\]/gi, '');
+      var match = text.match(/\u043f\u0435\u0440\u0441\u043e\u043d\u0430\u0436\s*:\s*([^\n]+?)(?=\s*HP\s+\u043d\u0430|\n|$)/i);
+      return match ? normalizeText(match[1]).replace(/\s+/g, ' ').trim() : '';
+    }
+    var selectedName = normalizeText(state.character && state.character.name).replace(/\s+/g, ' ').trim();
+    var regions = spoilers.map(function (box) {
+      return box.querySelector('.quote-box-content,.spoiler-content,blockquote') || box;
+    });
+    var matching = regions.filter(function (region) { return characterName(region) === selectedName && selectedName; });
+    if (matching.length) return matching[matching.length - 1];
+    if (regions.length) return regions.length === 1 && !characterName(regions[0]) ? regions[0] : null;
     var rules = clone.querySelectorAll('hr');
-    if (!rules.length) return clone;
+    if (!rules.length) return characterName(clone) && characterName(clone) !== selectedName ? null : clone;
     var result = document.createElement('div');
     var node = rules[rules.length - 1].nextSibling;
     while (node) {
       result.appendChild(node.cloneNode(true));
       node = node.nextSibling;
     }
-    return result;
+    return characterName(result) && characterName(result) !== selectedName ? null : result;
   }
 
   function lastRegexMatch(text, expression) {
@@ -5206,8 +5221,10 @@ function npcHtmlCode(node) {
     var normalizedPost = normalizePreviousPostUrl(url);
     if (!normalizedPost) return setStatus('\u0423\u043a\u0430\u0436\u0438\u0442\u0435 \u0441\u0441\u044b\u043b\u043a\u0443 \u043d\u0430 \u043a\u043e\u043d\u043a\u0440\u0435\u0442\u043d\u044b\u0439 \u043f\u043e\u0441\u0442 \u0444\u043e\u0440\u0443\u043c\u0430 \u0432 \u0444\u043e\u0440\u043c\u0430\u0442\u0435 viewtopic.php\u2026#p123.', 'error');
     var absolute = normalizedPost.url;
+    var selectedCharacter = state.character;
     setStatus('\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0442\u0435\u0445\u0447\u0430\u0441\u0442\u0438 \u043f\u0440\u043e\u0448\u043b\u043e\u0433\u043e \u043f\u043e\u0441\u0442\u0430\u2026', 'loading');
     return loadDocument(absolute.split('#')[0]).then(function (doc) {
+      if (state.character !== selectedCharacter || combatState() !== combat) return;
       var postId = normalizedPost.postId;
       var content = postId ? findPostContent(doc, postId) : null;
       if (!content) {
@@ -5216,6 +5233,12 @@ function npcHtmlCode(node) {
       }
       if (!content) throw new Error('\u0421\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e');
       var region = previousTechnicalRegion(content);
+      if (!region) {
+        combat.sourceMessage = '\u0414\u043b\u044f \u043f\u0435\u0440\u0441\u043e\u043d\u0430\u0436\u0430 \u00ab' + state.character.name + '\u00bb \u043d\u0435\u0442 \u0434\u0430\u043d\u043d\u044b\u0445 \u043f\u0440\u043e\u0448\u043b\u043e\u0433\u043e \u0445\u043e\u0434\u0430. \u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0440\u0435\u0441\u0443\u0440\u0441\u044b \u0432\u0440\u0443\u0447\u043d\u0443\u044e.';
+        renderTurnSetup();
+        setStatus(combat.sourceMessage, 'error');
+        return;
+      }
       var parsed = parsePreviousResources(region);
       combat.sourceUrl = absolute;
       combat.firstTurn = false;
