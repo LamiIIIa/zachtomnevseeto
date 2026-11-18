@@ -2903,12 +2903,16 @@ function npcHtmlCode(node) {
     return '<div class="aba-tech-boost"><label class="aba-check"><input type="checkbox" data-field="tech-chakra-boost"><span>\u0423\u0441\u0438\u043b\u0438\u0442\u044c \u0442\u0435\u0445\u043d\u0438\u043a\u0443 \u0447\u0430\u043a\u0440\u043e\u0439: 2 \u0447\u0430\u043a\u0440\u044b = +20 \u043a ' + target + '</span></label><label class="aba-tech-boost-fields" hidden>\u0414\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u0430\u044f \u0447\u0430\u043a\u0440\u0430<select data-field="tech-chakra-boost-value">' + options.join('') + '</select></label></div>';
   }
 
+  function isGenjutsu(item) {
+    return /\u0433\u0435\u043d\u0434\u0437\u044e(?:\u0446\u0443|\u0442\u0441\u0443)/i.test(clean(item.detail.block)) || techniqueCheck(item.detail).label === '\u0410\u0442\u0430\u043a\u0430 \u0413\u0435\u043d\u0434\u0437\u044e\u0446\u0443';
+  }
+
   function techniqueChakraBoostData(editor, item, mode) {
     var enabled = !!((editor.querySelector('[data-field="tech-chakra-boost"]') || {}).checked) && !((editor.querySelector('[data-field="tech-weaken"]') || {}).checked);
     var limit = techniqueChakraBoostLimit(item, mode);
     var value = enabled ? Number((editor.querySelector('[data-field="tech-chakra-boost-value"]') || {}).value || 0) : 0;
     value = Math.max(0, Math.min(limit, Math.floor(value / 2) * 2));
-    return { chakra: value, bonus: value * 10, target: mode === 'defense' ? 'defense' : 'damage' };
+    return { chakra: value, bonus: isGenjutsu(item) ? 0 : value * 10, target: isGenjutsu(item) ? 'effect' : mode === 'defense' ? 'defense' : 'damage' };
   }
 
   function techniqueWeakeningRules(item) {
@@ -2993,9 +2997,10 @@ function npcHtmlCode(node) {
     var standardPower = profile.gradual ? supportValues[2] : values[2];
     var oldStandardPower = profile.gradual ? originalSupport[2] : original[2];
     var raw = techniquePowerNumber(detail.power);
+    var noIllusionDamage = isGenjutsu(item) && !clean(detail.power);
     var factor = profile.shape * profile.elemental;
     var power = raw === null ? standardPower * factor : raw * (weakened ? standardPower / oldStandardPower : 1);
-    power = combatRound(power);
+    power = noIllusionDamage ? 0 : combatRound(power);
     if (weakened && profile.shape !== 1 && raw === null) notes.push(profile.shape === 0.75 ? '\u043a\u043e\u043d\u0443\u0441: \u00d70.75' : '\u043f\u043b\u043e\u0449\u0430\u0434\u044c: \u00d70.5');
     if (weakened && profile.elemental !== 1 && raw === null) notes.push('\u0441\u0442\u0438\u0445\u0438\u044f: \u00d7' + profile.elemental);
     if (profile.regeneration) notes.push('\u0440\u0435\u0433\u0435\u043d\u0435\u0440\u0430\u0446\u0438\u044f: \u0442\u0440\u043e\u0439\u043d\u043e\u0439 \u0440\u0430\u0441\u0445\u043e\u0434 \u043e\u0431\u0449\u0435\u0439 \u0447\u0430\u043a\u0440\u044b');
@@ -3013,10 +3018,10 @@ function npcHtmlCode(node) {
     if (profile.lightning) notes.push('\u0438\u0433\u043d\u043e\u0440\u0438\u0440\u0443\u0435\u0442 40% \u0437\u0430\u0449\u0438\u0442\u044b \u0446\u0435\u043b\u0438');
     if (profile.temporary && supportValues[3]) notes.push('\u0432\u0440\u0435\u043c\u0435\u043d\u043d\u043e\u0435 \u0432\u043e\u0441\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435: ' + supportValues[3] + ' \u0445\u043e\u0434(\u0430), \u0437\u0430\u0442\u0435\u043c HP \u0441\u043d\u043e\u0432\u0430 \u0441\u043d\u0438\u0436\u0430\u0435\u0442\u0441\u044f \u0431\u0435\u0437 \u043b\u0435\u0447\u0435\u043d\u0438\u044f');
     var support = weakened ? (profile.sustained ? supportValues[1] * (profile.taijutsu ? 0.5 : 1) : 0) : supportChakraCost(detail);
-    return { rank: rank, focused: chakra.focused, general: chakra.general, support: support, power: power, powerText: powerText,
+    return { noDamage: noIllusionDamage, rank: rank, focused: chakra.focused, general: chakra.general, support: support, power: power, powerText: powerText,
       powerLabel: powerLabel, burn: burn, healing: profile.healing, gradual: profile.gradual, temporary: profile.temporary,
       duration: profile.temporary ? supportValues[3] : 0, ot: Math.max(1, RANK_COSTS[rank] - detail.discount - (specializationDiscount && rank === 'S' ? 1 : 0)), notes: notes,
-      summary: ((profile.healing || effectiveMode === 'attack' || effectiveMode === 'defense' || weaponBonus) ? powerLabel + ': ' + powerText + '; ' : '') + '\u0447\u0430\u043a\u0440\u0430: ' + chakra.focused + '/' + chakra.general + (support ? '; \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430: ' + support + ' \u0432 \u0445\u043e\u0434' : '') + (notes.length ? '; ' + notes.join('; ') : '') };
+      summary: (!noIllusionDamage && (profile.healing || effectiveMode === 'attack' || effectiveMode === 'defense' || weaponBonus) ? powerLabel + ': ' + powerText + '; ' : '') + '\u0447\u0430\u043a\u0440\u0430: ' + chakra.focused + '/' + chakra.general + (support ? '; \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430: ' + support + ' \u0432 \u0445\u043e\u0434' : '') + (notes.length ? '; ' + notes.join('; ') : '') };
   }
 
   function techniqueCalculationFields(item) {
@@ -4611,7 +4616,8 @@ function npcHtmlCode(node) {
     var chakraBoost = techniqueChakraBoostData(editor, item, mode);
     if (chakraBoost.chakra) {
       chakraCost.general += chakraBoost.chakra;
-      code += '; \u0443\u0441\u0438\u043b\u0435\u043d\u0438\u0435 \u0447\u0430\u043a\u0440\u043e\u0439: +' + chakraBoost.bonus + (chakraBoost.target === 'defense' ? ' \u043a \u0417\u0430\u0449\u0438\u0442\u0435' : ' \u043a \u0443\u0440\u043e\u043d\u0443') + '; \u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u0440\u0430\u0441\u0445\u043e\u0434 \u043e\u0431\u0449\u0435\u0433\u043e \u0437\u0430\u043f\u0430\u0441\u0430 \u0447\u0430\u043a\u0440\u044b: ' + chakraBoost.chakra;
+      if (chakraBoost.target === 'effect') code += '; \u0443\u0441\u0438\u043b\u0435\u043d\u0438\u0435 \u044d\u0444\u0444\u0435\u043a\u0442\u0430 \u043d\u0430 ' + chakraBoost.chakra + ' \u0447\u0430\u043a\u0440\u044b; \u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u0440\u0430\u0441\u0445\u043e\u0434 \u043e\u0431\u0449\u0435\u0433\u043e \u0437\u0430\u043f\u0430\u0441\u0430 \u0447\u0430\u043a\u0440\u044b: ' + chakraBoost.chakra;
+      else code += '; \u0443\u0441\u0438\u043b\u0435\u043d\u0438\u0435 \u0447\u0430\u043a\u0440\u043e\u0439: +' + chakraBoost.bonus + (chakraBoost.target === 'defense' ? ' \u043a \u0417\u0430\u0449\u0438\u0442\u0435' : ' \u043a \u0443\u0440\u043e\u043d\u0443') + '; \u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u0440\u0430\u0441\u0445\u043e\u0434 \u043e\u0431\u0449\u0435\u0433\u043e \u0437\u0430\u043f\u0430\u0441\u0430 \u0447\u0430\u043a\u0440\u044b: ' + chakraBoost.chakra;
     }
     calculation.focused = chakraCost.focused;
     calculation.general = chakraCost.general;
@@ -4620,8 +4626,8 @@ function npcHtmlCode(node) {
     if (chakraBoost.bonus) calculation.power += chakraBoost.bonus;
     if (mode === 'attack' && techniqueRuleProfile(item, mode).fire) calculation.burn = Math.round(calculation.power * 0.1 * 100) / 100;
     if (chakraBoost.bonus || (twoTurn && twoTurnEffect === 'damage')) code += '; \u0438\u0442\u043e\u0433\u043e\u0432\u044b\u0439 \u044d\u0444\u0444\u0435\u043a\u0442: ' + calculation.powerLabel + ' ' + calculation.power + (calculation.burn ? ', \u043e\u0436\u043e\u0433 ' + calculation.burn + ' \u0432 \u0445\u043e\u0434, 3 \u0445\u043e\u0434\u0430' : '');
-    var techniqueAction = { label: labels[mode], summary: item.name + ' \u00b7 ' + calculation.summary + (weakening ? ' \u2014 \u043e\u0441\u043b\u0430\u0431\u043b\u0435\u043d\u0438\u0435 \u0434\u043e ' + weakening.rank + '; ' + weakening.description : '') + (twoTurn ? ' \u2014 \u043f\u043e\u0434\u0433\u043e\u0442\u043e\u0432\u043a\u0430 \u043f\u0435\u0447\u0430\u0442\u0435\u0439' : '') + (enhancement.summary ? ' \u00b7 ' + enhancement.summary : '') + (chakraBoost.chakra ? ' \u00b7 +' + chakraBoost.bonus + (chakraBoost.target === 'defense' ? ' \u043a \u0417\u0430\u0449\u0438\u0442\u0435' : ' \u043a \u0443\u0440\u043e\u043d\u0443') : ''), od: 0, ot: cost, code: code, link: item.url, attackFocus: mode === 'attack' && !twoTurn, counterAttack: counterAttack && !twoTurn, focusedChakraSpend: chakraCost.focused, chakraSpend: chakraCost.general, statModifiers: enhancement.statModifiers, expandedStatModifiers: enhancement.expandedStatModifiers, damageModifiers: enhancement.damageModifiers, modifierSourceKey: enhancement.modifierSourceKey, techniqueUseKey: 'technique:' + item.postId, techniqueTurnLimit: techniqueTurnLimit(detail), effectiveRank: calculation.rank, techniqueCalculation: calculation, hpDelta: calculation.healing && techniquePowerNumber(detail.power) !== null && !twoTurn && !calculation.temporary && (editor.querySelector('[data-field="tech-distance"]') || {}).value === 'self' ? calculation.power : 0 };
-    if (mode === 'attack' && !twoTurn) attachCriticalAction(techniqueAction, 'technique', {}, detail, calculation.power, 1, conditions);
+    var techniqueAction = { label: labels[mode], summary: item.name + ' \u00b7 ' + calculation.summary + (weakening ? ' \u2014 \u043e\u0441\u043b\u0430\u0431\u043b\u0435\u043d\u0438\u0435 \u0434\u043e ' + weakening.rank + '; ' + weakening.description : '') + (twoTurn ? ' \u2014 \u043f\u043e\u0434\u0433\u043e\u0442\u043e\u0432\u043a\u0430 \u043f\u0435\u0447\u0430\u0442\u0435\u0439' : '') + (enhancement.summary ? ' \u00b7 ' + enhancement.summary : '') + (chakraBoost.chakra ? chakraBoost.target === 'effect' ? ' \u00b7 \u0443\u0441\u0438\u043b\u0435\u043d\u0438\u0435 \u044d\u0444\u0444\u0435\u043a\u0442\u0430 \u043d\u0430 ' + chakraBoost.chakra + ' \u0447\u0430\u043a\u0440\u044b' : ' \u00b7 +' + chakraBoost.bonus + (chakraBoost.target === 'defense' ? ' \u043a \u0417\u0430\u0449\u0438\u0442\u0435' : ' \u043a \u0443\u0440\u043e\u043d\u0443') : ''), od: 0, ot: cost, code: code, link: item.url, attackFocus: mode === 'attack' && !twoTurn, counterAttack: counterAttack && !twoTurn, focusedChakraSpend: chakraCost.focused, chakraSpend: chakraCost.general, statModifiers: enhancement.statModifiers, expandedStatModifiers: enhancement.expandedStatModifiers, damageModifiers: enhancement.damageModifiers, modifierSourceKey: enhancement.modifierSourceKey, techniqueUseKey: 'technique:' + item.postId, techniqueTurnLimit: techniqueTurnLimit(detail), effectiveRank: calculation.rank, techniqueCalculation: calculation, hpDelta: calculation.healing && techniquePowerNumber(detail.power) !== null && !twoTurn && !calculation.temporary && (editor.querySelector('[data-field="tech-distance"]') || {}).value === 'self' ? calculation.power : 0 };
+    if (mode === 'attack' && !twoTurn && !calculation.noDamage) attachCriticalAction(techniqueAction, 'technique', {}, detail, calculation.power, 1, conditions);
     addAction(techniqueAction);
   }
 
