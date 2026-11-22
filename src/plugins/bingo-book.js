@@ -188,19 +188,22 @@ window.AkatsukiBingoIcons={"konoha":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iN
   async function request(options={}) {
     const read=!options.method||options.method==='GET';
     if(read&&window.AkatsukiPublicAPI)return window.AkatsukiPublicAPI.read('/api/v1/bingo',{minRevision:Math.max(latestRevision,readSnapshot()?.data.saved.revision||0),requireInitialized:!admin()});
-    for (let attempt=0;attempt<(read?3:1);attempt++) {
-      try {
-        const response=await fetch(endpoint,{cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(read?15000:20000),...options});
+    const mirror='https://akatsuki-forum-mirror.onrender.com/api/v1/bingo';
+    const alwaysdata='https://itinessity.alwaysdata.net/akatsuki-game-api/v1/bingo';
+    const errors=[];
+    for(const url of [endpoint,mirror,alwaysdata]){
+      try{
+        const response=await fetch(url,{cache:'no-store',credentials:'omit',...options,signal:AbortSignal.timeout(2500)});
         const result=await response.json();
-        if (!response.ok) throw Object.assign(Error(result.error||'Сервер временно недоступен'),{status:response.status});
+        if(!response.ok)throw Object.assign(Error(result.error||'HTTP '+response.status),{status:response.status});
         if(!read&&result.saved){validData(result);latestRevision=Math.max(latestRevision,result.saved.revision);remember(result);}
         return result;
-      } catch(error) {
-        if (!read||error.status&&error.status<500&&error.status!==429) throw error;
-        if (attempt===2) throw Error('Не удалось связаться с сервером Книги Бинго. Попробуйте обновить позже.');
-        await new Promise(resolve=>setTimeout(resolve,attempt?1500:500));
+      }catch(error){
+        if(error.status&&error.status<500&&![404,429].includes(error.status))throw error;
+        errors.push(new URL(url).hostname+' — '+(error.name==='TimeoutError'?'таймаут':error.message));
       }
     }
+    throw Error((read?'Чтение':'Запись')+' БД недоступно. '+errors.join(' | '));
   }
   let sharedRequest;
   function load() {

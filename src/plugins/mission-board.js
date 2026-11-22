@@ -116,18 +116,21 @@ window.AkatsukiMissionModel=createMissionModel();const style=document.createElem
   async function request(options={}) {
     const read=!options.method||options.method==='GET';
     if(read&&window.AkatsukiPublicAPI)return window.AkatsukiPublicAPI.read('/api/v1/missions');
-    for (let attempt=0;attempt<(read?3:1);attempt++) {
-      try {
-        const response=await fetch(endpoint,{cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(read?15000:20000),...options});
+    const mirror='https://akatsuki-forum-mirror.onrender.com/api/v1/missions';
+    const alwaysdata='https://itinessity.alwaysdata.net/akatsuki-game-api/v1/missions';
+    const errors=[];
+    for(const url of [endpoint,mirror,alwaysdata]){
+      try{
+        const response=await fetch(url,{cache:'no-store',credentials:'omit',...options,signal:AbortSignal.timeout(2500)});
         const result=await response.json();
-        if (!response.ok) throw Object.assign(Error(result.error||'Сервер временно недоступен'),{status:response.status});
+        if(!response.ok)throw Object.assign(Error(result.error||'HTTP '+response.status),{status:response.status});
         return result;
-      } catch(error) {
-        if (!read||error.status&&error.status<500&&error.status!==429) throw error;
-        if (attempt===2) throw Error('Не удалось связаться с сервером доски миссий. Попробуйте обновить позже.');
-        await new Promise(resolve=>setTimeout(resolve,attempt?1500:500));
+      }catch(error){
+        if(error.status&&error.status<500&&![404,429].includes(error.status))throw error;
+        errors.push(new URL(url).hostname+' — '+(error.name==='TimeoutError'?'таймаут':error.message));
       }
     }
+    throw Error((read?'Чтение':'Запись')+' БД недоступно. '+errors.join(' | '));
   }
   let sharedRequest;
   function load() {
