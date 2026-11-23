@@ -1,11 +1,16 @@
-// mubb-technique-search ver 17
+// mubb-technique-search ver 18
 (function () {
   'use strict';
 /* TECHNIQUE_TAGS_START */
 function akatsukiTechniqueTags() {
   const host = globalThis;
-  if (host.AkatsukiTechniqueTagsV1) return host.AkatsukiTechniqueTagsV1;
-  const categories = [['\u0414\u0435\u0440\u0435\u0432\u043d\u044f', '\u0422\u0435\u0445\u043d\u0438\u043a\u0438 \u0434\u0435\u0440\u0435\u0432\u043d\u0438'], ['\u0414\u043e\u0441\u0442\u0443\u043f', '\u0414\u043e\u0441\u0442\u0443\u043f\u043d\u043e\u0441\u0442\u044c \u0442\u0435\u0445\u043d\u0438\u043a\u0438'], ['\u041e\u0442\u043a\u0440\u044b\u0442\u043e\u0441\u0442\u044c', '\u041e\u0442\u043a\u0440\u044b\u0442\u043e\u0441\u0442\u044c \u0442\u0435\u0445\u043d\u0438\u043a\u0438']];
+  if (host.AkatsukiTechniqueTagsV2) return host.AkatsukiTechniqueTagsV2;
+  const categories = [
+    ['\u0414\u0435\u0440\u0435\u0432\u043d\u044f', '\u0422\u0435\u0445\u043d\u0438\u043a\u0438 \u0434\u0435\u0440\u0435\u0432\u043d\u0438', '\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u043e'],
+    ['\u0414\u043e\u0441\u0442\u0443\u043f', '\u0414\u043e\u0441\u0442\u0443\u043f\u043d\u043e\u0441\u0442\u044c \u0442\u0435\u0445\u043d\u0438\u043a\u0438', '\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u043e'],
+    ['\u041e\u0442\u043a\u0440\u044b\u0442\u043e\u0441\u0442\u044c', '\u041e\u0442\u043a\u0440\u044b\u0442\u043e\u0441\u0442\u044c \u0442\u0435\u0445\u043d\u0438\u043a\u0438', '\u0412\u0441\u0435\u043c']
+  ];
+  const decoration = '.lastedit,.post-sig,.signature,.post-signature,.spoiler-box,.code-box,blockquote,script,style';
   const heading = /^\u0420\u0430\u0437\u043c\u0435\u0442\u043a\u0430 \u0442\u0435\u0445\u043d\u0438\u043a \u00b7 \u0440\u0430\u043d\u0433 ([EDCBAS]) \u00b7 \u0447\u0430\u0441\u0442\u044c ([1-9]\d*)$/;
   const cache = new Map();
   const normalize = text => String(text || '').replace(/\s+/g, ' ').trim().toLocaleLowerCase('ru').replace(/\u0451/g, '\u0435');
@@ -16,27 +21,42 @@ function akatsukiTechniqueTags() {
   function readPage(doc, url, index) {
     if (!doc.querySelector('.post-content')) throw Error('\u0422\u0435\u043c\u0430 \u0440\u0430\u0437\u043c\u0435\u0442\u043a\u0438 \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u043d\u0430.');
     for (const content of doc.querySelectorAll('.post-content')) {
-      const title = content.querySelector('b,strong');
-      const match = heading.exec(title?.textContent.trim() || '');
-      if (!match) continue;
-      const topic = 74 + 'EDCBAS'.indexOf(match[1]);
-      const links = Array.from(content.querySelectorAll('a[href*="#p"]')).filter(link => {
-        if (link.closest('blockquote,.quote-box,.post-sig,.signature,.post-signature')) return false;
+      const titles = Array.from(content.querySelectorAll('b,strong')).filter(node =>
+        !node.closest(decoration) && heading.test(node.textContent.trim()));
+      if (!titles.length) continue;
+      const links = [];
+      for (const link of content.querySelectorAll('a[href*="#p"]')) {
+        if (link.closest(decoration)) continue;
+        const title = titles.findLast(node => node.compareDocumentPosition(link) & 4);
+        if (!title) continue;
+        const [, rank] = heading.exec(title.textContent.trim());
+        const topic = 74 + 'EDCBAS'.indexOf(rank);
         const target = new URL(link.getAttribute('href'), url);
-        return target.origin === url.origin && target.pathname === '/viewtopic.php' &&
-          target.searchParams.get('id') === String(topic) && /^#p\d+$/.test(target.hash);
-      });
-      links.forEach((link, offset) => {
-        const range = doc.createRange();
-        range.setStartAfter(link);
-        const next = links[offset + 1];
-        if (next) range.setEndBefore(next);
-        else range.setEnd(content, content.childNodes.length);
-        const block = range.cloneContents();
-        for (const decoration of block.querySelectorAll('.post-sig,.signature,.post-signature,script,style')) decoration.remove();
-        const raw = block.textContent.replace(/\s+/g, ' ').trim();
-        const tags = pairs(raw);
-        const id = new URL(link.getAttribute('href'), url).hash.slice(2);
+        if (target.origin === url.origin && target.pathname === '/viewtopic.php' &&
+            target.searchParams.get('id') === String(topic) && /^#p\d+$/.test(target.hash)) {
+          links.push({ link, id: target.hash.slice(2), title });
+        }
+      }
+      links.forEach(({ link, id, title }, offset) => {
+        const cell = link.closest('td');
+        const nextCell = cell?.nextElementSibling;
+        let block;
+        if (nextCell?.matches('td')) {
+          block = nextCell.cloneNode(true);
+        } else {
+          const range = doc.createRange();
+          range.setStartAfter(link);
+          const next = links[offset + 1];
+          if (next?.title === title) range.setEndBefore(next.link);
+          else {
+            const nextTitle = titles[titles.indexOf(title) + 1];
+            if (nextTitle) range.setEndBefore(nextTitle);
+            else range.setEnd(content, content.childNodes.length);
+          }
+          block = range.cloneContents();
+        }
+        for (const node of block.querySelectorAll(decoration)) node.remove();
+        const tags = pairs(block.textContent.replace(/\s+/g, ' ').trim());
         if (tags.length) index.set(id, tags);
       });
     }
@@ -79,17 +99,22 @@ function akatsukiTechniqueTags() {
     if (!index) return [];
     const key = normalize(category);
     const tags = (index.get(String(id)) || []).filter(tag => tag.key === key).map(tag => tag.value);
-    return tags.length || key !== '\u0434\u0435\u0440\u0435\u0432\u043d\u044f' ? tags : ['\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u043e'];
+    const fallback = categories.find(([name]) => normalize(name) === key)?.[2];
+    return tags.length || !fallback ? tags : [fallback];
   }
 
-  function summary(index, id) {
-    if (!index) return '';
-    const tags = (index.get(String(id)) || []).map(tag => {
+  function formatTags(entries) {
+    const tags = entries.map(tag => {
       const category = categories.find(([name]) => normalize(name) === tag.key);
       return (category?.[0] || tag.label) + ': ' + tag.value;
     });
-    if (!(index.get(String(id)) || []).some(tag => tag.key === '\u0434\u0435\u0440\u0435\u0432\u043d\u044f')) tags.unshift('\u0414\u0435\u0440\u0435\u0432\u043d\u044f: \u0421\u0432\u043e\u0431\u043e\u0434\u043d\u043e');
-    return tags.join(' \u00b7 ');
+    const defaults = categories.filter(([name]) => !entries.some(tag => tag.key === normalize(name)))
+      .map(([name, , fallback]) => name + ': ' + fallback);
+    return [...defaults, ...tags].join(' \u00b7 ');
+  }
+
+  function summary(index, id) {
+    return index ? formatTags(index.get(String(id)) || []) : '';
   }
 
   function filters(container, index, ids, previous = {}) {
@@ -128,7 +153,7 @@ function akatsukiTechniqueTags() {
     container.prepend(row);
   }
 
-  return host.AkatsukiTechniqueTagsV1 = { load, normalize, split, summary, filters, selections, matches, appendSummary, invalidate: () => cache.clear() };
+  return host.AkatsukiTechniqueTagsV2 = { load, normalize, split, summary, draftSummary: value => formatTags(pairs(value)), filters, selections, matches, appendSummary, invalidate: () => cache.clear() };
 }
 /* TECHNIQUE_TAGS_END */
 
