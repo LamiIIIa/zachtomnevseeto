@@ -1,6 +1,136 @@
-// mubb-technique-search ver 16
+// mubb-technique-search ver 17
 (function () {
   'use strict';
+/* TECHNIQUE_TAGS_START */
+function akatsukiTechniqueTags() {
+  const host = globalThis;
+  if (host.AkatsukiTechniqueTagsV1) return host.AkatsukiTechniqueTagsV1;
+  const categories = [['\u0414\u0435\u0440\u0435\u0432\u043d\u044f', '\u0422\u0435\u0445\u043d\u0438\u043a\u0438 \u0434\u0435\u0440\u0435\u0432\u043d\u0438'], ['\u0414\u043e\u0441\u0442\u0443\u043f', '\u0414\u043e\u0441\u0442\u0443\u043f\u043d\u043e\u0441\u0442\u044c \u0442\u0435\u0445\u043d\u0438\u043a\u0438'], ['\u041e\u0442\u043a\u0440\u044b\u0442\u043e\u0441\u0442\u044c', '\u041e\u0442\u043a\u0440\u044b\u0442\u043e\u0441\u0442\u044c \u0442\u0435\u0445\u043d\u0438\u043a\u0438']];
+  const heading = /^\u0420\u0430\u0437\u043c\u0435\u0442\u043a\u0430 \u0442\u0435\u0445\u043d\u0438\u043a \u00b7 \u0440\u0430\u043d\u0433 ([EDCBAS]) \u00b7 \u0447\u0430\u0441\u0442\u044c ([1-9]\d*)$/;
+  const cache = new Map();
+  const normalize = text => String(text || '').replace(/\s+/g, ' ').trim().toLocaleLowerCase('ru').replace(/\u0451/g, '\u0435');
+  const split = text => String(text || '').split(/\n|,\s*(?=[^,:\n]+:)/).map(tag => tag.trim()).filter(Boolean);
+  const pairs = text => split(text).map(tag => /^([^:]+):\s*(.+)$/.exec(tag)).filter(Boolean)
+    .map(match => ({ key: normalize(match[1]), label: match[1].trim(), value: match[2].trim() }));
+
+  function readPage(doc, url, index) {
+    if (!doc.querySelector('.post-content')) throw Error('\u0422\u0435\u043c\u0430 \u0440\u0430\u0437\u043c\u0435\u0442\u043a\u0438 \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u043d\u0430.');
+    for (const content of doc.querySelectorAll('.post-content')) {
+      const title = content.querySelector('b,strong');
+      const match = heading.exec(title?.textContent.trim() || '');
+      if (!match) continue;
+      const topic = 74 + 'EDCBAS'.indexOf(match[1]);
+      const links = Array.from(content.querySelectorAll('a[href*="#p"]')).filter(link => {
+        if (link.closest('blockquote,.quote-box,.post-sig,.signature,.post-signature')) return false;
+        const target = new URL(link.getAttribute('href'), url);
+        return target.origin === url.origin && target.pathname === '/viewtopic.php' &&
+          target.searchParams.get('id') === String(topic) && /^#p\d+$/.test(target.hash);
+      });
+      links.forEach((link, offset) => {
+        const range = doc.createRange();
+        range.setStartAfter(link);
+        const next = links[offset + 1];
+        if (next) range.setEndBefore(next);
+        else range.setEnd(content, content.childNodes.length);
+        const block = range.cloneContents();
+        for (const decoration of block.querySelectorAll('.post-sig,.signature,.post-signature,script,style')) decoration.remove();
+        const raw = block.textContent.replace(/\s+/g, ' ').trim();
+        const tags = pairs(raw);
+        const id = new URL(link.getAttribute('href'), url).hash.slice(2);
+        if (tags.length) index.set(id, tags);
+      });
+    }
+  }
+
+  function load(base, loader, force = false) {
+    const url = new URL('/viewtopic.php', base);
+    const id = String(host.AKATSUKI_TECHNIQUE_TAG_EDITOR?.topicId || 565);
+    url.searchParams.set('id', id);
+    const key = url.href;
+    const previous = cache.get(key);
+    if (previous?.pending || (!force && previous?.expires > Date.now())) return previous.promise;
+    const state = { pending: true };
+    state.promise = (async () => {
+      const pages = new Set([1]);
+      const index = new Map();
+      for (const page of pages) {
+        const target = new URL(url);
+        if (page > 1) target.searchParams.set('p', String(page));
+        const doc = await loader(target.href, force);
+        readPage(doc, target, index);
+        for (const link of doc.querySelectorAll('.pagelink a[href], .pagination a[href]')) {
+          const next = new URL(link.getAttribute('href'), target);
+          const number = Number(next.searchParams.get('p') || 1);
+          if (next.origin === url.origin && next.pathname === url.pathname &&
+              next.searchParams.get('id') === id && Number.isSafeInteger(number) && number > 0) pages.add(number);
+        }
+      }
+      state.expires = Date.now() + 300000;
+      return index;
+    })().catch(error => {
+      cache.delete(key);
+      throw error;
+    }).finally(() => { state.pending = false; });
+    cache.set(key, state);
+    return state.promise;
+  }
+
+  function values(index, id, category) {
+    if (!index) return [];
+    const key = normalize(category);
+    const tags = (index.get(String(id)) || []).filter(tag => tag.key === key).map(tag => tag.value);
+    return tags.length || key !== '\u0434\u0435\u0440\u0435\u0432\u043d\u044f' ? tags : ['\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u043e'];
+  }
+
+  function summary(index, id) {
+    if (!index) return '';
+    const tags = (index.get(String(id)) || []).map(tag => {
+      const category = categories.find(([name]) => normalize(name) === tag.key);
+      return (category?.[0] || tag.label) + ': ' + tag.value;
+    });
+    if (!(index.get(String(id)) || []).some(tag => tag.key === '\u0434\u0435\u0440\u0435\u0432\u043d\u044f')) tags.unshift('\u0414\u0435\u0440\u0435\u0432\u043d\u044f: \u0421\u0432\u043e\u0431\u043e\u0434\u043d\u043e');
+    return tags.join(' \u00b7 ');
+  }
+
+  function filters(container, index, ids, previous = {}) {
+    for (const [category, label] of categories) {
+      const select = document.createElement('select');
+      select.dataset.akTechniqueTag = category;
+      select.setAttribute('aria-label', label);
+      select.add(new Option(label, ''));
+      const choices = new Map();
+      for (const id of ids) for (const value of values(index, id, category)) choices.set(normalize(value), value);
+      for (const [key, value] of Array.from(choices).sort((a, b) => a[1].localeCompare(b[1], 'ru'))) select.add(new Option(value, key));
+      select.value = previous[category] || '';
+      if (select.selectedIndex < 0) select.selectedIndex = 0;
+      select.disabled = !index;
+      container.append(select);
+    }
+  }
+
+  function selections(container) {
+    return Object.fromEntries(Array.from(container.querySelectorAll('[data-ak-technique-tag]'),
+      select => [select.dataset.akTechniqueTag, select.value]));
+  }
+
+  function matches(index, id, selected) {
+    return Object.entries(selected).every(([category, expected]) =>
+      !expected || values(index, id, category).some(value => normalize(value) === expected));
+  }
+
+  function appendSummary(container, index, id) {
+    const text = summary(index, id);
+    if (!text || !container) return;
+    const row = container.ownerDocument.createElement('p');
+    row.className = 'ak-technique-tags';
+    row.style.cssText = 'margin:.5em 0;overflow-wrap:anywhere';
+    row.textContent = text;
+    container.prepend(row);
+  }
+
+  return host.AkatsukiTechniqueTagsV1 = { load, normalize, split, summary, filters, selections, matches, appendSummary, invalidate: () => cache.clear() };
+}
+/* TECHNIQUE_TAGS_END */
 
   var SCRIPT_ELEMENT = document.currentScript;
   var USER_CONFIG = window.AKATSUKI_TECH_SEARCH || {};
@@ -89,12 +219,33 @@
     });
   }
 
+  var techniqueTags = akatsukiTechniqueTags();
+  var techniqueTagIndex;
+  function refreshTechniqueTags(force) {
+    return techniqueTags.load(CONFIG.baseUrl, loadDocument, force).then(function (index) {
+      techniqueTagIndex = index;
+      var controls = state.nodes.tagFilters;
+      var values = techniqueTags.selections(controls);
+      controls.replaceChildren();
+      techniqueTags.filters(controls, index, state.index.map(function (item) { return item.postId; }), values);
+      renderResults();
+      var slot = state.nodes.detail.querySelector('[data-ats-tag-post]');
+      if (slot) {
+        slot.replaceChildren();
+        techniqueTags.appendSummary(slot, index, slot.dataset.atsTagPost);
+      }
+    }).catch(function () {
+      state.nodes.tagFilters.setAttribute('aria-label', '\u0424\u0438\u043b\u044c\u0442\u0440\u044b \u0442\u0435\u0433\u043e\u0432 \u0432\u0440\u0435\u043c\u0435\u043d\u043d\u043e \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u043d\u044b');
+    });
+  }
+
   function matchesQuery(item, query) {
-    if (!query || item.searchText.indexOf(query) !== -1) return true;
+    var searchable = item.searchText + ' ' + normalize(techniqueTags.summary(techniqueTagIndex, item.postId));
+    if (!query || searchable.indexOf(query) !== -1) return true;
 
     var tokens = searchTokens(query);
     return tokens.length > 0 && tokens.every(function (token) {
-      return item.searchText.indexOf(token) !== -1;
+      return searchable.indexOf(token) !== -1;
     });
   }
 
@@ -147,7 +298,7 @@ function akcmTemplateCode(raw) {
       else if (/^\u041e\u0431\u0449\u0430\u044f \u0441\u0443\u043c\u043c\u0430$/i.test(previous) && cells.length === 1) { sum = cells[0]; handled = true; }
       else if (/^\u0420\u0430\u043d\u0433\s*:/i.test(label)) { ranks.push('[akcmrank][akcmrankname]' + label.replace(/^\u0420\u0430\u043d\u0433\s*:\s*/i, '') + '[/akcmrankname][akcmlist]\n' + value.split(/\n+/).filter(function (s) { return s.trim(); }).map(function (s) { return '[akcmitem]' + s + '[/akcmitem]'; }).join('\n') + '\n[/akcmlist][/akcmrank]'); handled = true; }
       else if (/^\u0421\u043f\u043e\u0441\u043e\u0431\u043d\u043e\u0441\u0442\u0438$/i.test(label)) { ability = value; handled = true; }
-      else if (/^(\u0411\u043e\u0435\u0441\u043f\u043e\u0441\u043e\u0431\u043d\u043e\u0441\u0442\u044c|\u0417\u0430\u043f\u0430\u0441\s+\u0427\u0430\u043a\u0440\u044b|\u0423\u0440\u043e\u043d|\u0417\u0430\u0449\u0438\u0442\u0430|\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0439|\u0410\u0442\u0430\u043a\u0430|\u0423\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u0435)/i.test(label) && cells.length >= 2) {
+      else if (/^(\u0411\u043e\u0435\u0441\u043f\u043e\u0441\u043e\u0431\u043d\u043e\u0441\u0442\u044c|\u0417\u0430\u043f\u0430\u0441\s+\u0427\u0430\u043a\u0440\u044b|\u0423\u0440\u043e\u043d|\u0417\u0430\u0449\u0438\u0442\u0430|\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0439|\u0410\u0442\u0430\u043a\u0430|\u0423\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u0435|\u0411\u0430\u0437\u043e\u0432\u044b\u0439 \u043a\u0440\u0438\u0442)/i.test(label) && cells.length >= 2) {
         var labels = /^\u0417\u0430\u043f\u0430\u0441/i.test(label) ? ['\u041e\u0431\u0449\u0438\u0439', '\u0421\u043a\u043e\u043d\u0446\u0435\u043d\u0442\u0440\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u043e\u0439'] : ['\u041e\u0431\u044b\u0447\u043d\u044b\u0445', '\u0422\u0435\u0445\u043d\u0438\u043a\u0438'];
         value = cells.length === 3 ? '[akcmvalues]' + cells.slice(1).map(function (v, i) { return '[akcmval][akcmsmall]' + labels[i] + '[/akcmsmall][akcmvalue]' + v + '[/akcmvalue][/akcmval]'; }).join('') + '[/akcmvalues]' : '[akcmvalue]' + value + '[/akcmvalue]';
         combat.push('[akcmrow][akcmname]' + label + '[/akcmname]' + value + '[/akcmrow]'); handled = true;
@@ -162,7 +313,7 @@ function akcmTemplateCode(raw) {
     var parts = Array.from(body.matchAll(/\[td[^\]]*\]([\s\S]*?)\[\/td\]/gi)).map(function (m) { return m[1]; });
     return '[akcmequipment][akcmhead][akcmheadpart][akcmcaption]\u041b\u0438\u0447\u043d\u043e\u0435 \u0434\u0435\u043b\u043e \u00b7 \u0441\u043d\u0430\u0440\u044f\u0436\u0435\u043d\u0438\u0435[/akcmcaption][akcmtitle]\u042d\u043a\u0438\u043f\u0438\u0440\u043e\u0432\u043a\u0430[/akcmtitle][/akcmheadpart][/akcmhead]\n' + parts.slice(1).map(function (part) {
       var lines = part.split(/\n+/), title = plain(lines.shift()).replace(/^[\u25c8\u2694]\s*/, '');
-      return '[akcmsection]' + title + '[/akcmsection][akcmequiplist]' + lines.filter(function (line) { return line.trim(); }).map(function (line) { var match = line.replace(/^\u2022\s*/, '').split(/:\s*| \u2014 /); return '[akcmequiprow][akcmvalue]' + match.shift() + '[/akcmvalue][akcmname]' + match.join(' \u2014 ') + '[/akcmname][/akcmequiprow]'; }).join('\n') + '[/akcmequiplist]';
+      return '[akcmsection]' + title + '[/akcmsection][akcmequiplist]' + lines.filter(function (line) { return line.trim(); }).map(function (line) { var match = line.replace(/^\u2022\s*/, '').split(/\s+\u2014\s+|:\s+/); return '[akcmequiprow][akcmvalue]' + match.shift() + '[/akcmvalue][akcmname]' + match.join(' \u2014 ') + '[/akcmname][/akcmequiprow]'; }).join('\n') + '[/akcmequiplist]';
     }).join('\n') + '[/akcmequipment]';
   });
   return '[widepost]\n[akcm]\n[akcmhead][akcmheadpart][akcmcaption]\u041b\u0438\u0447\u043d\u043e\u0435 \u0434\u0435\u043b\u043e \u00b7 \u0445\u0430\u0440\u0430\u043a\u0442\u0435\u0440\u0438\u0441\u0442\u0438\u043a\u0438[/akcmcaption][akcmtitle]\u0423\u0440\u043e\u0432\u0435\u043d\u044c ' + level + '[/akcmtitle][/akcmheadpart][akcmheadpart][akcmsmall]\u041e\u0431\u0449\u0430\u044f \u0441\u0443\u043c\u043c\u0430[/akcmsmall][akcmvalue]' + sum + '[/akcmvalue][/akcmheadpart][/akcmhead]\n[akcmsection]\u0421\u043a\u0438\u043b\u043b\u044b \u043f\u0435\u0440\u0441\u043e\u043d\u0430\u0436\u0430[/akcmsection][akcmskills]\n' + skills.join('\n') + '\n[/akcmskills]\n[akcmsection]\u0411\u043e\u0435\u0432\u044b\u0435 \u043f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b[/akcmsection][akcmcombat]\n' + combat.join('\n') + '\n[/akcmcombat]\n[akcmsection]\u0422\u0435\u0445\u043d\u0438\u043a\u0438 \u043f\u0435\u0440\u0441\u043e\u043d\u0430\u0436\u0430[/akcmsection][akcmtechniques]\n' + ranks.join('\n') + '\n[/akcmtechniques]\n[akcmsection]\u0421\u043f\u043e\u0441\u043e\u0431\u043d\u043e\u0441\u0442\u0438[/akcmsection][akcmabilities]' + ability + '[/akcmabilities]\n[/akcm]\n' + remaining.trim();
@@ -190,7 +341,8 @@ function akcmNormalizePost(post) {
   Array.from(select('akcmrank')).forEach(function (node) { var rank = select('akcmrankname', node)[0], list = select('akcmlist', node)[0]; if (rank && list) row('\u0420\u0430\u043d\u0433: ' + rank.textContent, [list.innerHTML]); });
   Array.from(select('akcmabilities')).forEach(function (node) { row('\u0421\u043f\u043e\u0441\u043e\u0431\u043d\u043e\u0441\u0442\u0438', [node.innerHTML]); });
   var equipment = select('akcmequipment')[0];
-  var inventory = Array.from(clone.querySelectorAll('.spoiler-box,details')).find(function (node) { var title=node.querySelector(':scope > div:first-child,:scope > summary');return title&&/^\u0438\u043d\u0432\u0435\u043d\u0442\u0430\u0440\u044c$/i.test(title.textContent.trim()); });
+  var scopedInventory = typeof akcmThirdSection === 'function' ? akcmThirdSection(clone, '\u0418\u043d\u0432\u0435\u043d\u0442\u0430\u0440\u044c') : clone;
+  var inventory = scopedInventory && scopedInventory !== clone ? scopedInventory : Array.from(clone.querySelectorAll('.spoiler-box,details')).find(function (node) { var title=node.querySelector(':scope > div:first-child,:scope > summary');return title&&/^\u0438\u043d\u0432\u0435\u043d\u0442\u0430\u0440\u044c$/i.test(title.textContent.trim()); });
   var free = clone.textContent.match(/-?\s*\u0441\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0439 \u0441\u043b\u043e\u0442 \u0442\u0435\u0445\u043d\u0438\u043a\u0438 \u043b\u044e\u0431\u043e\u0433\u043e \u0440\u0430\u043d\u0433\u0430/gi) || [];
   clone.innerHTML = ''; clone.appendChild(table);
   free.forEach(function (text) { var p=doc.createElement('p');p.textContent=text;clone.appendChild(p); });
@@ -563,6 +715,7 @@ function akatsukiNetwork() {
         state.index = cached;
         fillBlockFilter();
         renderResults();
+        refreshTechniqueTags(false);
         setStatus('\u0417\u0430\u0433\u0440\u0443\u0436\u0435\u043d\u043e \u0442\u0435\u0445\u043d\u0438\u043a: ' + cached.length + ' (\u0438\u0437 \u043a\u044d\u0448\u0430)');
         loadCharacters();
         return Promise.resolve(cached);
@@ -588,6 +741,7 @@ function akatsukiNetwork() {
       fillBlockFilter();
       renderResults();
 
+      refreshTechniqueTags(force);
       if (merged.length) {
         setStatus('\u0417\u0430\u0433\u0440\u0443\u0436\u0435\u043d\u043e \u0442\u0435\u0445\u043d\u0438\u043a: ' + merged.length);
         loadCharacters();
@@ -793,8 +947,9 @@ function akatsukiNetwork() {
     var block = state.nodes.block.value;
     var characterId = state.nodes.character ? state.nodes.character.value : '';
 
+    var tags = techniqueTags.selections(state.nodes.tagFilters);
     return state.index.filter(function (item) {
-      return matchesQuery(item, query) &&
+      return matchesQuery(item, query) && techniqueTags.matches(techniqueTagIndex, item.postId, tags) &&
         (!rank || item.rank === rank) &&
         (!block || item.block === block) &&
         (!characterId || (state.selectedCharacterPostIds &&
@@ -926,8 +1081,9 @@ function akatsukiNetwork() {
           '</div>' +
         '</div>' +
       '</section>' +
-      '<section class="ats-post-preview">' + detail.html + '</section>';
+      '<section class="ats-post-preview"><div data-ats-tag-post="' + escapeHtml(item.postId) + '"></div>' + detail.html + '</section>';
 
+    techniqueTags.appendSummary(state.nodes.detail.querySelector('[data-ats-tag-post]'), techniqueTagIndex, item.postId);
     bindMobileBack();
     state.nodes.detail.querySelector('.ats-code').textContent = code;
     var codeToggle = state.nodes.detail.querySelector('.ats-code-toggle');
@@ -1034,6 +1190,7 @@ function akatsukiNetwork() {
     state.nodes.search.focus();
 
     if (!state.index.length) loadIndex(false);
+    else refreshTechniqueTags(false);
   }
 
   function closeModal() {
@@ -1098,6 +1255,7 @@ function akatsukiNetwork() {
       '.ats-code-actions button{border:1px solid var(--ats-accent);border-radius:10px 20px 10px 10px;padding:9px 13px;background:var(--ats-accent);color:var(--color-txt3,#f5f1f1);cursor:pointer;font:700 11px/1.2 var(--font-1,"Russo One",Arial,sans-serif);letter-spacing:.3px;text-transform:uppercase;transition:all .3s ease;box-shadow:-2px 2px 5px var(--shedow1,rgba(0,0,0,.15))}',
       '.ats-code-actions button:hover{background:var(--ats-accent-hover);border-color:var(--ats-accent-hover)}',
       '.ats-code-actions .ats-copy{background:var(--color-sub,#5b4c4c);border-color:var(--color-sub,#5b4c4c)}',
+      '.ats-tag-filters{grid-column:1/-1;display:flex;gap:7px;flex-wrap:wrap}.ats-tag-filters select{min-width:0;max-width:100%;flex:1 1 140px}',
       '.ats-post-preview{min-width:0;overflow-wrap:anywhere;color:var(--ats-text)}',
       '.ats-post-preview img{max-width:100%;height:auto}',
       '.ats-post-preview table{max-width:100%}',
@@ -1123,11 +1281,12 @@ function akatsukiNetwork() {
         '<header class="ats-modal-head"><h2 id="ats-title">\u041f\u043e\u0438\u0441\u043a \u0442\u0435\u0445\u043d\u0438\u043a</h2>' +
           '<button type="button" class="ats-close" aria-label="\u0417\u0430\u043a\u0440\u044b\u0442\u044c">\u00d7</button></header>' +
         '<div class="ats-controls">' +
-          '<input class="ats-search" type="search" placeholder="\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0438\u043b\u0438 \u0447\u0430\u0441\u0442\u044c \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u044f: \u041e\u0433\u043d\u044f, \u041b\u0435\u0447\u0430\u0449\u0435\u0439\u2026" autocomplete="off">' +
+          '<input class="ats-search" type="search" placeholder="\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0438\u043b\u0438 \u0442\u0435\u0433" autocomplete="off">' +
           '<select class="ats-rank-filter"><option value="">\u0412\u0441\u0435 \u0440\u0430\u043d\u0433\u0438</option><option>E</option><option>D</option><option>C</option><option>B</option><option>A</option><option>S</option></select>' +
           '<select class="ats-block-filter"><option value="">\u0412\u0441\u0435 \u0431\u043b\u043e\u043a\u0438 / \u043a\u043b\u0430\u0441\u0441\u044b</option></select>' +
           '<select class="ats-character-filter"><option value="">\u0418\u0433\u0440\u043e\u0432\u044b\u0435 \u043f\u0435\u0440\u0441\u043e\u043d\u0430\u0436\u0438</option></select>' +
-          '<button type="button" class="ats-refresh" title="\u041f\u0435\u0440\u0435\u0447\u0438\u0442\u0430\u0442\u044c \u043c\u0430\u0441\u0442\u0435\u0440-\u043f\u043e\u0441\u0442\u044b">\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u044c</button>' +
+          '<button type="button" class="ats-refresh">\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u044c</button>' +
+          '<div class="ats-tag-filters" aria-label="\u0424\u0438\u043b\u044c\u0442\u0440\u044b \u043f\u043e \u0442\u0435\u0433\u0430\u043c"></div>' +
         '</div>' +
         '<div class="ats-meta"><span class="ats-status"></span><span class="ats-count"></span></div>' +
         '<div class="ats-body"><div class="ats-results"></div>' +
@@ -1141,6 +1300,7 @@ function akatsukiNetwork() {
       search: overlay.querySelector('.ats-search'),
       rank: overlay.querySelector('.ats-rank-filter'),
       block: overlay.querySelector('.ats-block-filter'),
+      tagFilters: overlay.querySelector('.ats-tag-filters'),
       character: overlay.querySelector('.ats-character-filter'),
       refresh: overlay.querySelector('.ats-refresh'),
       status: overlay.querySelector('.ats-status'),
@@ -1157,6 +1317,8 @@ function akatsukiNetwork() {
       if (event.key === 'Escape' && overlay.classList.contains('is-open')) closeModal();
     });
     state.nodes.search.addEventListener('input', renderResults);
+    techniqueTags.filters(state.nodes.tagFilters, techniqueTagIndex, []);
+    state.nodes.tagFilters.addEventListener('change', renderResults);
     state.nodes.rank.addEventListener('change', renderResults);
     state.nodes.block.addEventListener('change', renderResults);
     state.nodes.character.addEventListener('change', function () {
