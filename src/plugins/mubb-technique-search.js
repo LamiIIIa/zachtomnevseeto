@@ -1,14 +1,15 @@
-// mubb-technique-search ver 18
+// mubb-technique-search ver 19
 (function () {
   'use strict';
 /* TECHNIQUE_TAGS_START */
 function akatsukiTechniqueTags() {
   const host = globalThis;
-  if (host.AkatsukiTechniqueTagsV2) return host.AkatsukiTechniqueTagsV2;
+  if (host.AkatsukiTechniqueTagsV3) return host.AkatsukiTechniqueTagsV3;
   const categories = [
     ['\u0414\u0435\u0440\u0435\u0432\u043d\u044f', '\u0422\u0435\u0445\u043d\u0438\u043a\u0438 \u0434\u0435\u0440\u0435\u0432\u043d\u0438', '\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u043e'],
     ['\u0414\u043e\u0441\u0442\u0443\u043f', '\u0414\u043e\u0441\u0442\u0443\u043f\u043d\u043e\u0441\u0442\u044c \u0442\u0435\u0445\u043d\u0438\u043a\u0438', '\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u043e'],
-    ['\u041e\u0442\u043a\u0440\u044b\u0442\u043e\u0441\u0442\u044c', '\u041e\u0442\u043a\u0440\u044b\u0442\u043e\u0441\u0442\u044c \u0442\u0435\u0445\u043d\u0438\u043a\u0438', '\u0412\u0441\u0435\u043c']
+    ['\u041e\u0442\u043a\u0440\u044b\u0442\u043e\u0441\u0442\u044c', '\u041e\u0442\u043a\u0440\u044b\u0442\u043e\u0441\u0442\u044c \u0442\u0435\u0445\u043d\u0438\u043a\u0438', '\u0412\u0441\u0435\u043c'],
+    ['\u041a\u043b\u0430\u0441\u0441', '\u041a\u043b\u0430\u0441\u0441\u0438\u0444\u0438\u043a\u0430\u0442\u043e\u0440 \u0442\u0435\u0445\u043d\u0438\u043a\u0438']
   ];
   const decoration = '.lastedit,.post-sig,.signature,.post-signature,.spoiler-box,.code-box,blockquote,script,style';
   const heading = /^\u0420\u0430\u0437\u043c\u0435\u0442\u043a\u0430 \u0442\u0435\u0445\u043d\u0438\u043a \u00b7 \u0440\u0430\u043d\u0433 ([EDCBAS]) \u00b7 \u0447\u0430\u0441\u0442\u044c ([1-9]\d*)$/;
@@ -108,7 +109,7 @@ function akatsukiTechniqueTags() {
       const category = categories.find(([name]) => normalize(name) === tag.key);
       return (category?.[0] || tag.label) + ': ' + tag.value;
     });
-    const defaults = categories.filter(([name]) => !entries.some(tag => tag.key === normalize(name)))
+    const defaults = categories.filter(([name, , fallback]) => fallback && !entries.some(tag => tag.key === normalize(name)))
       .map(([name, , fallback]) => name + ': ' + fallback);
     return [...defaults, ...tags].join(' \u00b7 ');
   }
@@ -153,7 +154,7 @@ function akatsukiTechniqueTags() {
     container.prepend(row);
   }
 
-  return host.AkatsukiTechniqueTagsV2 = { load, normalize, split, summary, draftSummary: value => formatTags(pairs(value)), filters, selections, matches, appendSummary, invalidate: () => cache.clear() };
+  return host.AkatsukiTechniqueTagsV3 = { load, normalize, split, summary, draftSummary: value => formatTags(pairs(value)), filters, selections, matches, appendSummary, invalidate: () => cache.clear() };
 }
 /* TECHNIQUE_TAGS_END */
 
