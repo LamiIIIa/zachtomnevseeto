@@ -185,8 +185,8 @@ function inlineRule(code) {
   return null
 }
 export function patchExtras(source, section, urls = {}) {
-  source = source.replace(/https:\/\/akatski-forum-app\.vercel\.app\/quests\/snow-pet\.js\?v=1\b/g,
-    'https://akatski-forum-app.vercel.app/quests/snow-pet.js?v=2')
+  source = source.replace(/https:\/\/akatski-forum-app\.vercel\.app\/quests\/snow-pet\.js\?v=[12]\b/g,
+    'https://akatski-forum-app.vercel.app/quests/snow-pet.js?v=3')
   const clean = source.replace(/(?:\r?\n)?<!-- forum-extras-bootstrap:start -->[\s\S]*?<!-- forum-extras-bootstrap:end -->\s*/g, '')
   const patched = clean.replace(tokens, (whole, attrs, code) => {
     if (whole.startsWith('<!--')) return whole
