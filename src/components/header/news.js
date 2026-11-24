@@ -32,13 +32,19 @@ export function initHeaderNews(root = document) {
 
 async function loadNews({ container, topicId, limit }) {
   const cacheKey = getNewsCacheKey(container, topicId, limit)
-  let posts = readNewsCache(cacheKey)
+  const cachedPosts = readNewsCache(cacheKey)
+  if (cachedPosts?.length) renderNews(container, cachedPosts, limit)
 
-  if (!posts) {
-    posts = await requestTopicPosts(container, topicId, limit)
+  try {
+    const posts = await requestTopicPosts(container, topicId, limit)
     writeNewsCache(cacheKey, posts)
+    renderNews(container, posts, limit)
+  } catch (error) {
+    if (!cachedPosts?.length) throw error
   }
+}
 
+function renderNews(container, posts, limit) {
   if (!posts.length) {
     container.dataset.forumNewsReady = 'empty'
     setStatus(container, 'header.news.empty')
