@@ -1,4 +1,4 @@
-// character-manager ver 95
+// character-manager ver 96
 (function (root, factory) {
   'use strict';
   const api = factory();
@@ -1689,6 +1689,16 @@ function ownPostOnPage(e,today){
      e.rule==='streak'&&today<e.streakFrom)return false;
   return Array.from(document.querySelectorAll('.post[id^="p"]')).some(p=>author(p)===uid()&&postDay(p)===today);
 }
+function finishBackgroundCheck(){
+  const frame=document.createElement('iframe');
+  frame.hidden=true;
+  frame.setAttribute('sandbox','');
+  frame.setAttribute('title','\u0424\u043e\u043d\u043e\u0432\u0430\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0430 \u0438\u0432\u0435\u043d\u0442\u043e\u0432');
+  const timer=setTimeout(()=>frame.remove(),15000);
+  frame.addEventListener('load',()=>{clearTimeout(timer);frame.remove();},{once:true});
+  frame.src='/';
+  document.body.appendChild(frame);
+}
 let refreshing=false,lastRefresh=0;
 async function refresh(manual=false){
   if(refreshing||checking)return;
@@ -1699,7 +1709,7 @@ async function refresh(manual=false){
     }
     const ok=await checkAll(manual);
     renderSide();
-    if(manual&&ok&&location.pathname!=='/'&&location.pathname!=='/index.php')location.assign('/');
+    if(manual&&ok)finishBackgroundCheck();
   }catch(error){
     if(side)side.innerHTML='<p>\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u0438\u0432\u0435\u043d\u0442\u044b: '+esc(error.message)+'</p><button data-ake-check>\u041f\u043e\u0432\u0442\u043e\u0440\u0438\u0442\u044c \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0443</button>';
   }finally{refreshing=false;}
