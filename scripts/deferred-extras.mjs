@@ -185,15 +185,15 @@ function inlineRule(code) {
   return null
 }
 export function patchExtras(source, section, urls = {}) {
-  source = source.replace(/https:\/\/akatski-forum-app\.vercel\.app\/quests\/snow-pet\.js\?v=[1-5]\b/g,
-    'https://akatski-forum-app.vercel.app/quests/snow-pet.js?v=6')
+  source = source.replace(/https:\/\/akatski-forum-app\.vercel\.app\/quests\/snow-pet\.js\?v=[1-6]\b/g,
+    'https://akatski-forum-app.vercel.app/quests/snow-pet.js?v=7')
     .replace('const hosts=[url,backup,pages,proxy].filter(Boolean);', "const hosts=(id==='snow-pet'?[url,pages?.replace('/snow-pet.js','/snow-pet-v6.js'),proxy]:[url,backup,pages,proxy]).filter(Boolean);")
     .replace(/script\.dataset\.questLoader=id;(?!\s*(?:\\n\s*)?let executionTimeout)/,
       "script.dataset.questLoader=id;let executionTimeout;if(id==='snow-pet')executionTimeout=setTimeout(()=>{preload?.remove();script.onload=script.onerror=null;script.remove();retry('Snow Pet script timeout');},started<hosts.length?4500:12000);")
     .replace(/(script\.dataset\.questLoader=id;let executionTimeout;[\s\S]{0,500}?script\.onload=\(\)=>\{)(?!clearTimeout)/, '$1clearTimeout(executionTimeout);')
     .replace(/(script\.dataset\.questLoader=id;let executionTimeout;[\s\S]{0,1000}?script\.onerror=\(\)=>\{)(?!clearTimeout)/, '$1clearTimeout(executionTimeout);')
   source = source.replace("const hosts=(id==='snow-pet'?[url,proxy]:[url,backup,pages,proxy]).filter(Boolean);", "const hosts=(id==='snow-pet'?[url,pages?.replace('/snow-pet.js','/snow-pet-v6.js'),proxy]:[url,backup,pages,proxy]).filter(Boolean);")
-  source = source.replaceAll('/snow-pet-v5.js', '/snow-pet-v6.js')
+  source = source.replaceAll('/snow-pet-v5.js', '/snow-pet-v6.js').replaceAll("[url,pages?.replace('/snow-pet.js','/snow-pet-v6.js'),proxy]", "[pages?.replace('/snow-pet.js','/snow-pet-v6.js'),url,proxy]")
   const clean = source.replace(/(?:\r?\n)?<!-- forum-extras-bootstrap:start -->[\s\S]*?<!-- forum-extras-bootstrap:end -->\s*/g, '')
   const patched = clean.replace(tokens, (whole, attrs, code) => {
     if (whole.startsWith('<!--')) return whole
