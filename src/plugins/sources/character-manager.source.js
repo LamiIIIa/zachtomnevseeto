@@ -1181,7 +1181,7 @@ function akatsukiNetwork() {
       return '<section class="akcm-admin-history"><h3>История изменений</h3><div class="akcm-grid"><div><b>Кошелёк:</b> '+fmt(t.money)+' рё</div><div><b>Опыт:</b> '+fmt(t.xp)+' ед.</div><div><b>Версия:</b> '+fmt(s.revision)+'</div></div><details><summary>История кошелька · '+money.length+' операций</summary><table><thead><tr><th>Дата</th><th>Админ</th><th>Основание</th><th>Сумма</th></tr></thead><tbody>'+rows(money)+'</tbody></table></details><details><summary>История опыта · '+xp.length+' операций</summary><table><thead><tr><th>Дата</th><th>Админ</th><th>Основание</th><th>Опыт</th></tr></thead><tbody>'+rows(xp)+'</tbody></table></details></section>';
     }
     function titleHtml(item) {let text=esc(plain(item.name)),color=String(item.name).match(/\[color=(#[0-9a-f]{3,6}|[a-z]+)\]/i)?.[1];if(color)text='<span style="color:'+esc(color)+'">'+text+'</span>';return item.url?'<a href="'+esc(cleanUrl(item.url))+'" target="_blank" rel="noopener">'+text+'</a>':text;}
-    function inventoryCategories(){return [...new Set([...categories,...kits.map(k=>k.category).filter(Boolean),...(lists.inventory||[]).map(i=>i.category).filter(Boolean)])];}
+    function inventoryCategories(){return [...new Set([...categories,'Книги и обучение',...kits.map(k=>k.category).filter(Boolean),...(lists.inventory||[]).map(i=>i.category).filter(Boolean)])];}
     function shopInventoryCategory(section,type,topicId,name){
       const text=plain([section,type,name].join(' ')).toLocaleLowerCase('ru').replace(/ё/g,'е');
       if(topicId===83||/медицин|препарат|лекар|антидот|противояд/.test(text))return 'Медицинский набор';

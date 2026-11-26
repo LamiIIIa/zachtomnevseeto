@@ -1,4 +1,4 @@
-// character-manager ver 94
+// character-manager ver 95
 (function (root, factory) {
   'use strict';
   const api = factory();
@@ -1182,7 +1182,7 @@ function akatsukiNetwork() {
       return '<section class="akcm-admin-history"><h3>\u0418\u0441\u0442\u043e\u0440\u0438\u044f \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u0439</h3><div class="akcm-grid"><div><b>\u041a\u043e\u0448\u0435\u043b\u0451\u043a:</b> '+fmt(t.money)+' \u0440\u0451</div><div><b>\u041e\u043f\u044b\u0442:</b> '+fmt(t.xp)+' \u0435\u0434.</div><div><b>\u0412\u0435\u0440\u0441\u0438\u044f:</b> '+fmt(s.revision)+'</div></div><details><summary>\u0418\u0441\u0442\u043e\u0440\u0438\u044f \u043a\u043e\u0448\u0435\u043b\u044c\u043a\u0430 \u00b7 '+money.length+' \u043e\u043f\u0435\u0440\u0430\u0446\u0438\u0439</summary><table><thead><tr><th>\u0414\u0430\u0442\u0430</th><th>\u0410\u0434\u043c\u0438\u043d</th><th>\u041e\u0441\u043d\u043e\u0432\u0430\u043d\u0438\u0435</th><th>\u0421\u0443\u043c\u043c\u0430</th></tr></thead><tbody>'+rows(money)+'</tbody></table></details><details><summary>\u0418\u0441\u0442\u043e\u0440\u0438\u044f \u043e\u043f\u044b\u0442\u0430 \u00b7 '+xp.length+' \u043e\u043f\u0435\u0440\u0430\u0446\u0438\u0439</summary><table><thead><tr><th>\u0414\u0430\u0442\u0430</th><th>\u0410\u0434\u043c\u0438\u043d</th><th>\u041e\u0441\u043d\u043e\u0432\u0430\u043d\u0438\u0435</th><th>\u041e\u043f\u044b\u0442</th></tr></thead><tbody>'+rows(xp)+'</tbody></table></details></section>';
     }
     function titleHtml(item) {let text=esc(plain(item.name)),color=String(item.name).match(/\[color=(#[0-9a-f]{3,6}|[a-z]+)\]/i)?.[1];if(color)text='<span style="color:'+esc(color)+'">'+text+'</span>';return item.url?'<a href="'+esc(cleanUrl(item.url))+'" target="_blank" rel="noopener">'+text+'</a>':text;}
-    function inventoryCategories(){return [...new Set([...categories,...kits.map(k=>k.category).filter(Boolean),...(lists.inventory||[]).map(i=>i.category).filter(Boolean)])];}
+    function inventoryCategories(){return [...new Set([...categories,'\u041a\u043d\u0438\u0433\u0438 \u0438 \u043e\u0431\u0443\u0447\u0435\u043d\u0438\u0435',...kits.map(k=>k.category).filter(Boolean),...(lists.inventory||[]).map(i=>i.category).filter(Boolean)])];}
     function shopInventoryCategory(section,type,topicId,name){
       const text=plain([section,type,name].join(' ')).toLocaleLowerCase('ru').replace(/\u0451/g,'\u0435');
       if(topicId===83||/\u043c\u0435\u0434\u0438\u0446\u0438\u043d|\u043f\u0440\u0435\u043f\u0430\u0440\u0430\u0442|\u043b\u0435\u043a\u0430\u0440|\u0430\u043d\u0442\u0438\u0434\u043e\u0442|\u043f\u0440\u043e\u0442\u0438\u0432\u043e\u044f\u0434/.test(text))return '\u041c\u0435\u0434\u0438\u0446\u0438\u043d\u0441\u043a\u0438\u0439 \u043d\u0430\u0431\u043e\u0440';
