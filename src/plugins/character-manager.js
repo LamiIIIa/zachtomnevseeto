@@ -459,7 +459,7 @@ function akatsukiNetwork() {
     s.elements=[...new Set((Array.isArray(s.elements)?s.elements:[]).map(x=>String(x).trim()).filter(Boolean))];if(!Array.isArray(s.specializations))s.specializations=[];s.specializations=s.specializations.map(x=>String(x).trim()).filter(Boolean).slice(0,3);
     if(!Array.isArray(s.specializationTechniques))s.specializationTechniques=s.specializationTechnique?[typeof s.specializationTechnique==='string'?{name:s.specializationTechnique,url:''}:s.specializationTechnique]:[];delete s.specializationTechnique;s.specializationTechniques=s.specializationTechniques.filter(item=>item&&item.name?.trim()).slice(0,Math.max(0,3-s.specializations.length)).map(item=>({name:String(item.name).trim(),url:item.url?cleanUrl(item.url):''}));
     for (const k of ['inventory','property','missions','quests','history']) if (!Array.isArray(s[k])) throw Error('\u041d\u0435\u0432\u0435\u0440\u043d\u044b\u0439 \u0441\u043f\u0438\u0441\u043e\u043a: '+k);
-    s.inventory.forEach(i => { normalizeItemLink(i); if (!i.name?.trim()) throw Error('\u0423 \u043f\u0440\u0435\u0434\u043c\u0435\u0442\u0430 \u043d\u0435\u0442 \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u044f.'); num(i.quantity,'\u043a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u043f\u0440\u0435\u0434\u043c\u0435\u0442\u0430'); if(i.url)i.url=cleanUrl(i.url); });
+    s.inventory.forEach(i => { normalizeItemLink(i); if (!i.name?.trim()) throw Error('\u0423 \u043f\u0440\u0435\u0434\u043c\u0435\u0442\u0430 \u043d\u0435\u0442 \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u044f.'); i.category=inventoryCategory(i.category,i.name); num(i.quantity,'\u043a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u043f\u0440\u0435\u0434\u043c\u0435\u0442\u0430'); if(i.url)i.url=cleanUrl(i.url); });
     totals(s); return s;
   }
   function compactHistoryEntry(entry) {
@@ -496,6 +496,12 @@ function akatsukiNetwork() {
     if(data.pending?.plans?.length)data.pending={id:String(data.pending.id||''),plans:data.pending.plans.map(compactPlan).filter(plan=>plan.id)};else data.pending=null;
     data.history=(data.history||[]).map(compactHistoryEntry);
     return validate(data);
+  }
+  function inventoryCategory(category,name){
+    if(category!=='\u041a\u043d\u0438\u0433\u0438 \u0438 \u043e\u0431\u0443\u0447\u0435\u043d\u0438\u0435')return category;
+    const title=plain(name);
+    if(/\u043a\u043d\u0438\u0433|\u043f\u043e\u0441\u043e\u0431\u0438|\u0443\u0447\u0435\u0431\u043d\u0438\u043a|\u0430\u0442\u043b\u0430\u0441/i.test(title))return '\u041a\u043d\u0438\u0433\u0438';
+    return /\u043e\u0431\u0443\u0447\u0435\u043d\u0438|\u0442\u0440\u0435\u043d\u0438\u0440\u043e\u0432|\u0437\u0430\u043d\u044f\u0442\u0438|\u0443\u0440\u043e\u043a|\u043a\u0443\u0440\u0441|\u043d\u0430\u0441\u0442\u0430\u0432\u043d\u0438\u0447/i.test(title)?'\u041e\u0431\u0443\u0447\u0435\u043d\u0438\u0435':'\u041a\u043d\u0438\u0433\u0438';
   }
   function postLabelFromContent(post) {
     const text=decodeNumericEntities(post?.content?.innerText||post?.content?.textContent||'').replace(/\s+/g,' ').trim();
@@ -1182,9 +1188,12 @@ function akatsukiNetwork() {
       return '<section class="akcm-admin-history"><h3>\u0418\u0441\u0442\u043e\u0440\u0438\u044f \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u0439</h3><div class="akcm-grid"><div><b>\u041a\u043e\u0448\u0435\u043b\u0451\u043a:</b> '+fmt(t.money)+' \u0440\u0451</div><div><b>\u041e\u043f\u044b\u0442:</b> '+fmt(t.xp)+' \u0435\u0434.</div><div><b>\u0412\u0435\u0440\u0441\u0438\u044f:</b> '+fmt(s.revision)+'</div></div><details><summary>\u0418\u0441\u0442\u043e\u0440\u0438\u044f \u043a\u043e\u0448\u0435\u043b\u044c\u043a\u0430 \u00b7 '+money.length+' \u043e\u043f\u0435\u0440\u0430\u0446\u0438\u0439</summary><table><thead><tr><th>\u0414\u0430\u0442\u0430</th><th>\u0410\u0434\u043c\u0438\u043d</th><th>\u041e\u0441\u043d\u043e\u0432\u0430\u043d\u0438\u0435</th><th>\u0421\u0443\u043c\u043c\u0430</th></tr></thead><tbody>'+rows(money)+'</tbody></table></details><details><summary>\u0418\u0441\u0442\u043e\u0440\u0438\u044f \u043e\u043f\u044b\u0442\u0430 \u00b7 '+xp.length+' \u043e\u043f\u0435\u0440\u0430\u0446\u0438\u0439</summary><table><thead><tr><th>\u0414\u0430\u0442\u0430</th><th>\u0410\u0434\u043c\u0438\u043d</th><th>\u041e\u0441\u043d\u043e\u0432\u0430\u043d\u0438\u0435</th><th>\u041e\u043f\u044b\u0442</th></tr></thead><tbody>'+rows(xp)+'</tbody></table></details></section>';
     }
     function titleHtml(item) {let text=esc(plain(item.name)),color=String(item.name).match(/\[color=(#[0-9a-f]{3,6}|[a-z]+)\]/i)?.[1];if(color)text='<span style="color:'+esc(color)+'">'+text+'</span>';return item.url?'<a href="'+esc(cleanUrl(item.url))+'" target="_blank" rel="noopener">'+text+'</a>':text;}
-    function inventoryCategories(){return [...new Set([...categories,'\u041a\u043d\u0438\u0433\u0438 \u0438 \u043e\u0431\u0443\u0447\u0435\u043d\u0438\u0435',...kits.map(k=>k.category).filter(Boolean),...(lists.inventory||[]).map(i=>i.category).filter(Boolean)])];}
+    function inventoryCategories(){return [...new Set([...categories,'\u041a\u043d\u0438\u0433\u0438','\u041e\u0431\u0443\u0447\u0435\u043d\u0438\u0435',...kits.map(k=>inventoryCategory(k.category,k.title)),...(lists.inventory||[]).map(i=>i.category)].filter(c=>c&&c!=='\u041a\u043d\u0438\u0433\u0438 \u0438 \u043e\u0431\u0443\u0447\u0435\u043d\u0438\u0435'))];}
     function shopInventoryCategory(section,type,topicId,name){
       const text=plain([section,type,name].join(' ')).toLocaleLowerCase('ru').replace(/\u0451/g,'\u0435');
+      if(/^\u043a\u043d\u0438\u0433\u0438 \u0438 \u043e\u0431\u0443\u0447\u0435\u043d\u0438\u0435$/i.test(section))return inventoryCategory('\u041a\u043d\u0438\u0433\u0438 \u0438 \u043e\u0431\u0443\u0447\u0435\u043d\u0438\u0435',name);
+      if(/^\u043e\u0431\u0443\u0447\u0435\u043d\u0438\u0435$/i.test(section))return '\u041e\u0431\u0443\u0447\u0435\u043d\u0438\u0435';
+      if(/^\u043a\u043d\u0438\u0433\u0438$/i.test(section))return '\u041a\u043d\u0438\u0433\u0438';
       if(topicId===83||/\u043c\u0435\u0434\u0438\u0446\u0438\u043d|\u043f\u0440\u0435\u043f\u0430\u0440\u0430\u0442|\u043b\u0435\u043a\u0430\u0440|\u0430\u043d\u0442\u0438\u0434\u043e\u0442|\u043f\u0440\u043e\u0442\u0438\u0432\u043e\u044f\u0434/.test(text))return '\u041c\u0435\u0434\u0438\u0446\u0438\u043d\u0441\u043a\u0438\u0439 \u043d\u0430\u0431\u043e\u0440';
       if(topicId===81||/\u043a\u0443\u043a\u043b|\u043c\u0430\u0440\u0438\u043e\u043d\u0435\u0442/.test(text))return '\u041a\u0443\u043a\u043b\u044b';
       if(/\u0430\u0440\u0442\u0435\u0444\u0430\u043a\u0442|\u043e\u0441\u043e\u0431\u0435\u043d\u043d/.test(text))return '\u0410\u0440\u0442\u0435\u0444\u0430\u043a\u0442\u044b';
@@ -1250,10 +1259,10 @@ function akatsukiNetwork() {
     }
     function applyKit(id){
       const kit=kits.find(k=>String(k.id)===String(id));if(!kit)throw Error('\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u043d\u0430\u0431\u043e\u0440.');
-      const category=kit.category||kit.title;
       for(const row of kit.items||[]){
         const item=Array.isArray(row)?{name:row[0],quantity:row[1],unit:row[2]||'\u0448\u0442.'}:row;
         if(!item.name)continue;
+        const category=inventoryCategory(kit.category||kit.title,item.name);
         const unit=item.unit||'\u0448\u0442.',quantity=num(item.quantity||1,'\u043a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u043f\u0440\u0435\u0434\u043c\u0435\u0442\u0430');
         const existing=lists.inventory.find(i=>itemKey(i.name)===itemKey(item.name)&&String(i.unit||'\u0448\u0442.')===String(unit));
         if(existing){existing.quantity=num(existing.quantity+quantity,'\u043a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u043f\u0440\u0435\u0434\u043c\u0435\u0442\u0430');if(!existing.category)existing.category=category;}
