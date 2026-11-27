@@ -1643,7 +1643,19 @@ async function remember(e){if(!uid()||completed(e))return;if(!W.ForumAPITicket)t
 async function visit(e){if(!uid()||e.rule!=='visit')return;await remember(e);states[e.id]={done:true,version:stamp(e)};renderSide();}
 async function html(url){const u=new URL(url,location.href);if(u.origin!==location.origin)throw Error('\u0421\u0441\u044b\u043b\u043a\u0430 \u0432\u0435\u0434\u0451\u0442 \u043d\u0430 \u0434\u0440\u0443\u0433\u043e\u0439 \u0441\u0430\u0439\u0442');const r=await request(u.href);const charset=/charset\s*=\s*["']?([^;\s"']+)/i.exec(r.headers.get('content-type')||'');return new DOMParser().parseFromString(new TextDecoder(charset?.[1]||document.characterSet||'windows-1251').decode(await r.arrayBuffer()),'text/html');}
 function author(post){return post.getAttribute('data-user-id')||(/[?&]id=(\d+)/.exec(post.querySelector('.pa-author a[href*="profile.php?id="],.post-author a[href*="profile.php?id="],.pl-profile a[href*="profile.php?id="],.post-links a[href*="profile.php?id="]')?.getAttribute('href')||'')||[])[1]||'';}
-function postDay(p){const seconds=Number(p.getAttribute('data-posted')||p.querySelector('[data-posted]')?.getAttribute('data-posted'));if(seconds>0)return day(seconds*1000);const h=p.querySelector('h3,.posthead')?.textContent||'',m=/(\d{4})-(\d{2})-(\d{2})/.exec(h);return m?m.slice(1).join('-'):'';}
+function postDay(p){
+  const seconds=Number(p.getAttribute('data-posted')||p.querySelector('[data-posted]')?.getAttribute('data-posted'));
+  if(seconds>0)return day(seconds*1000);
+  const header=p.querySelector('.permalink')||p.querySelector('h3,.posthead');
+  const label=header?.textContent.trim()||'',date=/\d{4}-\d{2}-\d{2}/.exec(label);
+  if(date)return date[0];
+  const today=day(now());
+  if(/^(?:\u0441\u0435\u0433\u043e\u0434\u043d\u044f|today)\s/i.test(label))return today;
+  if(/^(?:\u0432\u0447\u0435\u0440\u0430|yesterday)\s/i.test(label)){
+    return new Date(Date.parse(today+'T00:00:00Z')-86400000).toISOString().slice(0,10);
+  }
+  return '';
+}
 async function topicPosts(topic){const q=[1],seen=new Set(),posts=new Map();while(q.length){const batch=q.splice(0,3).filter(n=>!seen.has(n));batch.forEach(n=>seen.add(n));if(seen.size>300)throw Error('\u0422\u0435\u043c\u0430 \u0431\u043e\u043b\u044c\u0448\u0435 300 \u0441\u0442\u0440\u0430\u043d\u0438\u0446');const docs=await Promise.all(batch.map(p=>html('/viewtopic.php?id='+topic+'&p='+p+'&ake='+Date.now())));for(const doc of docs){if(!doc.querySelector('.post[id^="p"] .post-content'))throw Error('\u0422\u0435\u043c\u0430 \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u043d\u0430');doc.querySelectorAll('.post[id^="p"]').forEach(p=>{if(/^p\d+$/.test(p.id)&&!posts.has(p.id))posts.set(p.id,p);});doc.querySelectorAll('.pagelink a[href],.pagination a[href]').forEach(a=>{const u=new URL(a.getAttribute('href'),location.href),p=Number(u.searchParams.get('p')||1);if(u.origin===location.origin&&u.searchParams.get('id')===String(topic)&&Number.isInteger(p)&&p>0&&!seen.has(p)&&!q.includes(p))q.push(p);});}}return [...posts.values()];}
 function visible(e){return e.enabled!==false&&typeof e.text==='string'&&!!e.text.trim()&&typeof e.url==='string'&&!!e.url.trim()&&Array.isArray(e.groups)&&e.groups.includes(group());}
 function streakProgress(dates,count,today){
@@ -1684,11 +1696,6 @@ function rememberCheck(e,state){
     W.localStorage.setItem(cacheKey(),JSON.stringify({day:state.day,states:saved}));
   }catch(_){}
 }
-function ownPostOnPage(e,today){
-  if(!['today','streak'].includes(e.rule)||target(location.href).topic!==target(e.url).topic||
-     e.rule==='streak'&&today<e.streakFrom)return false;
-  return Array.from(document.querySelectorAll('.post[id^="p"]')).some(p=>author(p)===uid()&&postDay(p)===today);
-}
 function finishBackgroundCheck(){
   const frame=document.createElement('iframe');
   frame.hidden=true;
@@ -1726,13 +1733,8 @@ async function checkAll(manual=false){
       const today=day(now());
       const key=stamp(e),current=states[e.id],saved=cached[key];
       if(current?.done&&current.version===key&&(e.rule!=='today'||current.day===today))continue;
-      if(saved?.day===today&&(!manual||e.rule==='today'||e.rule==='streak'||saved.done)){
+      if(saved?.day===today&&(saved.done||saved.hasToday)){
         const seen={...saved};
-        if(!seen.done&&!seen.hasToday&&ownPostOnPage(e,today)){
-          if(e.rule==='today')seen.done=true;
-          else seen.hasToday=true;
-          rememberCheck(e,seen);
-        }
         states[e.id]=seen;
         if(seen.done&&!completed(e)){
           try{await remember(e);}catch(error){ok=false;states[e.id].error=error.message;}
@@ -1778,7 +1780,10 @@ function closeHover(){hovered=false;clearTimeout(closeTimer);closeTimer=setTimeo
 toggle.addEventListener('mouseenter',openHover);side.addEventListener('mouseenter',openHover);toggle.addEventListener('mouseleave',closeHover);side.addEventListener('mouseleave',closeHover);toggle.addEventListener('focus',openHover);side.addEventListener('focusin',openHover);toggle.addEventListener('blur',closeHover);side.addEventListener('focusout',closeHover);
 toggle.onclick=()=>{pinned=!pinned;hidden=!pinned;visibility();};document.body.append(side,toggle);visibility();window.addEventListener('resize',visibility);side.addEventListener('click',e=>{const close=e.target.closest('[data-ake-dismiss]');if(close){const event=shared?.events.find(x=>x.id===close.dataset.akeDismiss);if(event){close.disabled=true;dismiss(event).catch(error=>{states[event.id]={error:error.message};renderSide();});}return;}if(e.target.closest('[data-ake-check]'))void refresh(true);const a=e.target.closest('[data-ake-open]');if(a){const event=shared?.events.find(x=>x.id===a.dataset.akeOpen);if(event?.rule==='visit')visit(event).catch(err=>{states[event.id]={error:err.message};renderSide();});}});
 function scan(){document.querySelectorAll('[data-ak-events-admin]').forEach(mountAdmin);}scan();new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});try{await config();visits=await loadVisits();lastRefresh=Date.now();renderSide();for(const e of shared.events.filter(visible)){if(e.rule==='visit'&&!dismissed(e)&&target(e.url).href===location.href)await visit(e);}if(innerWidth>=1100)await checkAll();}catch(e){side.innerHTML='<p>\u0418\u0432\u0435\u043d\u0442\u044b \u0432\u0440\u0435\u043c\u0435\u043d\u043d\u043e \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u043d\u044b: '+esc(e.message)+'</p>';}
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&innerWidth>=1100)void refresh();});setInterval(()=>{if(!document.hidden&&innerWidth>=1100){if(!hidden)void refresh();else renderSide();}},Math.max(30000,Number(CFG.eventsCheckInterval)||120000));}
+const refreshVisible=()=>{if(!document.hidden&&innerWidth>=1100)void refresh();};
+document.addEventListener('visibilitychange',refreshVisible);
+window.addEventListener('focus',refreshVisible);
+setInterval(refreshVisible,Math.max(30000,Number(CFG.eventsCheckInterval)||120000));}
 const core={target,validate,validDate,consecutiveDays,streakProgress,day,author,postDay,visible,completed,dismissed,check,config,save};if(typeof module!=='undefined'&&module.exports){if(!module.exports.boot)module.exports=core;return;}W.AkatsukiEvents=core;if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })(typeof window==='undefined'?globalThis:window);
 
